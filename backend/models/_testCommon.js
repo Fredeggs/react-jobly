@@ -3,47 +3,75 @@ const bcrypt = require("bcrypt");
 const db = require("../db.js");
 const { BCRYPT_WORK_FACTOR } = require("../config");
 
-const testJobIds = [];
+let testLibraryIds = [];
 
 async function commonBeforeAll() {
   // noinspection SqlWithoutWhere
-  await db.query("DELETE FROM companies");
+  await db.query("DELETE FROM contacts");
+  // noinspection SqlWithoutWhere
+  await db.query("DELETE FROM libraries");
   // noinspection SqlWithoutWhere
   await db.query("DELETE FROM users");
+  // noinspection SqlWithoutWhere
+  await db.query("DELETE FROM primary_addresses");
+  // noinspection SqlWithoutWhere
+  await db.query("DELETE FROM shipping_addresses");
 
-  await db.query(`
-    INSERT INTO companies(handle, name, num_employees, description, logo_url)
-    VALUES ('c1', 'C1', 1, 'Desc1', 'http://c1.img'),
-           ('c2', 'C2', 2, 'Desc2', 'http://c2.img'),
-           ('c3', 'C3', 3, 'Desc3', 'http://c3.img')`);
+  const userIds = await db.query(`
+  INSERT INTO users (id, password, first_name, last_name, phone, email, is_admin)
+  VALUES (1,
+          '$2b$12$AZH7virni5jlTTiGgEg4zu3lSvAw68qVEfSIOjJ3RqtbJbdW/Oi5q',
+          'Test',
+          'User',
+          '123-456-7890',
+          'testuser@test.com',
+          FALSE),
+         (2,
+          '$2b$12$AZH7virni5jlTTiGgEg4zu3lSvAw68qVEfSIOjJ3RqtbJbdW/Oi5q',
+          'Test',
+          'Admin!',
+          '123-456-7890',
+          'testadmin@test.com',
+          TRUE)
+  RETURNING id`);
 
-  const resultsJobs = await db.query(`
-    INSERT INTO jobs (title, salary, equity, company_handle)
-    VALUES ('Job1', 100, '0.1', 'c1'),
-           ('Job2', 200, '0.2', 'c1'),
-           ('Job3', 300, '0', 'c1'),
-           ('Job4', NULL, NULL, 'c1')
+  const primaryAddressIds = await db.query(`
+  INSERT INTO primary_addresses (street, barangay, city, province_id, region_id)
+  VALUES ('street1', 'barangay1', 'city1', 49, 1),
+        ('street2', 'barangay2', 'city2', 49, 1),
+        ('street3', 'barangay3', 'city3', 49, 1),
+        ('street4', 'barangay4', 'city4', 49, 1)
+  RETURNING id`);
+
+  const shippingAddressIds = await db.query(`
+  INSERT INTO shipping_addresses (street, barangay, city, province_id, region_id)
+  VALUES ('street1', 'barangay1', 'city1', 49, 1),
+        ('street2', 'barangay2', 'city2', 49, 1),
+        ('street3', 'barangay3', 'city3', 49, 1),
+        ('street4', 'barangay4', 'city4', 49, 1)
+  RETURNING id`);
+
+  const resultsLibraries = await db.query(`
+    INSERT INTO libraries(admin_id, lib_name, lib_type, program, classrooms, teachers, students_per_grade, primary_address_id, shipping_address_id)
+    VALUES (${userIds.rows[0].id}, 'Elementary School Library 1', 'elementary school', 'FSER', 3, 3, 20, ${primaryAddressIds.rows[0].id}, ${shippingAddressIds.rows[0].id}),
+           (${userIds.rows[1].id}, 'Community Library 1', 'community', 'LC', null, null, null, ${primaryAddressIds.rows[1].id}, ${shippingAddressIds.rows[1].id})
     RETURNING id`);
-  testJobIds.splice(0, 0, ...resultsJobs.rows.map(r => r.id));
+  testLibraryIds.splice(0, 0, ...resultsLibraries.rows.map((r) => r.id));
 
   await db.query(`
-        INSERT INTO users(username,
-                          password,
-                          first_name,
-                          last_name,
-                          email)
-        VALUES ('u1', $1, 'U1F', 'U1L', 'u1@email.com'),
-               ('u2', $2, 'U2F', 'U2L', 'u2@email.com')
-        RETURNING username`,
-      [
-        await bcrypt.hash("password1", BCRYPT_WORK_FACTOR),
-        await bcrypt.hash("password2", BCRYPT_WORK_FACTOR),
-      ]);
-
-  await db.query(`
-        INSERT INTO applications(username, job_id)
-        VALUES ('u1', $1)`,
-      [testJobIds[0]]);
+  INSERT INTO contacts (id, first_name, last_name, phone, email, library_id)
+  VALUES (1,
+          'Contact1-First',
+          'Contact1-Last',
+          '123-456-7890',
+          'testcontact1@test.com',
+          ${testLibraryIds[0]}),
+         (2,
+          'Contact2-First',
+          'Contact1-Last',
+          '123-456-7890',
+          'testcontact2@test.com',
+          ${testLibraryIds[1]})`);
 }
 
 async function commonBeforeEach() {
@@ -58,11 +86,10 @@ async function commonAfterAll() {
   await db.end();
 }
 
-
 module.exports = {
   commonBeforeAll,
   commonBeforeEach,
   commonAfterEach,
   commonAfterAll,
-  testJobIds,
+  testLibraryIds,
 };

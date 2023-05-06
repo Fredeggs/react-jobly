@@ -17,23 +17,19 @@ async function commonBeforeAll() {
   // noinspection SqlWithoutWhere
   await db.query("DELETE FROM shipping_addresses");
 
-  const userIds = await db.query(`
-  INSERT INTO users (id, password, first_name, last_name, phone, email, is_admin)
-  VALUES (1,
-          '$2b$12$AZH7virni5jlTTiGgEg4zu3lSvAw68qVEfSIOjJ3RqtbJbdW/Oi5q',
-          'Test',
-          'User',
-          '123-456-7890',
-          'testuser@test.com',
-          FALSE),
-         (2,
-          '$2b$12$AZH7virni5jlTTiGgEg4zu3lSvAw68qVEfSIOjJ3RqtbJbdW/Oi5q',
-          'Test',
-          'Admin!',
-          '123-456-7890',
-          'testadmin@test.com',
-          TRUE)
-  RETURNING id`);
+  const userIds = await db.query(
+    `
+        INSERT INTO users(id, password, first_name, last_name, phone, email, is_admin)
+        VALUES (1, $1, 'User1First', 'User1Last', '123-456-7890', 'testuser1@test.com', FALSE),
+               (2, $2, 'AdminFirst', 'AdminLast', '123-456-7890', 'testadmin@test.com', TRUE),
+               (3, $3, 'User2First', 'User2Last', '123-456-7890', 'testuser2@test.com', FALSE)
+        RETURNING id`,
+    [
+      await bcrypt.hash("password1", BCRYPT_WORK_FACTOR),
+      await bcrypt.hash("password2", BCRYPT_WORK_FACTOR),
+      await bcrypt.hash("password3", BCRYPT_WORK_FACTOR),
+    ]
+  );
 
   const primaryAddressIds = await db.query(`
   INSERT INTO primary_addresses (street, barangay, city, province_id, region_id)

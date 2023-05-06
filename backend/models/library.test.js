@@ -20,27 +20,35 @@ afterAll(commonAfterAll);
 
 describe("create library", function () {
   const newLibrary = {
-    libraryName: "New Library",
-    adminId: 1,
-    libraryType: "middle school",
-    primaryStreet: "Primary Street",
-    primaryBarangay: "Primary Barangay",
-    primaryCity: "Primary City",
-    primaryProvinceId: 1,
-    primaryRegionId: 1,
-    shippingStreet: "Shipping Street",
-    shippingBarangay: "Shipping Barangay",
-    shippingCity: "Shipping City",
-    shippingProvinceId: 1,
-    shippingRegionId: 1,
-    classrooms: 1,
-    studentsPerGrade: 2,
-    teachers: 3,
-    program: "FSER",
-    contactFirst: "First",
-    contactLast: "Last",
-    contactPhone: "000-000-0000",
-    contactEmail: "contact@gmail.com",
+    libraryData: {
+      libraryName: "New Library",
+      libraryType: "middle school",
+      classrooms: 1,
+      studentsPerGrade: 2,
+      teachers: 3,
+      program: "FSER",
+    },
+    contactData: {
+      firstName: "First",
+      lastName: "Last",
+      phone: "0000000000",
+      email: "contact@gmail.com",
+    },
+    primaryAddress: {
+      street: "Primary Street",
+      barangay: "Primary Barangay",
+      city: "Primary City",
+      provinceId: 1,
+      regionId: 1,
+    },
+    shippingAddress: {
+      street: "Primary Street",
+      barangay: "Primary Barangay",
+      city: "Primary City",
+      provinceId: 1,
+      regionId: 1,
+    },
+    adminId: 3,
   };
 
   test("works", async function () {
@@ -48,7 +56,19 @@ describe("create library", function () {
     expect(library).toEqual({
       ...newLibrary,
       id: expect.any(Number),
-      libraryId: expect.any(Number),
+      contactData: {
+        ...newLibrary.contactData,
+        id: expect.any(Number),
+        libraryId: expect.any(Number),
+      },
+      primaryAddress: {
+        ...newLibrary.primaryAddress,
+        id: expect.any(Number),
+      },
+      shippingAddress: {
+        ...newLibrary.shippingAddress,
+        id: expect.any(Number),
+      },
     });
   });
 
@@ -68,10 +88,10 @@ describe("create library", function () {
 describe("create contact", function () {
   test("works", async function () {
     const newContact = {
-      contactFirst: "Test",
-      contactLast: "Contact",
-      contactEmail: "testcontact@gmail.com",
-      contactPhone: "111-111-1111",
+      firstName: "Test",
+      lastName: "Contact",
+      email: "testcontact@gmail.com",
+      phone: "111-111-1111",
       libraryId: testLibraryIds[0],
     };
     let contact = await Library.createContact(newContact);
@@ -84,10 +104,10 @@ describe("create contact", function () {
 
   test("bad request with dupe", async function () {
     const newContact = {
-      contactFirst: "Test",
-      contactLast: "Contact",
-      contactEmail: "testcontact@gmail.com",
-      contactPhone: "111-111-1111",
+      firstName: "Test",
+      lastName: "Contact",
+      email: "testcontact@gmail.com",
+      phone: "111-111-1111",
       libraryId: testLibraryIds[0],
     };
 
@@ -177,22 +197,22 @@ describe("get", function () {
     let library = await Library.get(testLibraryIds[0]);
     expect(library).toEqual({
       id: expect.any(Number),
-      libraryDetails: {
+      libraryData: {
         classrooms: 3,
         libraryName: "Elementary School Library 1",
         libraryType: "elementary school",
-        readingProgram: "FSER",
+        program: "FSER",
         studentsPerGrade: 20,
         teachers: 3,
       },
       admin: {
         id: expect.any(Number),
-        email: "testuser@test.com",
-        firstName: "Test",
-        lastName: "User",
+        email: "testuser1@test.com",
+        firstName: "User1First",
+        lastName: "User1Last",
         phone: "123-456-7890",
       },
-      contact: {
+      contactData: {
         id: expect.any(Number),
         email: "testcontact1@test.com",
         firstName: "Contact1-First",
@@ -232,28 +252,28 @@ describe("get", function () {
 
 describe("update", function () {
   const updateData = {
-    libraryDetails: {
+    libraryData: {
       libraryName: "Updated Name",
     },
     primaryAddress: {},
     shippingAddress: {},
-    contact: { firstName: "Updated First Name" },
+    contactData: { firstName: "Updated First Name" },
   };
 
   test("works", async function () {
     let library = await Library.update(testLibraryIds[0], updateData);
     expect(library).toEqual({
-      libraryDetails: {
+      libraryData: {
         classrooms: 3,
         libraryName: "Updated Name",
         libraryType: "elementary school",
-        readingProgram: "FSER",
+        program: "FSER",
         studentsPerGrade: 20,
         teachers: 3,
       },
       primaryAddress: {},
       shippingAddress: {},
-      contact: {
+      contactData: {
         email: "testcontact1@test.com",
         firstName: "Updated First Name",
         lastName: "Contact1-Last",
@@ -264,22 +284,22 @@ describe("update", function () {
     const getLibrary = await Library.get(testLibraryIds[0]);
     expect(getLibrary).toEqual({
       id: expect.any(Number),
-      libraryDetails: {
+      libraryData: {
         classrooms: 3,
         libraryName: "Updated Name",
         libraryType: "elementary school",
         studentsPerGrade: 20,
         teachers: 3,
-        readingProgram: "FSER",
+        program: "FSER",
       },
       admin: {
-        email: "testuser@test.com",
-        firstName: "Test",
+        email: "testuser1@test.com",
+        firstName: "User1First",
         id: expect.any(Number),
-        lastName: "User",
+        lastName: "User1Last",
         phone: "123-456-7890",
       },
-      contact: {
+      contactData: {
         email: "testcontact1@test.com",
         firstName: "Updated First Name",
         id: expect.any(Number),

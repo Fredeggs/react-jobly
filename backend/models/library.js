@@ -17,99 +17,108 @@ class Library {
    * */
 
   static async createLibrary({
-    libraryName,
+    libraryData,
+    primaryAddress,
+    shippingAddress,
+    contactData,
     adminId,
-    libraryType,
-    primaryStreet,
-    primaryBarangay,
-    primaryCity,
-    primaryProvinceId,
-    primaryRegionId,
-    shippingStreet,
-    shippingBarangay,
-    shippingCity,
-    shippingProvinceId,
-    shippingRegionId,
-    classrooms = 0,
-    studentsPerGrade = 0,
-    teachers = 0,
-    program,
-    contactFirst,
-    contactLast,
-    contactPhone,
-    contactEmail,
   }) {
-    const duplicateCheck = await db.query(
+    const duplicateLibCheck = await db.query(
       `SELECT lib_name
            FROM libraries
            WHERE lib_name = $1`,
-      [libraryName]
+      [libraryData.libraryName]
     );
+    if (duplicateLibCheck.rows[0])
+      throw new BadRequestError(
+        `Duplicate library with name: ${libraryData.libraryName}`
+      );
 
-    if (duplicateCheck.rows[0])
-      throw new BadRequestError(`Duplicate library with name: ${libraryName}`);
+    const duplicateUserCheck = await db.query(
+      `SELECT admin_id
+           FROM libraries
+           WHERE admin_id = $1`,
+      [adminId]
+    );
+    if (duplicateUserCheck.rows[0])
+      throw new BadRequestError(
+        `User with id: ${adminId} is already associated with a library`
+      );
 
     const shippingAddressRes = await db.query(
       `INSERT INTO shipping_addresses
            (street, barangay, city, province_id, region_id)
            VALUES ($1, $2, $3, $4, $5)
-           RETURNING street AS "shippingStreet", barangay AS "shippingBarangay", city AS "shippingCity", province_id AS "shippingProvinceId", region_id AS "shippingRegionId"`,
+           RETURNING id, street, barangay, city, province_id AS "provinceId", region_id AS "regionId"`,
       [
-        shippingStreet,
-        shippingBarangay,
-        shippingCity,
-        shippingProvinceId,
-        shippingRegionId,
+        shippingAddress.street,
+        shippingAddress.barangay,
+        shippingAddress.city,
+        shippingAddress.provinceId,
+        shippingAddress.regionId,
       ]
     );
-    const shippingAddress = shippingAddressRes.rows[0];
+    const newShippingAddress = shippingAddressRes.rows[0];
 
     const primaryAddressRes = await db.query(
       `INSERT INTO primary_addresses
            (street, barangay, city, province_id, region_id)
            VALUES ($1, $2, $3, $4, $5)
-           RETURNING street AS "primaryStreet", barangay AS "primaryBarangay", city AS "primaryCity", province_id AS "primaryProvinceId", region_id AS "primaryRegionId"`,
+           RETURNING id, street, barangay, city, province_id AS "provinceId", region_id AS "regionId"`,
       [
-        primaryStreet,
-        primaryBarangay,
-        primaryCity,
-        primaryProvinceId,
-        primaryRegionId,
+        primaryAddress.street,
+        primaryAddress.barangay,
+        primaryAddress.city,
+        primaryAddress.provinceId,
+        primaryAddress.regionId,
       ]
     );
-    const primaryAddress = primaryAddressRes.rows[0];
+    const newPrimaryAddress = primaryAddressRes.rows[0];
 
     const libraryRes = await db.query(
       `INSERT INTO libraries
-           (admin_id, lib_name, program, classrooms, teachers, students_per_grade, primary_address_id, shipping_address_id, lib_type)
+           (admin_id, lib_name, lib_type, program, classrooms, teachers, students_per_grade, primary_address_id, shipping_address_id)
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-           RETURNING id, admin_id as "adminId", lib_name AS "libraryName", program, classrooms, teachers, students_per_grade AS "studentsPerGrade", lib_type AS "libraryType"`,
+           RETURNING id, admin_id as "adminId", lib_name AS "libraryName", lib_type AS "libraryType", program, classrooms, teachers, students_per_grade AS "studentsPerGrade"`,
       [
         adminId,
-        libraryName,
-        program,
-        classrooms,
-        teachers,
-        studentsPerGrade,
-        primaryAddress.id,
-        shippingAddress.id,
-        libraryType,
+        libraryData.libraryName,
+        libraryData.libraryType,
+        libraryData.program,
+        libraryData.classrooms,
+        libraryData.teachers,
+        libraryData.studentsPerGrade,
+        newPrimaryAddress.id,
+        newShippingAddress.id,
       ]
     );
+    const newLibrary = libraryRes.rows[0];
 
     const newContact = await this.createContact({
-      contactFirst,
-      contactLast,
-      contactEmail,
-      contactPhone,
-      libraryId: libraryRes.rows[0].id,
+      ...contactData,
+      libraryId: newLibrary.id,
     });
 
     const library = {
-      ...libraryRes.rows[0],
-      ...primaryAddress,
-      ...shippingAddress,
-      ...newContact,
+      id: newLibrary.id,
+      libraryData: {
+        libraryName: newLibrary.libraryName,
+        libraryType: newLibrary.libraryType,
+        classrooms: newLibrary.classrooms,
+        teachers: newLibrary.teachers,
+        studentsPerGrade: newLibrary.studentsPerGrade,
+        program: newLibrary.program,
+      },
+      primaryAddress: {
+        ...newPrimaryAddress,
+      },
+      shippingAddress: {
+        ...newShippingAddress,
+      },
+      contactData: {
+        ...newContact,
+      },
+      adminId: newLibrary.adminId,
     };
 
     return library;
@@ -121,31 +130,23 @@ class Library {
    *
    * Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
    * */
-  static async createContact({
-    contactFirst,
-    contactLast,
-    contactEmail,
-    contactPhone,
-    libraryId,
-  }) {
+  static async createContact({ firstName, lastName, email, phone, libraryId }) {
     const duplicateCheck = await db.query(
       `SELECT email
            FROM contacts
            WHERE email = $1`,
-      [contactEmail]
+      [email]
     );
 
     if (duplicateCheck.rows.length >= 1)
-      throw new BadRequestError(
-        `Duplicate contact with email: ${contactEmail}`
-      );
+      throw new BadRequestError(`Duplicate contact with email: ${email}`);
 
     const newContactRes = await db.query(
       `INSERT INTO contacts
            (first_name, last_name, phone, email, library_id)
            VALUES ($1, $2, $3, $4, $5)
-           RETURNING id, first_name AS "contactFirst", last_name AS "contactLast", phone AS "contactPhone", email AS "contactEmail", library_id AS "libraryId"`,
-      [contactFirst, contactLast, contactPhone, contactEmail, libraryId]
+           RETURNING id, first_name AS "firstName", last_name AS "lastName", phone, email, library_id AS "libraryId"`,
+      [firstName, lastName, phone, email, libraryId]
     );
     const newContact = newContactRes.rows[0];
     return newContact;
@@ -205,10 +206,10 @@ class Library {
 
   /** Given a library id, return data about library.
    *
-   * Returns { id, admin, contact, primaryAddress, shippingAddress }
-   *   where libraryDetails is { libraryName, libraryType, readingProgram, studentsPerGrade, classrooms, teachers }
+   * Returns { id, admin, libraryData, contactData, primaryAddress, shippingAddress }
+   *   where libraryData is { libraryName, libraryType, readingProgram, studentsPerGrade, classrooms, teachers }
    *   where admin is { firstName, lastName, email, phone }
-   *   where contact is { firstName, lastName, email, phone }
+   *   where contactData is { firstName, lastName, email, phone }
    *   where primaryAddress is { street, barangay, city, province, region }
    *   where shippingAddress is { street, barangay, city, province, region }
    *
@@ -292,16 +293,16 @@ class Library {
 
     return {
       id: library.id,
-      libraryDetails: {
+      libraryData: {
         libraryName: library.lib_name,
         libraryType: library.lib_type,
-        readingProgram: library.program,
+        program: library.program,
         classrooms: library.classrooms,
         teachers: library.teachers,
         studentsPerGrade: library.students_per_grade,
       },
       admin: { ...admin },
-      contact: { ...contact },
+      contactData: { ...contact },
       primaryAddress: { ...primaryAddress },
       shippingAddress: { ...shippingAddress },
     };
@@ -335,11 +336,10 @@ class Library {
     const addressIds = addressIdsRes.rows[0];
     if (!addressIds) throw new NotFoundError(`No library with id: ${id}`);
 
-    if (Object.keys(data.libraryDetails).length) {
-      const { setCols, values } = sqlForPartialUpdate(data.libraryDetails, {
+    if (Object.keys(data.libraryData).length) {
+      const { setCols, values } = sqlForPartialUpdate(data.libraryData, {
         libraryName: "lib_name",
         libraryType: "lib_type",
-        readingProgram: "program",
         studentsPerGrade: "students_per_grade",
       });
       const handleVarIdx = "$" + (values.length + 1);
@@ -349,15 +349,15 @@ class Library {
                         WHERE id = ${handleVarIdx} 
                         RETURNING lib_name AS "libraryName", 
                                   lib_type AS "libraryType", 
-                                  program AS "readingProgram", 
+                                  program, 
                                   students_per_grade AS "studentsPerGrade", 
                                   teachers,
                                   classrooms`;
       const result = await db.query(querySql, [...values, id]);
-      data.libraryDetails = result.rows[0];
+      data.libraryData = result.rows[0];
     }
-    if (Object.keys(data.contact).length) {
-      const { setCols, values } = sqlForPartialUpdate(data.contact, {
+    if (Object.keys(data.contactData).length) {
+      const { setCols, values } = sqlForPartialUpdate(data.contactData, {
         firstName: "first_name",
         lastName: "lastName",
       });
@@ -371,7 +371,7 @@ class Library {
                                   email,
                                   phone`;
       const contactRes = await db.query(querySql, [...values, id]);
-      data.contact = contactRes.rows[0];
+      data.contactData = contactRes.rows[0];
     }
     if (Object.keys(data.primaryAddress).length) {
       if (data.primaryAddress.province) {

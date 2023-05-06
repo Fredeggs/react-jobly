@@ -29,6 +29,7 @@ class User {
                   first_name AS "firstName",
                   last_name AS "lastName",
                   email,
+                  phone,
                   is_admin AS "isAdmin"
            FROM users
            WHERE email = $1`,
@@ -56,7 +57,14 @@ class User {
    * Throws BadRequestError on duplicates.
    **/
 
-  static async register({ password, firstName, lastName, email, isAdmin }) {
+  static async register({
+    password,
+    firstName,
+    lastName,
+    email,
+    isAdmin,
+    phone,
+  }) {
     const duplicateCheck = await db.query(
       `SELECT email
            FROM users
@@ -76,10 +84,11 @@ class User {
             first_name,
             last_name,
             email,
+            phone,
             is_admin)
-           VALUES ($1, $2, $3, $4, $5)
-           RETURNING id, first_name AS "firstName", last_name AS "lastName", email, is_admin AS "isAdmin"`,
-      [hashedPassword, firstName, lastName, email, isAdmin]
+           VALUES ($1, $2, $3, $4, $5, $6)
+           RETURNING id, first_name AS "firstName", last_name AS "lastName", email, phone, is_admin AS "isAdmin"`,
+      [hashedPassword, firstName, lastName, email, phone, isAdmin]
     );
 
     const user = result.rows[0];
@@ -96,6 +105,7 @@ class User {
     const result = await db.query(
       `SELECT id,
                   email,
+                  phone,
                   first_name AS "firstName",
                   last_name AS "lastName",
                   is_admin AS "isAdmin"
@@ -114,12 +124,13 @@ class User {
    * Throws NotFoundError if user not found.
    **/
 
-  static async get(username) {
+  static async get(id) {
     const userRes = await db.query(
       `SELECT id,
                   first_name AS "firstName",
                   last_name AS "lastName",
                   email,
+                  phone,
                   is_admin AS "isAdmin"
            FROM users
            WHERE id = $1`,
@@ -129,15 +140,6 @@ class User {
     const user = userRes.rows[0];
 
     if (!user) throw new NotFoundError(`No user with id: ${id}`);
-
-    // const userApplicationsRes = await db.query(
-    //   `SELECT a.job_id
-    //        FROM applications AS a
-    //        WHERE a.username = $1`,
-    //   [username]
-    // );
-
-    // user.applications = userApplicationsRes.rows.map((a) => a.job_id);
     return user;
   }
 
@@ -177,6 +179,7 @@ class User {
                                 first_name AS "firstName",
                                 last_name AS "lastName",
                                 email,
+                                phone,
                                 is_admin AS "isAdmin"`;
     const result = await db.query(querySql, [...values, id]);
     const user = result.rows[0];

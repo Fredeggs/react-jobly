@@ -53,7 +53,7 @@ router.post("/", ensureAdmin, async function (req, res, next) {
  * Authorization required: admin
  **/
 
-router.get("/", ensureCorrectUserOrAdmin, async function (req, res, next) {
+router.get("/", ensureAdmin, async function (req, res, next) {
   try {
     const users = await User.findAll();
     return res.json({ users });
@@ -64,24 +64,19 @@ router.get("/", ensureCorrectUserOrAdmin, async function (req, res, next) {
 
 /** GET /[username] => { user }
  *
- * Returns { username, firstName, lastName, isAdmin, jobs }
- *   where jobs is { id, title, companyHandle, companyName, state }
+ * Returns { username, firstName, lastName, email, phone, isAdmin }
  *
- * Authorization required: admin or same user-as-:username
+ * Authorization required: admin or same user-as-:id
  **/
 
-router.get(
-  "/:username",
-  ensureCorrectUserOrAdmin,
-  async function (req, res, next) {
-    try {
-      const user = await User.get(req.params.username);
-      return res.json({ user });
-    } catch (err) {
-      return next(err);
-    }
+router.get("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) {
+  try {
+    const user = await User.get(req.params.id);
+    return res.json({ user });
+  } catch (err) {
+    return next(err);
   }
-);
+});
 
 /** PATCH /[username] { user } => { user }
  *
@@ -94,7 +89,7 @@ router.get(
  **/
 
 router.patch(
-  "/:username",
+  "/:id",
   ensureCorrectUserOrAdmin,
   async function (req, res, next) {
     try {
@@ -104,7 +99,7 @@ router.patch(
         throw new BadRequestError(errs);
       }
 
-      const user = await User.update(req.params.username, req.body);
+      const user = await User.update(req.params.id, req.body);
       return res.json({ user });
     } catch (err) {
       return next(err);
@@ -118,33 +113,12 @@ router.patch(
  **/
 
 router.delete(
-  "/:username",
+  "/:id",
   ensureCorrectUserOrAdmin,
   async function (req, res, next) {
     try {
-      await User.remove(req.params.username);
-      return res.json({ deleted: req.params.username });
-    } catch (err) {
-      return next(err);
-    }
-  }
-);
-
-/** POST /[username]/jobs/[id]  { state } => { application }
- *
- * Returns {"applied": jobId}
- *
- * Authorization required: admin or same-user-as-:username
- * */
-
-router.post(
-  "/:username/jobs/:id",
-  ensureCorrectUserOrAdmin,
-  async function (req, res, next) {
-    try {
-      const jobId = +req.params.id;
-      await User.applyToJob(req.params.username, jobId);
-      return res.json({ applied: jobId });
+      await User.remove(parseInt(req.params.id));
+      return res.json({ deleted: parseInt(req.params.id) });
     } catch (err) {
       return next(err);
     }

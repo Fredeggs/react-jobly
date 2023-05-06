@@ -58,7 +58,7 @@ function ensureAdmin(req, res, next) {
 }
 
 /** Middleware to use when they must provide a valid token & be user matching
- *  username provided as route param.
+ *  user id provided as route param.
  *
  *  If not, raises Unauthorized.
  */
@@ -66,7 +66,14 @@ function ensureAdmin(req, res, next) {
 function ensureCorrectUserOrAdmin(req, res, next) {
   try {
     const user = res.locals.user;
-    if (!(user && (user.isAdmin || user.username === req.params.username))) {
+    if (
+      !(
+        user &&
+        (user.isAdmin ||
+          user.id === parseInt(req.params.id) ||
+          user.libraryId === parseInt(req.params.id))
+      )
+    ) {
       throw new UnauthorizedError();
     }
     return next();

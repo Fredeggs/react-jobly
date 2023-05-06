@@ -23,6 +23,10 @@
       "minLength": 6,
       "maxLength": 60,
       "format": "email"
+    },
+    "phone": {
+      "type": "string",
+      "pattern": "^[0-9]{10}$"
     }
   },
   "additionalProperties": false,

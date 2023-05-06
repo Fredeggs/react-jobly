@@ -11,6 +11,7 @@ const { createToken } = require("../helpers/tokens");
 const userAuthSchema = require("../schemas/userAuth.json");
 const userRegisterSchema = require("../schemas/userRegister.json");
 const { BadRequestError } = require("../expressError");
+const db = require("../db");
 
 /** POST /auth/token:  { username, password } => { token }
  *
@@ -23,19 +24,25 @@ router.post("/token", async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, userAuthSchema);
     if (!validator.valid) {
-      const errs = validator.errors.map(e => e.stack);
+      const errs = validator.errors.map((e) => e.stack);
       throw new BadRequestError(errs);
     }
 
-    const { username, password } = req.body;
-    const user = await User.authenticate(username, password);
-    const token = createToken(user);
+    const { email, password } = req.body;
+    const user = await User.authenticate(email, password);
+    const libraryIdRes = await db.query(
+      `SELECT id FROM libraries WHERE admin_id = $1`,
+      [user.id]
+    );
+    const token = createToken({
+      ...user,
+      libraryId: libraryIdRes.rows[0],
+    });
     return res.json({ token });
   } catch (err) {
     return next(err);
   }
 });
-
 
 /** POST /auth/register:   { user } => { token }
  *
@@ -50,7 +57,7 @@ router.post("/register", async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, userRegisterSchema);
     if (!validator.valid) {
-      const errs = validator.errors.map(e => e.stack);
+      const errs = validator.errors.map((e) => e.stack);
       throw new BadRequestError(errs);
     }
 
@@ -61,6 +68,5 @@ router.post("/register", async function (req, res, next) {
     return next(err);
   }
 });
-
 
 module.exports = router;

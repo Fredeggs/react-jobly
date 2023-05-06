@@ -2,78 +2,182 @@
 
 const db = require("../db.js");
 const User = require("../models/user");
-const Company = require("../models/company");
+const Library = require("../models/library");
 const Job = require("../models/job");
 const { createToken } = require("../helpers/tokens");
+const { token } = require("morgan");
 
-const testJobIds = [];
+let testUserIds = [];
+let testLibraryIds = [];
+let tokens = {};
 
 async function commonBeforeAll() {
   // noinspection SqlWithoutWhere
+  await db.query("DELETE FROM contacts");
+  // noinspection SqlWithoutWhere
+  await db.query("DELETE FROM libraries");
+  // noinspection SqlWithoutWhere
   await db.query("DELETE FROM users");
   // noinspection SqlWithoutWhere
-  await db.query("DELETE FROM companies");
+  await db.query("DELETE FROM primary_addresses");
+  // noinspection SqlWithoutWhere
+  await db.query("DELETE FROM shipping_addresses");
 
-  await Company.create(
-      {
-        handle: "c1",
-        name: "C1",
-        numEmployees: 1,
-        description: "Desc1",
-        logoUrl: "http://c1.img",
-      });
-  await Company.create(
-      {
-        handle: "c2",
-        name: "C2",
-        numEmployees: 2,
-        description: "Desc2",
-        logoUrl: "http://c2.img",
-      });
-  await Company.create(
-      {
-        handle: "c3",
-        name: "C3",
-        numEmployees: 3,
-        description: "Desc3",
-        logoUrl: "http://c3.img",
-      });
-
-  testJobIds[0] = (await Job.create(
-      { title: "J1", salary: 1, equity: "0.1", companyHandle: "c1" })).id;
-  testJobIds[1] = (await Job.create(
-      { title: "J2", salary: 2, equity: "0.2", companyHandle: "c1" })).id;
-  testJobIds[2] = (await Job.create(
-      { title: "J3", salary: 3, /* equity null */ companyHandle: "c1" })).id;
-
-  await User.register({
-    username: "u1",
+  const u1 = await User.register({
     firstName: "U1F",
     lastName: "U1L",
     email: "user1@user.com",
+    phone: "1111111111",
     password: "password1",
     isAdmin: false,
   });
-  await User.register({
-    username: "u2",
+  testUserIds.push(u1.id);
+
+  const u2 = await User.register({
     firstName: "U2F",
     lastName: "U2L",
     email: "user2@user.com",
+    phone: "2222222222",
     password: "password2",
     isAdmin: false,
   });
-  await User.register({
-    username: "u3",
+  testUserIds.push(u2.id);
+
+  const u3 = await User.register({
     firstName: "U3F",
     lastName: "U3L",
     email: "user3@user.com",
+    phone: "3333333333",
     password: "password3",
+    isAdmin: true,
+  });
+  testUserIds.push(u3.id);
+
+  const u4 = await User.register({
+    firstName: "U4F",
+    lastName: "U4L",
+    email: "user4@user.com",
+    phone: "4444444444",
+    password: "password4",
     isAdmin: false,
   });
+  testUserIds.push(u4.id);
 
-  await User.applyToJob("u1", testJobIds[0]);
+  const l1 = await Library.createLibrary({
+    libraryData: {
+      libraryName: "Middle School Library",
+      libraryType: "middle school",
+      classrooms: 1,
+      studentsPerGrade: 10,
+      teachers: 3,
+      program: "FSER",
+    },
+    contactData: {
+      firstName: "First",
+      lastName: "Last",
+      phone: "000-000-0000",
+      email: "contact1@gmail.com",
+    },
+    primaryAddress: {
+      street: "Primary Street",
+      barangay: "Primary Barangay",
+      city: "Primary City",
+      provinceId: 1,
+      regionId: 1,
+    },
+    shippingAddress: {
+      street: "Shipping Street",
+      barangay: "Shipping Barangay",
+      city: "Shipping City",
+      provinceId: 1,
+      regionId: 1,
+    },
+    adminId: testUserIds[0],
+  });
+  testLibraryIds.push(l1.id);
+
+  const l2 = await Library.createLibrary({
+    libraryData: {
+      libraryName: "Elementary School Library",
+      libraryType: "elementary school",
+      classrooms: 1,
+      studentsPerGrade: 20,
+      teachers: 3,
+      program: "FSER",
+    },
+    contactData: {
+      firstName: "First",
+      lastName: "Last",
+      phone: "000-000-0000",
+      email: "contact2@gmail.com",
+    },
+    primaryAddress: {
+      street: "Primary Street",
+      barangay: "Primary Barangay",
+      city: "Primary City",
+      provinceId: 2,
+      regionId: 2,
+    },
+    shippingAddress: {
+      street: "Shipping Street",
+      barangay: "Shipping Barangay",
+      city: "Shipping City",
+      provinceId: 2,
+      regionId: 2,
+    },
+    adminId: testUserIds[1],
+  });
+  testLibraryIds.push(l2.id);
+
+  const l3 = await Library.createLibrary({
+    libraryData: {
+      libraryName: "Community Library",
+      libraryType: "community",
+      classrooms: null,
+      studentsPerGrade: null,
+      teachers: null,
+      program: "FSER",
+    },
+    contactData: {
+      firstName: "First",
+      lastName: "Last",
+      phone: "000-000-0000",
+      email: "contact3@gmail.com",
+    },
+    primaryAddress: {
+      street: "Primary Street",
+      barangay: "Primary Barangay",
+      city: "Primary City",
+      provinceId: 3,
+      regionId: 3,
+    },
+    shippingAddress: {
+      street: "Shipping Street",
+      barangay: "Shipping Barangay",
+      city: "Shipping City",
+      provinceId: 3,
+      regionId: 3,
+    },
+    adminId: testUserIds[2],
+  });
+  testLibraryIds.push(l3.id);
+
+  tokens.u1Token = createToken({
+    id: testUserIds[0],
+    libraryId: testLibraryIds[0],
+    isAdmin: false,
+  });
+  tokens.u2Token = createToken({
+    id: testUserIds[1],
+    libraryId: testLibraryIds[1],
+    isAdmin: false,
+  });
+  tokens.adminToken = createToken({
+    id: testUserIds[2],
+    libraryId: testLibraryIds[2],
+    isAdmin: true,
+  });
 }
-
 async function commonBeforeEach() {
   await db.query("BEGIN");
 }
@@ -86,19 +190,12 @@ async function commonAfterAll() {
   await db.end();
 }
 
-
-const u1Token = createToken({ username: "u1", isAdmin: false });
-const u2Token = createToken({ username: "u2", isAdmin: false });
-const adminToken = createToken({ username: "admin", isAdmin: true });
-
-
 module.exports = {
   commonBeforeAll,
   commonBeforeEach,
   commonAfterEach,
   commonAfterAll,
-  testJobIds,
-  u1Token,
-  u2Token,
-  adminToken,
+  testUserIds,
+  testLibraryIds,
+  tokens,
 };

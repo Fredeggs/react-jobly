@@ -42,7 +42,7 @@ CREATE TABLE shipping_addresses (
 CREATE TABLE libraries (
   id SERIAL PRIMARY KEY,
   lib_name TEXT UNIQUE NOT NULL,
-  admin_id INTEGER REFERENCES users,
+  admin_id INTEGER REFERENCES users ON DELETE CASCADE,
   lib_type library_type,
   program TEXT NOT NULL,
   classrooms INTEGER CHECK (classrooms >= 0),

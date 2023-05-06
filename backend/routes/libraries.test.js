@@ -397,76 +397,108 @@ describe("GET /libraries/:id", function () {
   });
 });
 
-// /************************************** PATCH /companies/:handle */
+/************************************** PATCH /companies/:handle */
 
-// describe("PATCH /companies/:handle", function () {
-//   test("works for admin", async function () {
-//     const resp = await request(app)
-//         .patch(`/companies/c1`)
-//         .send({
-//           name: "C1-new",
-//         })
-//         .set("authorization", `Bearer ${adminToken}`);
-//     expect(resp.body).toEqual({
-//       company: {
-//         handle: "c1",
-//         name: "C1-new",
-//         description: "Desc1",
-//         numEmployees: 1,
-//         logoUrl: "http://c1.img",
-//       },
-//     });
-//   });
+describe("PATCH /libraries/:id", function () {
+  test("works for admin", async function () {
+    const resp = await request(app)
+      .patch(`/libraries/${testLibraryIds[0]}`)
+      .send({
+        libraryData: {
+          libraryName: "Updated Library Name",
+        },
+        contactData: {},
+        primaryAddress: {},
+        shippingAddress: {},
+      })
+      .set("authorization", `Bearer ${tokens.adminToken}`);
+    expect(resp.body).toEqual({
+      library: {
+        libraryData: {
+          libraryName: "Updated Library Name",
+          libraryType: "middle school",
+          classrooms: 1,
+          studentsPerGrade: 10,
+          teachers: 3,
+          program: "FSER",
+        },
+        contactData: {},
+        primaryAddress: {},
+        shippingAddress: {},
+      },
+    });
+  });
 
-//   test("unauth for non-admin", async function () {
-//     const resp = await request(app)
-//         .patch(`/companies/c1`)
-//         .send({
-//           name: "C1-new",
-//         })
-//         .set("authorization", `Bearer ${u1Token}`);
-//     expect(resp.statusCode).toEqual(401);
-//   });
+  test("unauth for non-admin", async function () {
+    const resp = await request(app)
+      .patch(`/libraries/${testLibraryIds[0]}`)
+      .send({
+        libraryData: {
+          libraryName: "Updated Library Name",
+        },
+        contactData: {},
+        primaryAddress: {},
+        shippingAddress: {},
+      })
+      .set("authorization", `Bearer ${tokens.u2Token}`);
+    expect(resp.statusCode).toEqual(401);
+  });
 
-//   test("unauth for anon", async function () {
-//     const resp = await request(app)
-//         .patch(`/companies/c1`)
-//         .send({
-//           name: "C1-new",
-//         });
-//     expect(resp.statusCode).toEqual(401);
-//   });
+  test("unauth for anon", async function () {
+    const resp = await request(app)
+      .patch(`/libraries/${testLibraryIds[0]}`)
+      .send({
+        libraryData: {
+          libraryName: "Updated Library Name",
+        },
+        contactData: {},
+        primaryAddress: {},
+        shippingAddress: {},
+      });
+    expect(resp.statusCode).toEqual(401);
+  });
 
-//   test("not found on no such company", async function () {
-//     const resp = await request(app)
-//         .patch(`/companies/nope`)
-//         .send({
-//           name: "new nope",
-//         })
-//         .set("authorization", `Bearer ${adminToken}`);
-//     expect(resp.statusCode).toEqual(404);
-//   });
+  test("not found on no such library", async function () {
+    const resp = await request(app)
+      .patch(`/libraries/0`)
+      .send({
+        libraryData: {
+          libraryName: "Updated Library Name",
+        },
+        contactData: {},
+        primaryAddress: {},
+        shippingAddress: {},
+      })
+      .set("authorization", `Bearer ${tokens.adminToken}`);
+    expect(resp.statusCode).toEqual(404);
+  });
 
-//   test("bad request on handle change attempt", async function () {
-//     const resp = await request(app)
-//         .patch(`/companies/c1`)
-//         .send({
-//           handle: "c1-new",
-//         })
-//         .set("authorization", `Bearer ${adminToken}`);
-//     expect(resp.statusCode).toEqual(400);
-//   });
+  test("bad request on id change attempt", async function () {
+    const resp = await request(app)
+      .patch(`/libraries/c1`)
+      .send({
+        libraryData: {
+          libraryName: "Updated Library Name",
+        },
+        contactData: {},
+        primaryAddress: {},
+        shippingAddress: {},
+        adminId: 45,
+      })
+      .set("authorization", `Bearer ${tokens.adminToken}`);
+    expect(resp.statusCode).toEqual(400);
+  });
 
-//   test("bad request on invalid data", async function () {
-//     const resp = await request(app)
-//         .patch(`/companies/c1`)
-//         .send({
-//           logoUrl: "not-a-url",
-//         })
-//         .set("authorization", `Bearer ${adminToken}`);
-//     expect(resp.statusCode).toEqual(400);
-//   });
-// });
+  //   test("bad request on invalid data", async function () {
+  //     const resp = await request(app)
+  //         .patch(`/companies/c1`)
+  //         .send({
+  //           logoUrl: "not-a-url",
+  //         })
+  //         .set("authorization", `Bearer ${adminToken}`);
+  //     expect(resp.statusCode).toEqual(400);
+  //   });
+});
 
 // /************************************** DELETE /companies/:handle */
 

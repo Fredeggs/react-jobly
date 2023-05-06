@@ -14,7 +14,7 @@ const {
 const Library = require("../models/library");
 
 const libraryNewSchema = require("../schemas/libraryNew.json");
-const companyUpdateSchema = require("../schemas/companyUpdate.json");
+const libraryUpdateSchema = require("../schemas/libraryUpdate.json");
 const librarySearchSchema = require("../schemas/librarySearch.json");
 
 const router = new express.Router();
@@ -107,19 +107,19 @@ router.get("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) {
  *
  * Returns { handle, name, description, numEmployees, logo_url }
  *
- * Authorization required: admin
+ * Authorization required: correct user or admin
  */
 
-router.patch("/:handle", ensureAdmin, async function (req, res, next) {
+router.patch("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) {
   try {
-    const validator = jsonschema.validate(req.body, companyUpdateSchema);
+    const validator = jsonschema.validate(req.body, libraryUpdateSchema);
     if (!validator.valid) {
       const errs = validator.errors.map((e) => e.stack);
       throw new BadRequestError(errs);
     }
 
-    const company = await Company.update(req.params.handle, req.body);
-    return res.json({ company });
+    const library = await Library.update(req.params.id, req.body);
+    return res.json({ library });
   } catch (err) {
     return next(err);
   }

@@ -429,6 +429,35 @@ describe("PATCH /libraries/:id", function () {
     });
   });
 
+  test("works for correct user", async function () {
+    const resp = await request(app)
+      .patch(`/libraries/${testLibraryIds[0]}`)
+      .send({
+        libraryData: {
+          libraryName: "Updated Library Name",
+        },
+        contactData: {},
+        primaryAddress: {},
+        shippingAddress: {},
+      })
+      .set("authorization", `Bearer ${tokens.u1Token}`);
+    expect(resp.body).toEqual({
+      library: {
+        libraryData: {
+          libraryName: "Updated Library Name",
+          libraryType: "middle school",
+          classrooms: 1,
+          studentsPerGrade: 10,
+          teachers: 3,
+          program: "FSER",
+        },
+        contactData: {},
+        primaryAddress: {},
+        shippingAddress: {},
+      },
+    });
+  });
+
   test("unauth for non-admin", async function () {
     const resp = await request(app)
       .patch(`/libraries/${testLibraryIds[0]}`)
@@ -475,7 +504,7 @@ describe("PATCH /libraries/:id", function () {
 
   test("bad request on id change attempt", async function () {
     const resp = await request(app)
-      .patch(`/libraries/c1`)
+      .patch(`/libraries/${testLibraryIds[0]}`)
       .send({
         libraryData: {
           libraryName: "Updated Library Name",
@@ -489,44 +518,44 @@ describe("PATCH /libraries/:id", function () {
     expect(resp.statusCode).toEqual(400);
   });
 
-  //   test("bad request on invalid data", async function () {
-  //     const resp = await request(app)
-  //         .patch(`/companies/c1`)
-  //         .send({
-  //           logoUrl: "not-a-url",
-  //         })
-  //         .set("authorization", `Bearer ${adminToken}`);
-  //     expect(resp.statusCode).toEqual(400);
-  //   });
+    test("bad request on invalid data", async function () {
+      const resp = await request(app)
+          .patch(`/libraries/${testLibraryIds[0]}`)
+          .send({
+            invalidField: "invalid",
+          })
+          .set("authorization", `Bearer ${tokens.adminToken}`);
+      expect(resp.statusCode).toEqual(400);
+    });
 });
 
-// /************************************** DELETE /companies/:handle */
+/************************************** DELETE /companies/:handle */
 
-// describe("DELETE /companies/:handle", function () {
-//   test("works for admin", async function () {
-//     const resp = await request(app)
-//         .delete(`/companies/c1`)
-//         .set("authorization", `Bearer ${adminToken}`);
-//     expect(resp.body).toEqual({ deleted: "c1" });
-//   });
+describe("DELETE /libraries/:id", function () {
+  test("works for admin", async function () {
+    const resp = await request(app)
+        .delete(`/libraries/${testLibraryIds[0]}`)
+        .set("authorization", `Bearer ${tokens.adminToken}`);
+    expect(resp.body).toEqual({ deleted: testLibraryIds[0].toString() });
+  });
 
-//   test("unauth for non-admin", async function () {
-//     const resp = await request(app)
-//         .delete(`/companies/c1`)
-//         .set("authorization", `Bearer ${u1Token}`);
-//     expect(resp.statusCode).toEqual(401);
-//   });
+  test("unauth for non-admin", async function () {
+    const resp = await request(app)
+        .delete(`/libraries/${testLibraryIds[0]}`)
+        .set("authorization", `Bearer ${tokens.u1Token}`);
+    expect(resp.statusCode).toEqual(401);
+  });
 
-//   test("unauth for anon", async function () {
-//     const resp = await request(app)
-//         .delete(`/companies/c1`);
-//     expect(resp.statusCode).toEqual(401);
-//   });
+  test("unauth for anon", async function () {
+    const resp = await request(app)
+        .delete(`/libraries/${testLibraryIds[0]}`);
+    expect(resp.statusCode).toEqual(401);
+  });
 
-//   test("not found for no such company", async function () {
-//     const resp = await request(app)
-//         .delete(`/companies/nope`)
-//         .set("authorization", `Bearer ${adminToken}`);
-//     expect(resp.statusCode).toEqual(404);
-//   });
-// });
+  test("not found for no such library", async function () {
+    const resp = await request(app)
+        .delete(`/libraries/0`)
+        .set("authorization", `Bearer ${tokens.adminToken}`);
+    expect(resp.statusCode).toEqual(404);
+  });
+});

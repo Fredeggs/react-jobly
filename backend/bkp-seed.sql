@@ -2,10 +2,16 @@
 
 INSERT INTO users (password, first_name, last_name, phone, email, is_admin)
 VALUES ('$2b$12$AZH7virni5jlTTiGgEg4zu3lSvAw68qVEfSIOjJ3RqtbJbdW/Oi5q',
-        'Test',
-        'User',
+        'Test1',
+        'User1',
         '123-456-7890',
-        'testuser@test.com',
+        'testuser1@test.com',
+        FALSE),
+        ('$2b$12$AZH7virni5jlTTiGgEg4zu3lSvAw68qVEfSIOjJ3RqtbJbdW/Oi5q',
+        'Test2',
+        'User2',
+        '123-456-7890',
+        'testuser2@test.com',
         FALSE),
        ('$2b$12$AZH7virni5jlTTiGgEg4zu3lSvAw68qVEfSIOjJ3RqtbJbdW/Oi5q',
         'Test',
@@ -116,9 +122,20 @@ VALUES ('999 Southroad St.', 'Jude Luxury Homes', 'Quezon City', 49, 1),
 
 INSERT INTO libraries (admin_id, lib_name, lib_type, program, classrooms, teachers, students_per_grade, primary_address_id, shipping_address_id)
 VALUES (1, 'Elementary School Library 1', 'elementary school', 'FSER', 3, 3, 20, 1, 1),
-       (2, 'Community Library 1', 'community', 'LC', null, null, null, 2, 2);
+       (2, 'Middle School Library 1', 'middle school', 'FSER', 3, 3, 20, 3, 3),
+       (3, 'Community Library 1', 'community', 'LC', null, null, null, 2, 2);
 
 INSERT INTO contacts (first_name, last_name, phone, email, library_id)
 VALUES ('Person1', 'Smith', '(344) 882-7360', 'person1@gmail.com', 1),
        ('Person2', 'Johnson', '(546) 705-6760', 'person2@gmail.com', 2),
        ('Person3', 'Brown', '(451) 309-0486', 'person3@gmail.com', 2);
+
+INSERT INTO moas (moa_link, moa_status, library_id)
+VALUES ('link1', 'approved', 1),
+       ('link2', 'rejected', 2),
+       ('link3', 'submitted', 3);
+
+INSERT INTO shipments (id, export_declaration, invoice_num, boxes, date_packed, receipt_url, receipt_date, library_id)
+VALUES (1, 123, 321, 1, '08-Jan-2022', 'link to receipt1', '11-Jan-2022', 1),
+       (2, 456, 654, 1, '09-Jan-2022', 'link to receipt2', '12-Jan-2022', 2),
+       (3, 789, 987, 2, '09-Jan-2022', null, null, 2);

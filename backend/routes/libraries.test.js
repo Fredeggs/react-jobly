@@ -338,6 +338,11 @@ describe("GET /libraries/:id", function () {
           province: "Abra",
           region: "Luzon",
         },
+        moa: {
+          id: expect.any(Number),
+          link: "testLink1",
+          moaStatus: "submitted",
+        },
       },
     });
   });
@@ -387,12 +392,19 @@ describe("GET /libraries/:id", function () {
           province: "Abra",
           region: "Luzon",
         },
+        moa: {
+          id: expect.any(Number),
+          link: "testLink1",
+          moaStatus: "submitted",
+        },
       },
     });
   });
 
-  test("not found for no such company", async function () {
-    const resp = await request(app).get(`/companies/nope`);
+  test("not found for no such library", async function () {
+    const resp = await request(app)
+      .get(`/libraries/0`)
+      .set("authorization", `Bearer ${tokens.adminToken}`);
     expect(resp.statusCode).toEqual(404);
   });
 });
@@ -422,9 +434,26 @@ describe("PATCH /libraries/:id", function () {
           teachers: 3,
           program: "FSER",
         },
-        contactData: {},
-        primaryAddress: {},
-        shippingAddress: {},
+        contactData: {
+          email: "contact1@gmail.com",
+          firstName: "First",
+          lastName: "Last",
+          phone: "000-000-0000",
+        },
+        primaryAddress: {
+          barangay: "Primary Barangay",
+          city: "Primary City",
+          province: "Abra",
+          region: "Luzon",
+          street: "Primary Street",
+        },
+        shippingAddress: {
+          barangay: "Shipping Barangay",
+          city: "Shipping City",
+          province: "Abra",
+          region: "Luzon",
+          street: "Shipping Street",
+        },
       },
     });
   });
@@ -451,9 +480,26 @@ describe("PATCH /libraries/:id", function () {
           teachers: 3,
           program: "FSER",
         },
-        contactData: {},
-        primaryAddress: {},
-        shippingAddress: {},
+        contactData: {
+          email: "contact1@gmail.com",
+          firstName: "First",
+          lastName: "Last",
+          phone: "000-000-0000",
+        },
+        primaryAddress: {
+          barangay: "Primary Barangay",
+          city: "Primary City",
+          province: "Abra",
+          region: "Luzon",
+          street: "Primary Street",
+        },
+        shippingAddress: {
+          barangay: "Shipping Barangay",
+          city: "Shipping City",
+          province: "Abra",
+          region: "Luzon",
+          street: "Shipping Street",
+        },
       },
     });
   });
@@ -518,15 +564,15 @@ describe("PATCH /libraries/:id", function () {
     expect(resp.statusCode).toEqual(400);
   });
 
-    test("bad request on invalid data", async function () {
-      const resp = await request(app)
-          .patch(`/libraries/${testLibraryIds[0]}`)
-          .send({
-            invalidField: "invalid",
-          })
-          .set("authorization", `Bearer ${tokens.adminToken}`);
-      expect(resp.statusCode).toEqual(400);
-    });
+  test("bad request on invalid data", async function () {
+    const resp = await request(app)
+      .patch(`/libraries/${testLibraryIds[0]}`)
+      .send({
+        invalidField: "invalid",
+      })
+      .set("authorization", `Bearer ${tokens.adminToken}`);
+    expect(resp.statusCode).toEqual(400);
+  });
 });
 
 /************************************** DELETE /companies/:handle */
@@ -534,28 +580,27 @@ describe("PATCH /libraries/:id", function () {
 describe("DELETE /libraries/:id", function () {
   test("works for admin", async function () {
     const resp = await request(app)
-        .delete(`/libraries/${testLibraryIds[0]}`)
-        .set("authorization", `Bearer ${tokens.adminToken}`);
+      .delete(`/libraries/${testLibraryIds[0]}`)
+      .set("authorization", `Bearer ${tokens.adminToken}`);
     expect(resp.body).toEqual({ deleted: testLibraryIds[0].toString() });
   });
 
   test("unauth for non-admin", async function () {
     const resp = await request(app)
-        .delete(`/libraries/${testLibraryIds[0]}`)
-        .set("authorization", `Bearer ${tokens.u1Token}`);
+      .delete(`/libraries/${testLibraryIds[0]}`)
+      .set("authorization", `Bearer ${tokens.u1Token}`);
     expect(resp.statusCode).toEqual(401);
   });
 
   test("unauth for anon", async function () {
-    const resp = await request(app)
-        .delete(`/libraries/${testLibraryIds[0]}`);
+    const resp = await request(app).delete(`/libraries/${testLibraryIds[0]}`);
     expect(resp.statusCode).toEqual(401);
   });
 
   test("not found for no such library", async function () {
     const resp = await request(app)
-        .delete(`/libraries/0`)
-        .set("authorization", `Bearer ${tokens.adminToken}`);
+      .delete(`/libraries/0`)
+      .set("authorization", `Bearer ${tokens.adminToken}`);
     expect(resp.statusCode).toEqual(404);
   });
 });

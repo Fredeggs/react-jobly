@@ -22,12 +22,14 @@ async function commonBeforeAll() {
         INSERT INTO users(id, password, first_name, last_name, phone, email, is_admin)
         VALUES (1, $1, 'User1First', 'User1Last', '123-456-7890', 'testuser1@test.com', FALSE),
                (2, $2, 'AdminFirst', 'AdminLast', '123-456-7890', 'testadmin@test.com', TRUE),
-               (3, $3, 'User2First', 'User2Last', '123-456-7890', 'testuser2@test.com', FALSE)
+               (3, $3, 'User2First', 'User2Last', '123-456-7890', 'testuser2@test.com', FALSE),
+               (4, $4, 'User3First', 'User3Last', '123-456-7890', 'testuser3@test.com', FALSE)
         RETURNING id`,
     [
       await bcrypt.hash("password1", BCRYPT_WORK_FACTOR),
       await bcrypt.hash("password2", BCRYPT_WORK_FACTOR),
       await bcrypt.hash("password3", BCRYPT_WORK_FACTOR),
+      await bcrypt.hash("password4", BCRYPT_WORK_FACTOR),
     ]
   );
 
@@ -50,7 +52,8 @@ async function commonBeforeAll() {
   const resultsLibraries = await db.query(`
     INSERT INTO libraries(admin_id, lib_name, lib_type, program, classrooms, teachers, students_per_grade, primary_address_id, shipping_address_id)
     VALUES (${userIds.rows[0].id}, 'Elementary School Library 1', 'elementary school', 'FSER', 3, 3, 20, ${primaryAddressIds.rows[0].id}, ${shippingAddressIds.rows[0].id}),
-           (${userIds.rows[1].id}, 'Community Library 1', 'community', 'LC', null, null, null, ${primaryAddressIds.rows[1].id}, ${shippingAddressIds.rows[1].id})
+           (${userIds.rows[1].id}, 'Community Library 1', 'community', 'LC', null, null, null, ${primaryAddressIds.rows[1].id}, ${shippingAddressIds.rows[1].id}),
+           (${userIds.rows[2].id}, 'Middle School Library 1', 'middle school', 'FSER', 3, 3, 20, ${primaryAddressIds.rows[2].id}, ${shippingAddressIds.rows[2].id})
     RETURNING id`);
   testLibraryIds.splice(0, 0, ...resultsLibraries.rows.map((r) => r.id));
 
@@ -64,9 +67,47 @@ async function commonBeforeAll() {
           ${testLibraryIds[0]}),
          (2,
           'Contact2-First',
-          'Contact1-Last',
+          'Contact2-Last',
           '123-456-7890',
           'testcontact2@test.com',
+          ${testLibraryIds[1]})`);
+
+  await db.query(`
+  INSERT INTO moas (id, moa_link, moa_status, library_id)
+  VALUES (1,
+          'link number 1',
+          'submitted',
+          ${testLibraryIds[0]}),
+         (2,
+          'link number 2',
+          'approved',
+          ${testLibraryIds[1]})`);
+
+  await db.query(`
+  INSERT INTO shipments (id, export_declaration, invoice_num, boxes, date_packed, receipt_url, receipt_date, library_id)
+  VALUES (1,
+          123,
+          321,
+          2,
+          '08-Jan-2022',
+          'link to receipt 1',
+          '13-Jan-2022',
+          ${testLibraryIds[0]}),
+          (2,
+          456,
+          654,
+          1,
+          '23-Mar-2022',
+          null,
+          null,
+          ${testLibraryIds[1]}),
+          (3,
+          789,
+          987,
+          4,
+          '14-Mar-2022',
+          'link to receipt 2',
+          '25-Mar-2022',
           ${testLibraryIds[1]})`);
 }
 

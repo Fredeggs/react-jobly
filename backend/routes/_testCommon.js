@@ -3,7 +3,7 @@
 const db = require("../db.js");
 const User = require("../models/user");
 const Library = require("../models/library");
-const Job = require("../models/job");
+const Shipment = require("../models/shipment");
 const { createToken } = require("../helpers/tokens");
 const { token } = require("morgan");
 
@@ -161,6 +161,36 @@ async function commonBeforeAll() {
     adminId: testUserIds[2],
   });
   testLibraryIds.push(l3.id);
+
+  await Library.createMOA({ link: "testLink1", libraryId: testLibraryIds[0] });
+  await Library.createMOA({ link: "testLink2", libraryId: testLibraryIds[1] });
+
+  await db.query(`
+  INSERT INTO shipments (id, export_declaration, invoice_num, boxes, date_packed, receipt_url, receipt_date, library_id)
+  VALUES (1,
+          123,
+          321,
+          2,
+          '08-Jan-2022',
+          'link to receipt 1',
+          '13-Jan-2022',
+          ${testLibraryIds[0]}),
+          (2,
+          456,
+          654,
+          1,
+          '23-Mar-2022',
+          null,
+          null,
+          ${testLibraryIds[1]}),
+          (3,
+          789,
+          987,
+          4,
+          '14-Mar-2022',
+          'link to receipt 2',
+          '25-Mar-2022',
+          ${testLibraryIds[1]})`);
 
   tokens.u1Token = createToken({
     id: testUserIds[0],

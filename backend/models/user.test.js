@@ -142,6 +142,14 @@ describe("findAll", function () {
         phone: "123-456-7890",
         isAdmin: false,
       },
+      {
+        id: 4,
+        firstName: "User3First",
+        lastName: "User3Last",
+        email: "testuser3@test.com",
+        phone: "123-456-7890",
+        isAdmin: false,
+      },
     ]);
   });
 });

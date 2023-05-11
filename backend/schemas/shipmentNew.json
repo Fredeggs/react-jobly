@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "http://example.com/example.json",
+  "type": "object",
+  "default": {},
+  "title": "Root Schema",
+  "required": [
+    "exportDeclaration",
+    "invoiceNum",
+    "boxes",
+    "datePacked",
+    "libraryId"
+  ],
+  "properties": {
+    "exportDeclaration": {
+      "type": "integer",
+      "default": 0,
+      "title": "The exportDeclaration Schema",
+      "examples": [
+        111
+      ]
+    },
+    "invoiceNum": {
+      "type": "integer",
+      "default": 0,
+      "title": "The invoiceNum Schema",
+      "examples": [
+        222
+      ]
+    },
+    "boxes": {
+      "type": "integer",
+      "default": 0,
+      "title": "The boxes Schema",
+      "examples": [
+        14
+      ]
+    },
+    "datePacked": {
+      "type": "string",
+      "format": "date",
+      "default": "",
+      "title": "The datePacked Schema",
+      "examples": [
+        "14-Jan-2022"
+      ]
+    },
+    "libraryId": {
+      "type": "integer",
+      "default": 0,
+      "title": "The libraryId Schema",
+      "examples": [
+        4
+      ]
+    }
+  },
+  "examples": [
+    {
+      "exportDeclaration": 111,
+      "invoiceNum": 222,
+      "boxes": 14,
+      "datePacked": "14-Jan-2022",
+      "libraryId": 4
+    }
+  ]
+}

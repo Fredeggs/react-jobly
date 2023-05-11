@@ -1,4 +1,5 @@
 CREATE TYPE library_type AS ENUM ('elementary school', 'middle school', 'high school', 'community');
+CREATE TYPE moa_statuses AS ENUM ('approved', 'rejected', 'submitted');
 
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
@@ -59,6 +60,24 @@ CREATE TABLE contacts (
   phone TEXT NOT NULL,
   email TEXT NOT NULL
     CHECK (position('@' IN email) > 1),
+  library_id INTEGER REFERENCES libraries ON DELETE CASCADE
+);
+
+CREATE TABLE moas (
+  id SERIAL PRIMARY KEY,
+  moa_link TEXT NOT NULL,
+  moa_status moa_statuses,
+  library_id INTEGER REFERENCES libraries ON DELETE CASCADE
+);
+
+CREATE TABLE shipments (
+  id SERIAL PRIMARY KEY,
+  export_declaration INTEGER CHECK (export_declaration >= 0) UNIQUE NOT NULL,
+  invoice_num INTEGER CHECK (invoice_num >= 0) NOT NULL,
+  boxes INTEGER CHECK (boxes >= 0) NOT NULL,
+  date_packed DATE NOT NULL,
+  receipt_url TEXT DEFAULT NULL,
+  receipt_date DATE DEFAULT NULL,
   library_id INTEGER REFERENCES libraries ON DELETE CASCADE
 );
 

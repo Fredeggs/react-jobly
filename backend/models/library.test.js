@@ -48,7 +48,7 @@ describe("create library", function () {
       provinceId: 1,
       regionId: 1,
     },
-    adminId: 3,
+    adminId: 4,
   };
 
   test("works", async function () {
@@ -121,6 +121,39 @@ describe("create contact", function () {
   });
 });
 
+/************************************** createMOA */
+
+describe("create moa", function () {
+  test("works", async function () {
+    const newMOA = {
+      link: "link to s3 bucket",
+      libraryId: testLibraryIds[2],
+    };
+    let moa = await Library.createMOA(newMOA);
+
+    expect(moa).toEqual({
+      ...newMOA,
+      moaStatus: "submitted",
+      id: expect.any(Number),
+    });
+  });
+
+  test("bad request with dupe", async function () {
+    const newMOA = {
+      link: "link to s3 bucket",
+      libraryId: testLibraryIds[2],
+    };
+
+    try {
+      await Library.createMOA(newMOA);
+      await Library.createMOA(newMOA);
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+    }
+  });
+});
+
 /************************************** findAll */
 
 describe("findAll", function () {
@@ -158,6 +191,22 @@ describe("findAll", function () {
         shippingProvince: "Metro Manila",
         shippingRegion: "Luzon",
         shippingStreet: "street1",
+      },
+      {
+        id: expect.any(Number),
+        adminId: expect.any(Number),
+        libraryName: "Middle School Library 1",
+        libraryType: "middle school",
+        primaryBarangay: "barangay3",
+        primaryCity: "city3",
+        primaryProvince: "Metro Manila",
+        primaryRegion: "Luzon",
+        primaryStreet: "street3",
+        shippingBarangay: "barangay3",
+        shippingCity: "city3",
+        shippingProvince: "Metro Manila",
+        shippingRegion: "Luzon",
+        shippingStreet: "street3",
       },
     ]);
   });
@@ -235,6 +284,11 @@ describe("get", function () {
         region: "Luzon",
         street: "street1",
       },
+      moa: {
+        id: expect.any(Number),
+        link: "link number 1",
+        moaStatus: "submitted",
+      },
     });
   });
 
@@ -251,7 +305,7 @@ describe("get", function () {
 /************************************** update */
 
 describe("update", function () {
-  const updateData = {
+  const updateData1 = {
     libraryData: {
       libraryName: "Updated Name",
     },
@@ -260,8 +314,21 @@ describe("update", function () {
     contactData: { firstName: "Updated First Name" },
   };
 
-  test("works", async function () {
-    let library = await Library.update(testLibraryIds[0], updateData);
+  const updateData2 = {
+    libraryData: {},
+    primaryAddress: {
+      regionId: 3,
+      provinceId: 10,
+    },
+    shippingAddress: {
+      regionId: 3,
+      provinceId: 10,
+    },
+    contactData: {},
+  };
+
+  test("works: updating libraryData and contactData", async function () {
+    let library = await Library.update(testLibraryIds[0], updateData1);
     expect(library).toEqual({
       libraryData: {
         classrooms: 3,
@@ -271,8 +338,20 @@ describe("update", function () {
         studentsPerGrade: 20,
         teachers: 3,
       },
-      primaryAddress: {},
-      shippingAddress: {},
+      primaryAddress: {
+        barangay: "barangay1",
+        city: "city1",
+        province: "Metro Manila",
+        region: "Luzon",
+        street: "street1",
+      },
+      shippingAddress: {
+        barangay: "barangay1",
+        city: "city1",
+        province: "Metro Manila",
+        region: "Luzon",
+        street: "street1",
+      },
       contactData: {
         email: "testcontact1@test.com",
         firstName: "Updated First Name",
@@ -322,12 +401,99 @@ describe("update", function () {
         region: "Luzon",
         street: "street1",
       },
+      moa: {
+        id: expect.any(Number),
+        link: "link number 1",
+        moaStatus: "submitted",
+      },
     });
   });
 
-  test("not found if no such company", async function () {
+  test("works: updating primaryAddress and shippingAddress", async function () {
+    let library = await Library.update(testLibraryIds[0], updateData2);
+    expect(library).toEqual({
+      libraryData: {
+        classrooms: 3,
+        libraryName: "Elementary School Library 1",
+        libraryType: "elementary school",
+        program: "FSER",
+        studentsPerGrade: 20,
+        teachers: 3,
+      },
+      primaryAddress: {
+        barangay: "barangay1",
+        city: "city1",
+        province: "Batanes",
+        region: "Mindanao",
+        street: "street1",
+      },
+      shippingAddress: {
+        barangay: "barangay1",
+        city: "city1",
+        province: "Batanes",
+        region: "Mindanao",
+        street: "street1",
+      },
+      contactData: {
+        email: "testcontact1@test.com",
+        firstName: "Contact1-First",
+        lastName: "Contact1-Last",
+        phone: "123-456-7890",
+      },
+    });
+
+    const getLibrary = await Library.get(testLibraryIds[0]);
+    expect(getLibrary).toEqual({
+      id: expect.any(Number),
+      libraryData: {
+        classrooms: 3,
+        libraryName: "Elementary School Library 1",
+        libraryType: "elementary school",
+        studentsPerGrade: 20,
+        teachers: 3,
+        program: "FSER",
+      },
+      admin: {
+        email: "testuser1@test.com",
+        firstName: "User1First",
+        id: expect.any(Number),
+        lastName: "User1Last",
+        phone: "123-456-7890",
+      },
+      contactData: {
+        email: "testcontact1@test.com",
+        firstName: "Contact1-First",
+        id: expect.any(Number),
+        lastName: "Contact1-Last",
+        phone: "123-456-7890",
+      },
+      primaryAddress: {
+        barangay: "barangay1",
+        city: "city1",
+        id: expect.any(Number),
+        province: "Batanes",
+        region: "Mindanao",
+        street: "street1",
+      },
+      shippingAddress: {
+        barangay: "barangay1",
+        city: "city1",
+        id: expect.any(Number),
+        province: "Batanes",
+        region: "Mindanao",
+        street: "street1",
+      },
+      moa: {
+        id: expect.any(Number),
+        link: "link number 1",
+        moaStatus: "submitted",
+      },
+    });
+  });
+
+  test("not found if no such library", async function () {
     try {
-      await Library.update(0, updateData);
+      await Library.update(0, updateData1);
       fail();
     } catch (err) {
       expect(err instanceof NotFoundError).toBeTruthy();

@@ -126,9 +126,9 @@ class Library {
 
   /** Create a contact for a library (from data), update db, return new contact data.
    *
-   * data should be { admin_id, name, type, primary_address_id, shipping_address_id, classrooms, students, teachers, program }
+   * data should be { firstName, lastName, email, phone, libraryId }
    *
-   * Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
+   * Returns { id, firstName, lastName, email, phone, libraryId }
    * */
   static async createContact({ firstName, lastName, email, phone, libraryId }) {
     const duplicateCheck = await db.query(
@@ -150,6 +150,34 @@ class Library {
     );
     const newContact = newContactRes.rows[0];
     return newContact;
+  }
+
+  /** Create a Memorandum of Agreement (moa) for a library (from data), update db, return new moa data.
+   *
+   * data should be { link, libraryId  }
+   *
+   * Returns {id, link, moaStatus, libraryId }
+   * */
+  static async createMOA({ link, libraryId }) {
+    const duplicateCheck = await db.query(
+      `SELECT id
+           FROM moas
+           WHERE library_id = $1`,
+      [libraryId]
+    );
+
+    if (duplicateCheck.rows.length >= 1)
+      throw new BadRequestError(`Duplicate moa with libraryId: ${libraryId}`);
+
+    const newMOARes = await db.query(
+      `INSERT INTO moas
+           (moa_link, moa_status, library_id)
+           VALUES ($1, 'submitted', $2)
+           RETURNING id, moa_link AS "link", moa_status AS "moaStatus", library_id AS "libraryId"`,
+      [link, libraryId]
+    );
+    const newMOA = newMOARes.rows[0];
+    return newMOA;
   }
 
   /** Find all libraries (optional filter on searchFilters).
@@ -261,6 +289,16 @@ class Library {
     );
     const contact = contactRes.rows[0];
 
+    const moaRes = await db.query(
+      `SELECT id,
+              moa_link AS "link",
+              moa_status AS "moaStatus"
+           FROM moas
+           WHERE library_id = $1`,
+      [library.id]
+    );
+    const moa = moaRes.rows[0];
+
     const primaryAddressRes = await db.query(
       `SELECT a.id,
               a.street,
@@ -303,6 +341,7 @@ class Library {
       },
       admin: { ...admin },
       contactData: { ...contact },
+      moa: { ...moa },
       primaryAddress: { ...primaryAddress },
       shippingAddress: { ...shippingAddress },
     };
@@ -315,8 +354,8 @@ class Library {
    *
    * Data can include: {libraryDetails, primaryAddress, shippingAddress, contact}
    * where libraryDetails is { libraryName, libraryType, readingProgram, studentsPerGrade, teachers, classrooms }
-   * where primaryAddress is { street, barangay, city, region, province }
-   * where shippingAddress is { street, barangay, city, region, province }
+   * where primaryAddress is { street, barangay, city, regionId, provinceId }
+   * where shippingAddress is { street, barangay, city, regionId, provinceId }
    * where contact is { firstName, lastName, phone, email }
    *
    * Returns {libraryDetails, primaryAddress, shippingAddress, contact}
@@ -327,8 +366,8 @@ class Library {
   static async update(id, data) {
     if (Object.keys(data).length === 0) throw new BadRequestError("No data");
     const addressIdsRes = await db.query(
-      `SELECT primary_address_id,
-              shipping_address_id
+      `SELECT primary_address_id AS "primaryAddressId",
+              shipping_address_id AS "shippingAddressId"
       FROM libraries
       WHERE id = $1`,
       [id]
@@ -336,6 +375,7 @@ class Library {
     const addressIds = addressIdsRes.rows[0];
     if (!addressIds) throw new NotFoundError(`No library with id: ${id}`);
 
+    // update libraryData if provided, else return existing libraryData
     if (Object.keys(data.libraryData).length) {
       const { setCols, values } = sqlForPartialUpdate(data.libraryData, {
         libraryName: "lib_name",
@@ -355,11 +395,26 @@ class Library {
                                   classrooms`;
       const result = await db.query(querySql, [...values, id]);
       data.libraryData = result.rows[0];
+    } else {
+      const result = await db.query(
+        `SELECT lib_name AS "libraryName", 
+                lib_type AS "libraryType", 
+                program, 
+                students_per_grade AS "studentsPerGrade", 
+                teachers,
+                classrooms
+        FROM libraries 
+        WHERE id = $1`,
+        [id]
+      );
+      data.libraryData = result.rows[0];
     }
+
+    // update contactData if provided, else return existing contactData
     if (Object.keys(data.contactData).length) {
       const { setCols, values } = sqlForPartialUpdate(data.contactData, {
         firstName: "first_name",
-        lastName: "lastName",
+        lastName: "last_name",
       });
       const handleVarIdx = "$" + (values.length + 1);
 
@@ -372,33 +427,25 @@ class Library {
                                   phone`;
       const contactRes = await db.query(querySql, [...values, id]);
       data.contactData = contactRes.rows[0];
+    } else {
+      const result = await db.query(
+        `SELECT first_name AS "firstName", 
+                last_name AS "lastName", 
+                email,
+                phone
+        FROM contacts 
+        WHERE library_id = $1`,
+        [id]
+      );
+      data.contactData = result.rows[0];
     }
+
+    // update primaryAddress if provided, else return existing primaryAddress
     if (Object.keys(data.primaryAddress).length) {
-      if (data.primaryAddress.province) {
-        const provinceIdRes = await db.query(
-          `SELECT id FROM provinces WHERE name = $1`,
-          [data.primaryAddress.province]
-        );
-        const provinceId = provinceIdRes.rows[0];
-        if (!provinceId)
-          throw new NotFoundError(
-            `No province with name: ${data.primaryAddress.province}`
-          );
-        data.primaryAddress.province = provinceId;
-      }
-      if (data.primaryAddress.region) {
-        const regionIdRes = await db.query(
-          `SELECT id FROM regions WHERE name = $1`,
-          [data.primaryAddress.region]
-        );
-        const regionId = regionIdRes.rows[0];
-        if (!regionId)
-          throw new NotFoundError(
-            `No region with name: ${data.primaryAddress.region}`
-          );
-        data.primaryAddress.region = regionId;
-      }
-      const { setCols, values } = sqlForPartialUpdate(data.primaryAddress, {});
+      const { setCols, values } = sqlForPartialUpdate(data.primaryAddress, {
+        provinceId: "province_id",
+        regionId: "region_id",
+      });
       const handleVarIdx = "$" + (values.length + 1);
 
       const querySql = `UPDATE primary_addresses 
@@ -409,7 +456,10 @@ class Library {
                                   city,
                                   province_id AS "province",
                                   region_id AS "region"`;
-      const result = await db.query(querySql, [...values, id]);
+      const result = await db.query(querySql, [
+        ...values,
+        addressIds.primaryAddressId,
+      ]);
       const provinceRes = await db.query(
         `SELECT name FROM provinces WHERE id = $1`,
         [result.rows[0].province]
@@ -420,36 +470,44 @@ class Library {
       );
       data.primaryAddress = {
         ...result.rows[0],
-        province: provinceRes.rows[0],
-        region: regionRes.rows[0],
+        province: provinceRes.rows[0].name,
+        region: regionRes.rows[0].name,
       };
+    } else {
+      const result = await db.query(
+        `SELECT street, 
+                barangay, 
+                city,
+                province_id AS "province",
+                region_id AS "region"
+        FROM primary_addresses 
+        WHERE id = $1`,
+        [addressIds.primaryAddressId]
+      );
+      const provinceRes = await db.query(
+        `SELECT name FROM provinces WHERE id = $1`,
+        [result.rows[0].province]
+      );
+      const regionRes = await db.query(
+        `SELECT name FROM regions WHERE id = $1`,
+        [result.rows[0].region]
+      );
+
+      data.primaryAddress = {
+        ...result.rows[0],
+        province: provinceRes.rows[0].name,
+        region: regionRes.rows[0].name,
+      };
+      delete data.primaryAddress.provinceId;
+      delete data.primaryAddress.regionId;
     }
+
+    // update shippingAddress if provided, else return existing shippingAddress
     if (Object.keys(data.shippingAddress).length) {
-      if (data.shippingAddress.province) {
-        const provinceIdRes = await db.query(
-          `SELECT id FROM provinces WHERE name = $1`,
-          [data.shippingAddress.province]
-        );
-        const provinceId = provinceIdRes.rows[0];
-        if (!provinceId)
-          throw new NotFoundError(
-            `No province with name: ${data.shippingAddress.province}`
-          );
-        data.shippingAddress.province = provinceId;
-      }
-      if (data.shippingAddress.region) {
-        const regionIdRes = await db.query(
-          `SELECT id FROM regions WHERE name = $1`,
-          [data.shippingAddress.region]
-        );
-        const regionId = regionIdRes.rows[0];
-        if (!regionId)
-          throw new NotFoundError(
-            `No region with name: ${data.shippingAddress.region}`
-          );
-        data.shippingAddress.region = regionId;
-      }
-      const { setCols, values } = sqlForPartialUpdate(data.shippingAddress, {});
+      const { setCols, values } = sqlForPartialUpdate(data.shippingAddress, {
+        regionId: "region_id",
+        provinceId: "province_id",
+      });
       const handleVarIdx = "$" + (values.length + 1);
 
       const querySql = `UPDATE shipping_addresses 
@@ -460,7 +518,10 @@ class Library {
                                   city,
                                   province_id AS "province",
                                   region_id AS "region"`;
-      const result = await db.query(querySql, [...values, id]);
+      const result = await db.query(querySql, [
+        ...values,
+        addressIds.primaryAddressId,
+      ]);
       const provinceRes = await db.query(
         `SELECT name FROM provinces WHERE id = $1`,
         [result.rows[0].province]
@@ -471,9 +532,36 @@ class Library {
       );
       data.shippingAddress = {
         ...result.rows[0],
-        province: provinceRes.rows[0],
-        region: regionRes.rows[0],
+        province: provinceRes.rows[0].name,
+        region: regionRes.rows[0].name,
       };
+    } else {
+      const result = await db.query(
+        `SELECT street, 
+                barangay, 
+                city,
+                province_id AS "province",
+                region_id AS "region"
+        FROM shipping_addresses 
+        WHERE id = $1`,
+        [addressIds.shippingAddressId]
+      );
+      const provinceRes = await db.query(
+        `SELECT name FROM provinces WHERE id = $1`,
+        [result.rows[0].province]
+      );
+      const regionRes = await db.query(
+        `SELECT name FROM regions WHERE id = $1`,
+        [result.rows[0].region]
+      );
+
+      data.shippingAddress = {
+        ...result.rows[0],
+        province: provinceRes.rows[0].name,
+        region: regionRes.rows[0].name,
+      };
+      delete data.shippingAddress.provinceId;
+      delete data.shippingAddress.regionId;
     }
 
     return data;

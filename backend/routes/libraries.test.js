@@ -409,7 +409,7 @@ describe("GET /libraries/:id", function () {
   });
 });
 
-/************************************** PATCH /companies/:handle */
+/************************************** PATCH /libraries/:id */
 
 describe("PATCH /libraries/:id", function () {
   test("works for admin", async function () {
@@ -575,7 +575,7 @@ describe("PATCH /libraries/:id", function () {
   });
 });
 
-/************************************** DELETE /companies/:handle */
+/************************************** DELETE /libraries/:id */
 
 describe("DELETE /libraries/:id", function () {
   test("works for admin", async function () {

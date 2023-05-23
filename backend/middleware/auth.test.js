@@ -134,7 +134,9 @@ describe("ensureCorrectUserOrAdmin", function () {
   test("unauth: mismatch", function () {
     expect.assertions(1);
     const req = { params: { id: 1 } };
-    const res = { locals: { user: { username: 2, isAdmin: false } } };
+    const res = {
+      locals: { user: { id: 3, shipments: [], isAdmin: false } },
+    };
     const next = function (err) {
       expect(err instanceof UnauthorizedError).toBeTruthy();
     };

@@ -71,7 +71,8 @@ function ensureCorrectUserOrAdmin(req, res, next) {
         user &&
         (user.isAdmin ||
           user.id === parseInt(req.params.id) ||
-          user.libraryId === parseInt(req.params.id))
+          user.libraryId === parseInt(req.params.id) ||
+          user.shipments.includes(parseInt(req.params.id)))
       )
     ) {
       throw new UnauthorizedError();

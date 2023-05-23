@@ -34,9 +34,17 @@ router.post("/token", async function (req, res, next) {
       `SELECT id FROM libraries WHERE admin_id = $1`,
       [user.id]
     );
+    let shipmentsRes;
+    if (libraryIdRes.rows[0]) {
+      shipmentsRes = await db.query(
+        `SELECT id FROM shipments WHERE library_id = $1`,
+        [libraryIdRes.rows[0].id]
+      );
+    }
     const token = createToken({
       ...user,
-      libraryId: libraryIdRes.rows[0],
+      libraryId: libraryIdRes.rows[0].id,
+      shipments: shipmentsRes.rows || [],
     });
     return res.json({ token });
   } catch (err) {

@@ -4,13 +4,7 @@
   "type": "object",
   "default": {},
   "title": "Root Schema",
-  "required": [
-    "exportDeclaration",
-    "invoiceNum",
-    "boxes",
-    "datePacked",
-    "libraryId"
-  ],
+  "required": [],
   "properties": {
     "exportDeclaration": {
       "type": "integer",
@@ -33,7 +27,7 @@
       "default": 0,
       "title": "The boxes Schema",
       "examples": [
-        14
+        4
       ]
     },
     "datePacked": {
@@ -45,12 +39,21 @@
         "14-Jan-2022"
       ]
     },
-    "libraryId": {
-      "type": "integer",
-      "default": 0,
-      "title": "The libraryId Schema",
+    "receiptURL": {
+      "type": "string",
+      "default": "",
+      "title": "The receiptURL Schema",
       "examples": [
-        4
+        "link to receipt"
+      ]
+    },
+    "receiptDate": {
+      "type": "string",
+      "format": "date",
+      "default": "",
+      "title": "The receiptDate Schema",
+      "examples": [
+        "16-Jan-2022"
       ]
     }
   },
@@ -59,9 +62,10 @@
     {
       "exportDeclaration": 111,
       "invoiceNum": 222,
-      "boxes": 14,
+      "boxes": 4,
       "datePacked": "14-Jan-2022",
-      "libraryId": 4
+      "receiptURL": "link to receipt",
+      "receiptDate": "16-Jan-2022"
     }
   ]
 }

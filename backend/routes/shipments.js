@@ -14,8 +14,7 @@ const {
 const Shipment = require("../models/shipment");
 
 const shipmentNewSchema = require("../schemas/shipmentNew.json");
-// const shipmentUpdateSchema = require("../schemas/shipmentUpdate.json");
-// const shipmentSearchSchema = require("../schemas/shipmentSearch.json");
+const shipmentUpdateSchema = require("../schemas/shipmentUpdate.json");
 
 const router = new express.Router();
 
@@ -43,7 +42,7 @@ router.post("/", ensureAdmin, async function (req, res, next) {
 });
 
 /** GET /  =>
- *   { shipments: [ { handle, name, description, numEmployees, logoUrl }, ...] }
+ *   { shipments: [ { id, exportDeclaration, invoiceNum, boxes, datePacked, receiptURL, receiptDate }, ...] }
  *
  *
  * Authorization required: admin
@@ -58,54 +57,43 @@ router.get("/", ensureAdmin, async function (req, res, next) {
   }
 });
 
-/** GET /[id]  =>  { library }
+/** GET /[id]  =>  { shipment }
  *
- * library is { libraryData, contactData, primaryAddress, shippingAddress, adminId }
+ * shipment is { id, exportDeclaration, invoiceNum, boxes, datePacked, receiptURL, receiptDate, libraryId }
  *
- * Returns { id, adminId, libraryData, contactData, primaryAddress, shippingAddress}
- * where libraryData = { libraryName, libraryType, program, classrooms, teachers, studentsPerGrade }
- * where contactData = { id, firstName, lastName, phone, email, libraryId }
- * where primaryAddress = { street, barangay, city, province, region }
- * where shippingAddress = { street, barangay, city, province, region }
- *
- * Authorization required: admin
+ * Authorization required: correct user or admin
  */
 
 router.get("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) {
   try {
-    const library = await Library.get(req.params.id);
-    return res.json({ library });
+    const shipment = await Shipment.get(parseInt(req.params.id));
+    return res.json({ shipment });
   } catch (err) {
     return next(err);
   }
 });
 
-/** PATCH /[id] { fld1, fld2, ... } => { library }
+/** PATCH /[id] { fld1, fld2, ... } => { shipment }
  *
- * Patches library data.
+ * Patches shipment data.
  *
- * fields can be: { libraryData, contactData, primaryAddress, shippingAddress }
+ * fields can be: { exportDeclaration, invoiceNum, boxes, datePacked, receiptURL, receiptDate }
  *
- * where libraryData = { libraryName, libraryType, program, classrooms, teachers, studentsPerGrade }
- * where contactData = { id, firstName, lastName, phone, email, libraryId }
- * where primaryAddress = { street, barangay, city, province, region }
- * where shippingAddress = { street, barangay, city, province, region }
- *
- * Returns { handle, name, description, numEmployees, logo_url }
+ * Returns { exportDeclaration, invoiceNum, boxes, datePacked, receiptURL, receiptDate }
  *
  * Authorization required: correct user or admin
  */
 
 router.patch("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) {
   try {
-    const validator = jsonschema.validate(req.body, libraryUpdateSchema);
+    const validator = jsonschema.validate(req.body, shipmentUpdateSchema);
     if (!validator.valid) {
       const errs = validator.errors.map((e) => e.stack);
       throw new BadRequestError(errs);
     }
 
-    const library = await Library.update(req.params.id, req.body);
-    return res.json({ library });
+    const shipment = await Shipment.update(parseInt(req.params.id), req.body);
+    return res.json({ shipment });
   } catch (err) {
     return next(err);
   }
@@ -118,7 +106,7 @@ router.patch("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) {
 
 router.delete("/:id", ensureAdmin, async function (req, res, next) {
   try {
-    await Library.remove(req.params.id);
+    await Shipment.remove(parseInt(req.params.id));
     return res.json({ deleted: req.params.id });
   } catch (err) {
     return next(err);

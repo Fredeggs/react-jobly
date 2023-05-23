@@ -152,317 +152,168 @@ describe("GET /shipments", function () {
   });
 });
 
-// /************************************** GET /libraries/:id */
+/************************************** GET /shipments/:id */
 
-// describe("GET /libraries/:id", function () {
-//   test("works for admin", async function () {
-//     const resp = await request(app)
-//       .get(`/libraries/${testLibraryIds[0]}`)
-//       .set("authorization", `Bearer ${tokens.adminToken}`);
-//     expect(resp.body).toEqual({
-//       library: {
-//         id: testLibraryIds[0],
-//         admin: {
-//           id: testUserIds[0],
-//           email: "user1@user.com",
-//           firstName: "U1F",
-//           lastName: "U1L",
-//           phone: "1111111111",
-//         },
-//         libraryData: {
-//           libraryName: "Middle School Library",
-//           libraryType: "middle school",
-//           classrooms: 1,
-//           studentsPerGrade: 10,
-//           teachers: 3,
-//           program: "FSER",
-//         },
-//         contactData: {
-//           id: expect.any(Number),
-//           firstName: "First",
-//           lastName: "Last",
-//           phone: "000-000-0000",
-//           email: "contact1@gmail.com",
-//         },
-//         primaryAddress: {
-//           id: expect.any(Number),
-//           street: "Primary Street",
-//           barangay: "Primary Barangay",
-//           city: "Primary City",
-//           province: "Abra",
-//           region: "Luzon",
-//         },
-//         shippingAddress: {
-//           id: expect.any(Number),
-//           street: "Shipping Street",
-//           barangay: "Shipping Barangay",
-//           city: "Shipping City",
-//           province: "Abra",
-//           region: "Luzon",
-//         },
-//         moa: {
-//           id: expect.any(Number),
-//           link: "testLink1",
-//           moaStatus: "submitted",
-//         },
-//       },
-//     });
-//   });
+describe("GET /shipments/:id", function () {
+  test("works for admin", async function () {
+    const resp = await request(app)
+      .get(`/shipments/1}`)
+      .set("authorization", `Bearer ${tokens.adminToken}`);
+    expect(resp.body).toEqual({
+      shipment: {
+        id: 1,
+        boxes: 2,
+        datePacked: "1/8/2022",
+        exportDeclaration: 123,
+        invoiceNum: 321,
+        libraryId: testLibraryIds[0],
+        libraryName: "Middle School Library",
+        receiptDate: "1/13/2022",
+        receiptURL: "link to receipt 1",
+      },
+    });
+  });
 
-//   test("works for correct user", async function () {
-//     const resp = await request(app)
-//       .get(`/libraries/${testLibraryIds[0]}`)
-//       .set("authorization", `Bearer ${tokens.u1Token}`);
-//     expect(resp.body).toEqual({
-//       library: {
-//         id: testLibraryIds[0],
-//         admin: {
-//           id: testUserIds[0],
-//           email: "user1@user.com",
-//           firstName: "U1F",
-//           lastName: "U1L",
-//           phone: "1111111111",
-//         },
-//         libraryData: {
-//           libraryName: "Middle School Library",
-//           libraryType: "middle school",
-//           classrooms: 1,
-//           studentsPerGrade: 10,
-//           teachers: 3,
-//           program: "FSER",
-//         },
-//         contactData: {
-//           id: expect.any(Number),
-//           firstName: "First",
-//           lastName: "Last",
-//           phone: "000-000-0000",
-//           email: "contact1@gmail.com",
-//         },
-//         primaryAddress: {
-//           id: expect.any(Number),
-//           street: "Primary Street",
-//           barangay: "Primary Barangay",
-//           city: "Primary City",
-//           province: "Abra",
-//           region: "Luzon",
-//         },
-//         shippingAddress: {
-//           id: expect.any(Number),
-//           street: "Shipping Street",
-//           barangay: "Shipping Barangay",
-//           city: "Shipping City",
-//           province: "Abra",
-//           region: "Luzon",
-//         },
-//         moa: {
-//           id: expect.any(Number),
-//           link: "testLink1",
-//           moaStatus: "submitted",
-//         },
-//       },
-//     });
-//   });
+  test("works for correct user", async function () {
+    const resp = await request(app)
+      .get(`/shipments/1}`)
+      .set("authorization", `Bearer ${tokens.u1Token}`);
+    expect(resp.body).toEqual({
+      shipment: {
+        id: 1,
+        boxes: 2,
+        datePacked: "1/8/2022",
+        exportDeclaration: 123,
+        invoiceNum: 321,
+        libraryId: testLibraryIds[0],
+        libraryName: "Middle School Library",
+        receiptDate: "1/13/2022",
+        receiptURL: "link to receipt 1",
+      },
+    });
+  });
 
-//   test("not found for no such library", async function () {
-//     const resp = await request(app)
-//       .get(`/libraries/0`)
-//       .set("authorization", `Bearer ${tokens.adminToken}`);
-//     expect(resp.statusCode).toEqual(404);
-//   });
-// });
+  test("not found for no such library", async function () {
+    const resp = await request(app)
+      .get(`/shipments/0`)
+      .set("authorization", `Bearer ${tokens.adminToken}`);
+    expect(resp.statusCode).toEqual(404);
+  });
+});
 
-// /************************************** PATCH /companies/:handle */
+/************************************** PATCH /shipments/:id */
 
-// describe("PATCH /libraries/:id", function () {
-//   test("works for admin", async function () {
-//     const resp = await request(app)
-//       .patch(`/libraries/${testLibraryIds[0]}`)
-//       .send({
-//         libraryData: {
-//           libraryName: "Updated Library Name",
-//         },
-//         contactData: {},
-//         primaryAddress: {},
-//         shippingAddress: {},
-//       })
-//       .set("authorization", `Bearer ${tokens.adminToken}`);
-//     expect(resp.body).toEqual({
-//       library: {
-//         libraryData: {
-//           libraryName: "Updated Library Name",
-//           libraryType: "middle school",
-//           classrooms: 1,
-//           studentsPerGrade: 10,
-//           teachers: 3,
-//           program: "FSER",
-//         },
-//         contactData: {
-//           email: "contact1@gmail.com",
-//           firstName: "First",
-//           lastName: "Last",
-//           phone: "000-000-0000",
-//         },
-//         primaryAddress: {
-//           barangay: "Primary Barangay",
-//           city: "Primary City",
-//           province: "Abra",
-//           region: "Luzon",
-//           street: "Primary Street",
-//         },
-//         shippingAddress: {
-//           barangay: "Shipping Barangay",
-//           city: "Shipping City",
-//           province: "Abra",
-//           region: "Luzon",
-//           street: "Shipping Street",
-//         },
-//       },
-//     });
-//   });
+describe("PATCH /shipments/:id", function () {
+  test("works for admin", async function () {
+    const resp = await request(app)
+      .patch(`/shipments/1}`)
+      .send({
+        boxes: 45,
+      })
+      .set("authorization", `Bearer ${tokens.adminToken}`);
+    expect(resp.body).toEqual({
+      shipment: {
+        boxes: 45,
+        datePacked: "1/8/2022",
+        exportDeclaration: 123,
+        invoiceNum: 321,
+        receiptDate: "1/13/2022",
+        receiptURL: "link to receipt 1",
+      },
+    });
+  });
 
-//   test("works for correct user", async function () {
-//     const resp = await request(app)
-//       .patch(`/libraries/${testLibraryIds[0]}`)
-//       .send({
-//         libraryData: {
-//           libraryName: "Updated Library Name",
-//         },
-//         contactData: {},
-//         primaryAddress: {},
-//         shippingAddress: {},
-//       })
-//       .set("authorization", `Bearer ${tokens.u1Token}`);
-//     expect(resp.body).toEqual({
-//       library: {
-//         libraryData: {
-//           libraryName: "Updated Library Name",
-//           libraryType: "middle school",
-//           classrooms: 1,
-//           studentsPerGrade: 10,
-//           teachers: 3,
-//           program: "FSER",
-//         },
-//         contactData: {
-//           email: "contact1@gmail.com",
-//           firstName: "First",
-//           lastName: "Last",
-//           phone: "000-000-0000",
-//         },
-//         primaryAddress: {
-//           barangay: "Primary Barangay",
-//           city: "Primary City",
-//           province: "Abra",
-//           region: "Luzon",
-//           street: "Primary Street",
-//         },
-//         shippingAddress: {
-//           barangay: "Shipping Barangay",
-//           city: "Shipping City",
-//           province: "Abra",
-//           region: "Luzon",
-//           street: "Shipping Street",
-//         },
-//       },
-//     });
-//   });
+  test("works for correct user", async function () {
+    const resp = await request(app)
+      .patch(`/shipments/1}`)
+      .send({
+        boxes: 45,
+      })
+      .set("authorization", `Bearer ${tokens.u1Token}`);
+    expect(resp.body).toEqual({
+      shipment: {
+        boxes: 45,
+        datePacked: "1/8/2022",
+        exportDeclaration: 123,
+        invoiceNum: 321,
+        receiptDate: "1/13/2022",
+        receiptURL: "link to receipt 1",
+      },
+    });
+  });
 
-//   test("unauth for non-admin", async function () {
-//     const resp = await request(app)
-//       .patch(`/libraries/${testLibraryIds[0]}`)
-//       .send({
-//         libraryData: {
-//           libraryName: "Updated Library Name",
-//         },
-//         contactData: {},
-//         primaryAddress: {},
-//         shippingAddress: {},
-//       })
-//       .set("authorization", `Bearer ${tokens.u2Token}`);
-//     expect(resp.statusCode).toEqual(401);
-//   });
+  test("unauth for incorrect user", async function () {
+    const resp = await request(app)
+      .patch(`/shipments/1`)
+      .send({ boxes: 45 })
+      .set("authorization", `Bearer ${tokens.u2Token}`);
+    expect(resp.statusCode).toEqual(401);
+  });
 
-//   test("unauth for anon", async function () {
-//     const resp = await request(app)
-//       .patch(`/libraries/${testLibraryIds[0]}`)
-//       .send({
-//         libraryData: {
-//           libraryName: "Updated Library Name",
-//         },
-//         contactData: {},
-//         primaryAddress: {},
-//         shippingAddress: {},
-//       });
-//     expect(resp.statusCode).toEqual(401);
-//   });
+  test("unauth for anon", async function () {
+    const resp = await request(app).patch(`/shipments/1`).send({
+      boxes: 45,
+    });
+    expect(resp.statusCode).toEqual(401);
+  });
 
-//   test("not found on no such library", async function () {
-//     const resp = await request(app)
-//       .patch(`/libraries/0`)
-//       .send({
-//         libraryData: {
-//           libraryName: "Updated Library Name",
-//         },
-//         contactData: {},
-//         primaryAddress: {},
-//         shippingAddress: {},
-//       })
-//       .set("authorization", `Bearer ${tokens.adminToken}`);
-//     expect(resp.statusCode).toEqual(404);
-//   });
+  test("not found on no such library", async function () {
+    const resp = await request(app)
+      .patch(`/shipments/0`)
+      .send({
+        boxes: 45,
+      })
+      .set("authorization", `Bearer ${tokens.adminToken}`);
+    expect(resp.statusCode).toEqual(404);
+  });
 
-//   test("bad request on id change attempt", async function () {
-//     const resp = await request(app)
-//       .patch(`/libraries/${testLibraryIds[0]}`)
-//       .send({
-//         libraryData: {
-//           libraryName: "Updated Library Name",
-//         },
-//         contactData: {},
-//         primaryAddress: {},
-//         shippingAddress: {},
-//         adminId: 45,
-//       })
-//       .set("authorization", `Bearer ${tokens.adminToken}`);
-//     expect(resp.statusCode).toEqual(400);
-//   });
+  test("bad request on id change attempt", async function () {
+    const resp = await request(app)
+      .patch(`/shipments/1`)
+      .send({
+        id: 24,
+      })
+      .set("authorization", `Bearer ${tokens.adminToken}`);
+    expect(resp.statusCode).toEqual(400);
+  });
 
-//   test("bad request on invalid data", async function () {
-//     const resp = await request(app)
-//       .patch(`/libraries/${testLibraryIds[0]}`)
-//       .send({
-//         invalidField: "invalid",
-//       })
-//       .set("authorization", `Bearer ${tokens.adminToken}`);
-//     expect(resp.statusCode).toEqual(400);
-//   });
-// });
+  test("bad request on invalid data", async function () {
+    const resp = await request(app)
+      .patch(`/shipments/1`)
+      .send({
+        invalidField: "invalid",
+      })
+      .set("authorization", `Bearer ${tokens.adminToken}`);
+    expect(resp.statusCode).toEqual(400);
+  });
+});
 
-// /************************************** DELETE /companies/:handle */
+/************************************** DELETE /shipments/:id */
 
-// describe("DELETE /libraries/:id", function () {
-//   test("works for admin", async function () {
-//     const resp = await request(app)
-//       .delete(`/libraries/${testLibraryIds[0]}`)
-//       .set("authorization", `Bearer ${tokens.adminToken}`);
-//     expect(resp.body).toEqual({ deleted: testLibraryIds[0].toString() });
-//   });
+describe("DELETE /shipments/:id", function () {
+  test("works for admin", async function () {
+    const resp = await request(app)
+      .delete(`/shipments/1`)
+      .set("authorization", `Bearer ${tokens.adminToken}`);
+    expect(resp.body).toEqual({ deleted: "1" });
+  });
 
-//   test("unauth for non-admin", async function () {
-//     const resp = await request(app)
-//       .delete(`/libraries/${testLibraryIds[0]}`)
-//       .set("authorization", `Bearer ${tokens.u1Token}`);
-//     expect(resp.statusCode).toEqual(401);
-//   });
+  test("unauth for non-admin", async function () {
+    const resp = await request(app)
+      .delete(`/shipments/1`)
+      .set("authorization", `Bearer ${tokens.u1Token}`);
+    expect(resp.statusCode).toEqual(401);
+  });
 
-//   test("unauth for anon", async function () {
-//     const resp = await request(app).delete(`/libraries/${testLibraryIds[0]}`);
-//     expect(resp.statusCode).toEqual(401);
-//   });
+  test("unauth for anon", async function () {
+    const resp = await request(app).delete(`/shipments/1`);
+    expect(resp.statusCode).toEqual(401);
+  });
 
-//   test("not found for no such library", async function () {
-//     const resp = await request(app)
-//       .delete(`/libraries/0`)
-//       .set("authorization", `Bearer ${tokens.adminToken}`);
-//     expect(resp.statusCode).toEqual(404);
-//   });
-// });
+  test("not found for no such shipment", async function () {
+    const resp = await request(app)
+      .delete(`/shipments/0`)
+      .set("authorization", `Bearer ${tokens.adminToken}`);
+    expect(resp.statusCode).toEqual(404);
+  });
+});

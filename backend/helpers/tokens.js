@@ -12,6 +12,7 @@ function createToken(user) {
   let payload = {
     id: user.id,
     libraryId: user.libraryId,
+    shipments: user.shipments,
     isAdmin: user.isAdmin || false,
   };
   return jwt.sign(payload, SECRET_KEY);

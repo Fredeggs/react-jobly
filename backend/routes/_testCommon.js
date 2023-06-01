@@ -194,18 +194,21 @@ async function commonBeforeAll() {
 
   tokens.u1Token = createToken({
     id: testUserIds[0],
+    email: "user1@user.com",
     libraryId: testLibraryIds[0],
     shipments: [1],
     isAdmin: false,
   });
   tokens.u2Token = createToken({
     id: testUserIds[1],
+    email: "user2@user.com",
     libraryId: testLibraryIds[1],
     shipments: [2, 3],
     isAdmin: false,
   });
   tokens.adminToken = createToken({
     id: testUserIds[2],
+    email: "user3@user.com",
     libraryId: testLibraryIds[2],
     shipments: [],
     isAdmin: true,

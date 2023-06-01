@@ -175,6 +175,7 @@ describe("findAll", function () {
         shippingProvince: "Metro Manila",
         shippingRegion: "Luzon",
         shippingStreet: "street2",
+        moaStatus: "approved",
       },
       {
         id: expect.any(Number),
@@ -191,6 +192,7 @@ describe("findAll", function () {
         shippingProvince: "Metro Manila",
         shippingRegion: "Luzon",
         shippingStreet: "street1",
+        moaStatus: "submitted",
       },
       {
         id: expect.any(Number),
@@ -207,6 +209,7 @@ describe("findAll", function () {
         shippingProvince: "Metro Manila",
         shippingRegion: "Luzon",
         shippingStreet: "street3",
+        moaStatus: null,
       },
     ]);
   });
@@ -229,6 +232,30 @@ describe("findAll", function () {
         shippingProvince: "Metro Manila",
         shippingRegion: "Luzon",
         shippingStreet: "street2",
+        moaStatus: "approved",
+      },
+    ]);
+  });
+
+  test("works: filter by submittedMOA", async function () {
+    let libraries = await Library.findAll({ submittedMOA: true });
+    expect(libraries).toEqual([
+      {
+        id: expect.any(Number),
+        adminId: expect.any(Number),
+        libraryName: "Elementary School Library 1",
+        libraryType: "elementary school",
+        primaryBarangay: "barangay1",
+        primaryCity: "city1",
+        primaryProvince: "Metro Manila",
+        primaryRegion: "Luzon",
+        primaryStreet: "street1",
+        shippingBarangay: "barangay1",
+        shippingCity: "city1",
+        shippingProvince: "Metro Manila",
+        shippingRegion: "Luzon",
+        shippingStreet: "street1",
+        moaStatus: "submitted",
       },
     ]);
   });
@@ -528,5 +555,15 @@ describe("remove", function () {
     } catch (err) {
       expect(err instanceof NotFoundError).toBeTruthy();
     }
+  });
+});
+
+/************************************** getRegionsAndProvinces */
+
+describe("get regions and provinces", function () {
+  test("works", async function () {
+    const res = await Library.getRegionsAndProvinces();
+    expect(res.provinces.length).toEqual(81);
+    expect(res.regions.length).toEqual(3);
   });
 });

@@ -204,21 +204,27 @@ class Library {
                         ship.barangay AS "shippingBarangay",
                         ship.city AS "shippingCity",
                         sprov.name AS "shippingProvince",
-                        sreg.name AS "shippingRegion"
+                        sreg.name AS "shippingRegion",
+                        moas.moa_status AS "moaStatus"
                  FROM libraries l
                  LEFT JOIN primary_addresses AS prim ON prim.id = l.primary_address_id
                  LEFT JOIN shipping_addresses AS ship ON ship.id = l.shipping_address_id
                  LEFT JOIN provinces AS pprov ON pprov.id = prim.province_id
                  LEFT JOIN regions AS preg ON preg.id = prim.region_id
                  LEFT JOIN provinces AS sprov ON sprov.id = ship.province_id
-                 LEFT JOIN regions AS sreg ON sreg.id = ship.region_id`;
+                 LEFT JOIN regions AS sreg ON sreg.id = ship.region_id
+                 LEFT JOIN moas ON moas.library_id = l.id`;
     let whereExpressions = [];
     let queryValues = [];
-    const { name } = searchFilters;
+    const { name, submittedMOA } = searchFilters;
 
     if (name) {
       queryValues.push(`%${name}%`);
       whereExpressions.push(`lib_name ILIKE $${queryValues.length}`);
+    }
+
+    if (submittedMOA) {
+      whereExpressions.push(`moas.moa_status = 'submitted'`);
     }
 
     if (whereExpressions.length > 0) {
@@ -583,6 +589,28 @@ class Library {
     const library = result.rows[0];
 
     if (!library) throw new NotFoundError(`No library with id: ${id}`);
+  }
+
+  /** Get names and ids for provinces and regions
+   *
+   **/
+
+  static async getRegionsAndProvinces() {
+    const regionsRes = await db.query(
+      `SELECT id, name
+           FROM regions`,
+      []
+    );
+    const regions = regionsRes.rows;
+
+    const provincesRes = await db.query(
+      `SELECT id, name
+           FROM provinces`,
+      []
+    );
+    const provinces = provincesRes.rows;
+
+    return { regions, provinces };
   }
 }
 

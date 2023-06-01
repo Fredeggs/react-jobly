@@ -135,7 +135,14 @@ describe("ensureCorrectUserOrAdmin", function () {
     expect.assertions(1);
     const req = { params: { id: 1 } };
     const res = {
-      locals: { user: { id: 3, shipments: [], isAdmin: false } },
+      locals: {
+        user: {
+          id: 3,
+          email: "testuser1@test.com",
+          shipments: [],
+          isAdmin: false,
+        },
+      },
     };
     const next = function (err) {
       expect(err instanceof UnauthorizedError).toBeTruthy();

@@ -43,8 +43,8 @@ router.post("/token", async function (req, res, next) {
     }
     const token = createToken({
       ...user,
-      libraryId: libraryIdRes.rows[0].id,
-      shipments: shipmentsRes.rows || [],
+      libraryId: libraryIdRes.rows.length > 0 ? libraryIdRes.rows[0].id : null,
+      shipments: shipmentsRes ? shipmentsRes.rows : [],
     });
     return res.json({ token });
   } catch (err) {
@@ -70,7 +70,7 @@ router.post("/register", async function (req, res, next) {
     }
 
     const newUser = await User.register({ ...req.body, isAdmin: false });
-    const token = createToken(newUser);
+    const token = createToken({ ...newUser, libraryId: null, shipments: [] });
     return res.status(201).json({ token });
   } catch (err) {
     return next(err);

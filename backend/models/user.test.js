@@ -158,7 +158,7 @@ describe("findAll", function () {
 
 describe("get", function () {
   test("works", async function () {
-    let user = await User.get(1);
+    let user = await User.get("testuser1@test.com");
     expect(user).toEqual({
       id: 1,
       firstName: "User1First",
@@ -166,12 +166,14 @@ describe("get", function () {
       email: "testuser1@test.com",
       phone: "123-456-7890",
       isAdmin: false,
+      libraryId: expect.any(Number),
+      moaStatus: "submitted",
     });
   });
 
   test("not found if no such user", async function () {
     try {
-      await User.get(0);
+      await User.get("DNEuser@test.com");
       fail();
     } catch (err) {
       expect(err instanceof NotFoundError).toBeTruthy();
@@ -185,21 +187,21 @@ describe("update", function () {
   const updateData = {
     firstName: "NewF",
     lastName: "NewF",
-    email: "new@email.com",
     phone: "000-000-0000",
     isAdmin: true,
   };
 
   test("works", async function () {
-    let updatedUser = await User.update(1, updateData);
+    let updatedUser = await User.update("testuser1@test.com", updateData);
     expect(updatedUser).toEqual({
       id: 1,
+      email: "testuser1@test.com",
       ...updateData,
     });
   });
 
   test("works: set password", async function () {
-    let updatedUser = await User.update(1, {
+    let updatedUser = await User.update("testuser1@test.com", {
       password: "new",
     });
     expect(updatedUser).toEqual({
@@ -217,7 +219,7 @@ describe("update", function () {
 
   test("not found if no such user", async function () {
     try {
-      await User.update(0, {
+      await User.update("DNEuser@test.com", {
         firstName: "test",
       });
       fail();
@@ -229,7 +231,7 @@ describe("update", function () {
   test("bad request if no data", async function () {
     expect.assertions(1);
     try {
-      await User.update(1, {});
+      await User.update("testuser1@test.com", {});
       fail();
     } catch (err) {
       expect(err instanceof BadRequestError).toBeTruthy();
@@ -241,14 +243,16 @@ describe("update", function () {
 
 describe("remove", function () {
   test("works", async function () {
-    await User.remove(1);
-    const res = await db.query("SELECT * FROM users WHERE id=1");
+    await User.remove("testuser1@test.com");
+    const res = await db.query(
+      "SELECT * FROM users WHERE email='testuser1@test.com'"
+    );
     expect(res.rows.length).toEqual(0);
   });
 
   test("not found if no such user", async function () {
     try {
-      await User.remove(0);
+      await User.remove("DNEuser@test.com");
       fail();
     } catch (err) {
       expect(err instanceof NotFoundError).toBeTruthy();

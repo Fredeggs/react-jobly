@@ -210,6 +210,7 @@ describe("GET /libraries", function () {
           shippingProvince: "Agusan del Sur",
           shippingRegion: "Mindanao",
           shippingStreet: "Shipping Street",
+          moaStatus: null,
         },
         {
           id: expect.any(Number),
@@ -226,6 +227,7 @@ describe("GET /libraries", function () {
           shippingProvince: "Agusan del Norte",
           shippingRegion: "Visayas",
           shippingStreet: "Shipping Street",
+          moaStatus: "submitted",
         },
         {
           id: expect.any(Number),
@@ -242,6 +244,7 @@ describe("GET /libraries", function () {
           shippingProvince: "Abra",
           shippingRegion: "Luzon",
           shippingStreet: "Shipping Street",
+          moaStatus: "submitted",
         },
       ],
     });
@@ -254,7 +257,7 @@ describe("GET /libraries", function () {
     expect(resp.statusCode).toEqual(401);
   });
 
-  test("works: filtering", async function () {
+  test("works: filtering by name", async function () {
     const resp = await request(app)
       .get("/libraries")
       .query({ name: "community" })
@@ -276,6 +279,52 @@ describe("GET /libraries", function () {
           shippingProvince: "Agusan del Sur",
           shippingRegion: "Mindanao",
           shippingStreet: "Shipping Street",
+          moaStatus: null,
+        },
+      ],
+    });
+  });
+
+  test("works: filtering by submittedMOA", async function () {
+    const resp = await request(app)
+      .get("/libraries")
+      .query({ submittedMOA: true })
+      .set("authorization", `Bearer ${tokens.adminToken}`);
+    expect(resp.body).toEqual({
+      libraries: [
+        {
+          id: expect.any(Number),
+          adminId: testUserIds[1],
+          libraryName: "Elementary School Library",
+          libraryType: "elementary school",
+          primaryBarangay: "Primary Barangay",
+          primaryCity: "Primary City",
+          primaryProvince: "Agusan del Norte",
+          primaryRegion: "Visayas",
+          primaryStreet: "Primary Street",
+          shippingBarangay: "Shipping Barangay",
+          shippingCity: "Shipping City",
+          shippingProvince: "Agusan del Norte",
+          shippingRegion: "Visayas",
+          shippingStreet: "Shipping Street",
+          moaStatus: "submitted",
+        },
+        {
+          id: expect.any(Number),
+          adminId: testUserIds[0],
+          libraryName: "Middle School Library",
+          libraryType: "middle school",
+          primaryBarangay: "Primary Barangay",
+          primaryCity: "Primary City",
+          primaryProvince: "Abra",
+          primaryRegion: "Luzon",
+          primaryStreet: "Primary Street",
+          shippingBarangay: "Shipping Barangay",
+          shippingCity: "Shipping City",
+          shippingProvince: "Abra",
+          shippingRegion: "Luzon",
+          shippingStreet: "Shipping Street",
+          moaStatus: "submitted",
         },
       ],
     });

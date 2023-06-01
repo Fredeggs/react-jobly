@@ -72,7 +72,7 @@ router.get("/", ensureAdmin, async function (req, res, next) {
   }
 });
 
-/** GET /[id]  =>  { library }
+/** GET /[libraryId]  =>  { library }
  *
  * library is { libraryData, contactData, primaryAddress, shippingAddress, adminId }
  *
@@ -85,16 +85,20 @@ router.get("/", ensureAdmin, async function (req, res, next) {
  * Authorization required: admin
  */
 
-router.get("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) {
-  try {
-    const library = await Library.get(req.params.id);
-    return res.json({ library });
-  } catch (err) {
-    return next(err);
+router.get(
+  "/:libraryId",
+  ensureCorrectUserOrAdmin,
+  async function (req, res, next) {
+    try {
+      const library = await Library.get(req.params.libraryId);
+      return res.json({ library });
+    } catch (err) {
+      return next(err);
+    }
   }
-});
+);
 
-/** PATCH /[id] { fld1, fld2, ... } => { library }
+/** PATCH /[libraryId] { fld1, fld2, ... } => { library }
  *
  * Patches library data.
  *
@@ -110,30 +114,34 @@ router.get("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) {
  * Authorization required: correct user or admin
  */
 
-router.patch("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) {
-  try {
-    const validator = jsonschema.validate(req.body, libraryUpdateSchema);
-    if (!validator.valid) {
-      const errs = validator.errors.map((e) => e.stack);
-      throw new BadRequestError(errs);
-    }
+router.patch(
+  "/:libraryId",
+  ensureCorrectUserOrAdmin,
+  async function (req, res, next) {
+    try {
+      const validator = jsonschema.validate(req.body, libraryUpdateSchema);
+      if (!validator.valid) {
+        const errs = validator.errors.map((e) => e.stack);
+        throw new BadRequestError(errs);
+      }
 
-    const library = await Library.update(req.params.id, req.body);
-    return res.json({ library });
-  } catch (err) {
-    return next(err);
+      const library = await Library.update(req.params.libraryId, req.body);
+      return res.json({ library });
+    } catch (err) {
+      return next(err);
+    }
   }
-});
+);
 
 /** DELETE /[id]  =>  { deleted: id }
  *
  * Authorization: admin
  */
 
-router.delete("/:id", ensureAdmin, async function (req, res, next) {
+router.delete("/:libraryId", ensureAdmin, async function (req, res, next) {
   try {
-    await Library.remove(req.params.id);
-    return res.json({ deleted: req.params.id });
+    await Library.remove(req.params.libraryId);
+    return res.json({ deleted: req.params.libraryId });
   } catch (err) {
     return next(err);
   }

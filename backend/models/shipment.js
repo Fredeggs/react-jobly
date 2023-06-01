@@ -72,8 +72,6 @@ class Shipment {
       datePacked: datePacked.toLocaleDateString(),
       receiptDate: receiptDate || null,
     };
-
-    return shipment;
   }
 
   /** GET: Given a shipment id, return data about shipment.

@@ -62,23 +62,27 @@ router.get("/", ensureAdmin, async function (req, res, next) {
   }
 });
 
-/** GET /[username] => { user }
+/** GET /[email] => { user }
  *
  * Returns { username, firstName, lastName, email, phone, isAdmin }
  *
  * Authorization required: admin or same user-as-:id
  **/
 
-router.get("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) {
-  try {
-    const user = await User.get(req.params.id);
-    return res.json({ user });
-  } catch (err) {
-    return next(err);
+router.get(
+  "/:email",
+  ensureCorrectUserOrAdmin,
+  async function (req, res, next) {
+    try {
+      const user = await User.get(req.params.email);
+      return res.json({ user });
+    } catch (err) {
+      return next(err);
+    }
   }
-});
+);
 
-/** PATCH /[username] { user } => { user }
+/** PATCH /[email] { user } => { user }
  *
  * Data can include:
  *   { firstName, lastName, password, email }
@@ -89,7 +93,7 @@ router.get("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) {
  **/
 
 router.patch(
-  "/:id",
+  "/:email",
   ensureCorrectUserOrAdmin,
   async function (req, res, next) {
     try {
@@ -99,7 +103,7 @@ router.patch(
         throw new BadRequestError(errs);
       }
 
-      const user = await User.update(req.params.id, req.body);
+      const user = await User.update(req.params.email, req.body);
       return res.json({ user });
     } catch (err) {
       return next(err);
@@ -113,12 +117,12 @@ router.patch(
  **/
 
 router.delete(
-  "/:id",
+  "/:email",
   ensureCorrectUserOrAdmin,
   async function (req, res, next) {
     try {
-      await User.remove(parseInt(req.params.id));
-      return res.json({ deleted: parseInt(req.params.id) });
+      await User.remove(req.params.email);
+      return res.json({ deleted: req.params.email });
     } catch (err) {
       return next(err);
     }

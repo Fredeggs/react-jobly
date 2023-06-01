@@ -6,6 +6,9 @@
         "name": {
             "type": "string",
             "minLength": 1
+        },
+        "submittedMOA": {
+            "type": "string"
         }
     },
     "additionalProperties": false,

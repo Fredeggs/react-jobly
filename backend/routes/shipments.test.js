@@ -206,7 +206,7 @@ describe("GET /shipments/:id", function () {
 describe("PATCH /shipments/:id", function () {
   test("works for admin", async function () {
     const resp = await request(app)
-      .patch(`/shipments/1}`)
+      .patch(`/shipments/1`)
       .send({
         boxes: 45,
       })
@@ -225,7 +225,7 @@ describe("PATCH /shipments/:id", function () {
 
   test("works for correct user", async function () {
     const resp = await request(app)
-      .patch(`/shipments/1}`)
+      .patch(`/shipments/1`)
       .send({
         boxes: 45,
       })

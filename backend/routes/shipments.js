@@ -64,9 +64,9 @@ router.get("/", ensureAdmin, async function (req, res, next) {
  * Authorization required: correct user or admin
  */
 
-router.get("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) {
+router.get("/:shippingId", ensureCorrectUserOrAdmin, async function (req, res, next) {
   try {
-    const shipment = await Shipment.get(parseInt(req.params.id));
+    const shipment = await Shipment.get(parseInt(req.params.shippingId));
     return res.json({ shipment });
   } catch (err) {
     return next(err);
@@ -84,7 +84,7 @@ router.get("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) {
  * Authorization required: correct user or admin
  */
 
-router.patch("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) {
+router.patch("/:shippingId", ensureCorrectUserOrAdmin, async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, shipmentUpdateSchema);
     if (!validator.valid) {
@@ -92,7 +92,7 @@ router.patch("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) {
       throw new BadRequestError(errs);
     }
 
-    const shipment = await Shipment.update(parseInt(req.params.id), req.body);
+    const shipment = await Shipment.update(parseInt(req.params.shippingId), req.body);
     return res.json({ shipment });
   } catch (err) {
     return next(err);
@@ -104,10 +104,10 @@ router.patch("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) {
  * Authorization: admin
  */
 
-router.delete("/:id", ensureAdmin, async function (req, res, next) {
+router.delete("/:shippingId", ensureAdmin, async function (req, res, next) {
   try {
-    await Shipment.remove(parseInt(req.params.id));
-    return res.json({ deleted: req.params.id });
+    await Shipment.remove(parseInt(req.params.shippingId));
+    return res.json({ deleted: req.params.shippingId });
   } catch (err) {
     return next(err);
   }

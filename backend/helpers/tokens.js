@@ -11,8 +11,9 @@ function createToken(user) {
 
   let payload = {
     id: user.id,
-    libraryId: user.libraryId,
-    shipments: user.shipments,
+    email: user.email,
+    libraryId: null || user.libraryId,
+    shipments: user.shipments || [],
     isAdmin: user.isAdmin || false,
   };
   return jwt.sign(payload, SECRET_KEY);

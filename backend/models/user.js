@@ -124,22 +124,26 @@ class User {
    * Throws NotFoundError if user not found.
    **/
 
-  static async get(id) {
+  static async get(email) {
     const userRes = await db.query(
-      `SELECT id,
-                  first_name AS "firstName",
-                  last_name AS "lastName",
-                  email,
-                  phone,
-                  is_admin AS "isAdmin"
-           FROM users
-           WHERE id = $1`,
-      [id]
+      `SELECT u.id,
+                  u.first_name AS "firstName",
+                  u.last_name AS "lastName",
+                  u.email,
+                  u.phone,
+                  u.is_admin AS "isAdmin",
+                  l.id AS "libraryId",
+                  m.moa_status AS "moaStatus"
+           FROM users u
+           LEFT JOIN libraries AS l ON l.admin_id = u.id
+           LEFT JOIN moas AS m ON m.library_id = l.id
+           WHERE email = $1`,
+      [email]
     );
 
     const user = userRes.rows[0];
 
-    if (!user) throw new NotFoundError(`No user with id: ${id}`);
+    if (!user) throw new NotFoundError(`No user with email: ${email}`);
     return user;
   }
 
@@ -160,7 +164,7 @@ class User {
    * or a serious security risks are opened.
    */
 
-  static async update(id, data) {
+  static async update(email, data) {
     if (data.password) {
       data.password = await bcrypt.hash(data.password, BCRYPT_WORK_FACTOR);
     }
@@ -174,17 +178,17 @@ class User {
 
     const querySql = `UPDATE users 
                       SET ${setCols} 
-                      WHERE id = ${idVarIdx} 
+                      WHERE email = ${idVarIdx} 
                       RETURNING id,
                                 first_name AS "firstName",
                                 last_name AS "lastName",
                                 email,
                                 phone,
                                 is_admin AS "isAdmin"`;
-    const result = await db.query(querySql, [...values, id]);
+    const result = await db.query(querySql, [...values, email]);
     const user = result.rows[0];
 
-    if (!user) throw new NotFoundError(`No user with id: ${id}`);
+    if (!user) throw new NotFoundError(`No user with email: ${email}`);
 
     delete user.password;
     return user;
@@ -192,17 +196,17 @@ class User {
 
   /** Delete given user from database; returns undefined. */
 
-  static async remove(id) {
+  static async remove(email) {
     let result = await db.query(
       `DELETE
            FROM users
-           WHERE id = $1
+           WHERE email = $1
            RETURNING id`,
-      [id]
+      [email]
     );
     const user = result.rows[0];
 
-    if (!user) throw new NotFoundError(`No user with id: ${id}`);
+    if (!user) throw new NotFoundError(`No user with email: ${email}`);
   }
 }
 

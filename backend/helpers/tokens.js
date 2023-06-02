@@ -12,7 +12,7 @@ function createToken(user) {
   let payload = {
     id: user.id,
     email: user.email,
-    libraryId: null || user.libraryId,
+    libraryId: user.libraryId || null,
     shipments: user.shipments || [],
     isAdmin: user.isAdmin || false,
   };

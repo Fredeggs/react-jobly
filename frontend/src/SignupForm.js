@@ -5,11 +5,11 @@ import { useHistory } from "react-router-dom";
 function SignupForm({ signup }) {
   const history = useHistory();
   const INITIAL_FORM_DATA = {
-    username: "",
     password: "",
     firstName: "",
     lastName: "",
     email: "",
+    phone: "",
   };
   const [formData, setFormData] = useState(INITIAL_FORM_DATA);
   const handleChange = (e) => {
@@ -25,15 +25,15 @@ function SignupForm({ signup }) {
   };
   return (
     <div>
-      <h1>Log In</h1>
-      <Form>
+      <h1>Sign Up</h1>
+      <Form onSubmit={handleSubmit}>
         <FormGroup>
-          <Label for="username">Username</Label>
+          <Label for="email">Email</Label>
           <Input
-            id="username"
-            name="username"
-            type="text"
-            value={formData.username}
+            id="email"
+            name="email"
+            type="email"
+            value={formData.email}
             onChange={handleChange}
           />
         </FormGroup>
@@ -44,6 +44,16 @@ function SignupForm({ signup }) {
             name="password"
             type="password"
             value={formData.password}
+            onChange={handleChange}
+          />
+        </FormGroup>
+        <FormGroup>
+          <Label for="phone">Phone</Label>
+          <Input
+            id="phone"
+            name="phone"
+            type="phone"
+            value={formData.phone}
             onChange={handleChange}
           />
         </FormGroup>
@@ -67,17 +77,7 @@ function SignupForm({ signup }) {
             onChange={handleChange}
           />
         </FormGroup>
-        <FormGroup>
-          <Label for="email">Email</Label>
-          <Input
-            id="email"
-            name="email"
-            type="email"
-            value={formData.email}
-            onChange={handleChange}
-          />
-        </FormGroup>
-        <Button onClick={handleSubmit}>Submit</Button>
+        <Button>Submit</Button>
       </Form>
     </div>
   );

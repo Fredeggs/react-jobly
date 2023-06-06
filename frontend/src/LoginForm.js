@@ -5,7 +5,7 @@ import { Form, FormGroup, Input, Label, Button } from "reactstrap";
 function LoginForm({ login }) {
   const history = useHistory();
   const INITIAL_FORM_DATA = {
-    username: "",
+    email: "",
     password: "",
   };
   const [formData, setFormData] = useState(INITIAL_FORM_DATA);
@@ -23,14 +23,14 @@ function LoginForm({ login }) {
   return (
     <div>
       <h1>Log In</h1>
-      <Form>
+      <Form onSubmit={handleSubmit}>
         <FormGroup>
-          <Label for="username">Username</Label>
+          <Label for="email">Email</Label>
           <Input
-            id="username"
-            name="username"
+            id="email"
+            name="email"
             type="text"
-            value={formData.username}
+            value={formData.email}
             onChange={handleChange}
           />
         </FormGroup>
@@ -44,7 +44,7 @@ function LoginForm({ login }) {
             onChange={handleChange}
           />
         </FormGroup>
-        <Button onClick={handleSubmit}>Submit</Button>
+        <Button>Submit</Button>
       </Form>
     </div>
   );

@@ -10,7 +10,7 @@ const BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:3001";
  *
  */
 
-class JoblyApi {
+class BKPApi {
   // the token for interactive with the API will be stored here.
   static token;
 
@@ -20,7 +20,7 @@ class JoblyApi {
     //there are multiple ways to pass an authorization token, this is how you pass it in the header.
     //this has been provided to show you another way to pass the token. you are only expected to read this code for this project.
     const url = `${BASE_URL}/${endpoint}`;
-    const headers = { Authorization: `Bearer ${JoblyApi.token}` };
+    const headers = { Authorization: `Bearer ${BKPApi.token}` };
     const params = method === "get" ? data : {};
 
     try {
@@ -36,59 +36,59 @@ class JoblyApi {
 
   /** Get a token when entering correct login credentials  */
   static async getToken(loginCredentials) {
-    console.log("getting token");
     let res = await this.request(`auth/token`, loginCredentials, "post");
     return res;
   }
 
   /** Get a token when entering correct login credentials  */
   static async register(signupCredentials) {
-    console.log("getting token");
     let res = await this.request(`auth/register`, signupCredentials, "post");
     return res;
   }
 
-  /** Get details on a company and a list of its jobs by handle. */
-  static async getCompany(handle) {
-    let res = await this.request(`companies/${handle}`);
-    return res.company;
+  /** Create a library for a specific user. */
+  static async createLibrary(libraryData) {
+    let res = await this.request(`libraries/`, libraryData, "post");
+    return res.user;
   }
 
-  /** Get a list of companies. */
-  static async getCompanies(searchTerm) {
-    if (searchTerm) {
-      let res = await this.request(`companies`, { name: searchTerm });
-      return res.companies;
+  /** Get details on a library and a list of its shipments by handle. */
+  static async getLibrary(id) {
+    let res = await this.request(`libraries/${id}`);
+    return res.library;
+  }
+
+  /** Get a list of libraries. */
+  static async getLibraries(data = {}) {
+    if (data.libraryName) {
+      let res = await this.request(`libraries`, { name: data.libraryName });
+      return res.libraries;
     }
-    let res = await this.request(`companies`);
-    return res.companies;
-  }
-
-  /** Get details on a job by handle. */
-  static async getJob(handle) {
-    let res = await this.request(`jobs/${handle}`);
-    return res.job;
-  }
-
-  /** Get a list of jobs. */
-  static async getJobs(searchTerm) {
-    if (searchTerm) {
-      let res = await this.request(`jobs`, { title: searchTerm });
-      return res.jobs;
+    if (data.submittedMOA) {
+      let res = await this.request(`libraries`, {
+        submittedMOA: data.submittedMOA,
+      });
+      return res.libraries;
     }
-    let res = await this.request(`jobs`);
-    return res.jobs;
+    let res = await this.request(`libraries`);
+    return res.libraries;
   }
 
-  /** Get details on a user by handle. */
-  static async getUser(handle) {
-    let res = await this.request(`users/${handle}`);
+  /** Get a list of names and ids for regions and provinces. */
+  static async getRegionsAndProvinces() {
+    let res = await this.request(`database/regions-and-provinces`);
+    return res;
+  }
+
+  /** Get details on a user by email. */
+  static async getUser(email) {
+    let res = await this.request(`users/${email}`);
     return res.user;
   }
 
   /** Update details for a specific user. */
-  static async updateUser(handle, userData) {
-    let res = await this.request(`users/${handle}`, userData, "patch");
+  static async updateUser(email, userData) {
+    let res = await this.request(`users/${email}`, userData, "patch");
     return res.user;
   }
 
@@ -96,9 +96,9 @@ class JoblyApi {
 }
 
 // for now, put token ("testuser" / "password" on class)
-// JoblyApi.token =
+// BKPApi.token =
 //   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZ" +
 //   "SI6InRlc3R1c2VyIiwiaXNBZG1pbiI6ZmFsc2UsImlhdCI6MTU5ODE1OTI1OX0." +
 //   "FtrMwBQwe6Ue-glIFgz_Nf8XxRT2YecFCiSpYL0fCXc";
 
-export default JoblyApi;
+export default BKPApi;

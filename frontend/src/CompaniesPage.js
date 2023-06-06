@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import CompanyList from "./CompanyList";
 import { Form, FormGroup, Input, Label, Button } from "reactstrap";
-import JoblyApi from "./api";
+import BKPApi from "./api";
 
 function CompaniesPage() {
   const INITIAL_FORM_DATA = {
@@ -17,14 +17,14 @@ function CompaniesPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await JoblyApi.getCompanies(formData.search);
+    const res = await BKPApi.getCompanies(formData.search);
     setCompanies(res);
     setFormData(INITIAL_FORM_DATA);
   };
 
   useEffect(() => {
     async function searchCompanies(searchTerm) {
-      const res = await JoblyApi.getCompanies(searchTerm);
+      const res = await BKPApi.getCompanies(searchTerm);
       setCompanies(res);
     }
     searchCompanies(formData.search);

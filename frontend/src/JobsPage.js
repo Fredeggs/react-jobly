@@ -1,6 +1,6 @@
 import React from "react";
 import JobList from "./JobList";
-import JoblyApi from "./api";
+import BKPApi from "./api";
 import { Form, FormGroup, Input, Label, Button } from "reactstrap";
 import { useState, useEffect } from "react";
 
@@ -18,16 +18,14 @@ function JobsPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await JoblyApi.getJobs(formData.search);
-    console.log(res);
+    const res = await BKPApi.getJobs(formData.search);
     setJobs(res);
     setFormData(INITIAL_FORM_DATA);
   };
 
   useEffect(() => {
     async function searchJobs(searchTerm) {
-      console.log(searchTerm);
-      const res = await JoblyApi.getJobs(searchTerm);
+      const res = await BKPApi.getJobs(searchTerm);
       setJobs(res);
     }
     searchJobs(formData.search);

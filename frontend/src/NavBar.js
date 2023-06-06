@@ -10,31 +10,50 @@ function NavBar({ logout }) {
     <div>
       <Navbar expand="md">
         <NavLink exact to="/" className="navbar-brand">
-          Jobly
+          BKP Home
         </NavLink>
         {currentUser ? (
-          <Nav className="ml-auto" navbar>
-            <NavItem>
-              <NavLink to="/companies">Companies</NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink to="/jobs">Jobs</NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink to="/profile">Profile</NavLink>
-            </NavItem>
-            <NavItem>
-              <a
-                style={{ cursor: "pointer" }}
-                onClick={() => {
-                  logout();
-                  history.push("/");
-                }}
-              >
-                Logout {currentUser.username}
-              </a>
-            </NavItem>
-          </Nav>
+          currentUser.isAdmin ? (
+            <Nav className="ml-auto" navbar>
+              <NavItem>
+                <NavLink to="/shipping-entry">Shipping Entry</NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink to="/libraries">Library Database</NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink to="/new-applications">New Applications</NavLink>
+              </NavItem>
+              <NavItem>
+                <a
+                  style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    logout();
+                    history.push("/");
+                  }}
+                >
+                  Logout
+                </a>
+              </NavItem>
+            </Nav>
+          ) : (
+            <Nav className="ml-auto" navbar>
+              <NavItem>
+                <NavLink to="/profile">Profile</NavLink>
+              </NavItem>
+              <NavItem>
+                <a
+                  style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    logout();
+                    history.push("/");
+                  }}
+                >
+                  Logout {currentUser.username}
+                </a>
+              </NavItem>
+            </Nav>
+          )
         ) : (
           <Nav className="ml-auto" navbar>
             <NavItem>

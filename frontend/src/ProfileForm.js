@@ -6,7 +6,7 @@ function ProfileForm({ updateUserDetails }) {
   const { currentUser, setCurrentUser } = useContext(UserContext);
   const [alert, setAlert] = useState(false);
   const INITIAL_FORM_DATA = {
-    username: currentUser.username,
+    phone: currentUser.phone,
     firstName: currentUser.firstName,
     lastName: currentUser.lastName,
     email: currentUser.email,
@@ -20,7 +20,7 @@ function ProfileForm({ updateUserDetails }) {
   };
 
   const handleSubmit = async (e) => {
-    const { email, firstName, lastName, password } = formData;
+    const { email, firstName, lastName, password, phone } = formData;
     e.preventDefault();
     try {
       const updatedUser = await updateUserDetails({
@@ -28,6 +28,7 @@ function ProfileForm({ updateUserDetails }) {
         firstName,
         lastName,
         password,
+        phone,
       });
       setCurrentUser(updatedUser);
       setAlert(true);
@@ -36,19 +37,8 @@ function ProfileForm({ updateUserDetails }) {
 
   return (
     <div>
-      <h1>Log In</h1>
-      <Form>
-        <FormGroup>
-          <Label for="username">Username</Label>
-          <Input
-            id="username"
-            name="username"
-            type="text"
-            value={formData.username}
-            disabled={true}
-            onChange={handleChange}
-          />
-        </FormGroup>
+      <h1>Make changes to your profile</h1>
+      <Form onSubmit={handleSubmit}>
         <FormGroup>
           <Label for="firstName">First name</Label>
           <Input
@@ -78,8 +68,18 @@ function ProfileForm({ updateUserDetails }) {
             value={formData.email}
             onChange={handleChange}
           />
+          <FormGroup>
+            <Label for="phone">Phone</Label>
+            <Input
+              id="phone"
+              name="phone"
+              type="text"
+              value={formData.phone}
+              onChange={handleChange}
+            />
+          </FormGroup>
         </FormGroup>
-        <Button onClick={handleSubmit}>Save Changes</Button>
+        <Button>Save Changes</Button>
         {alert && <Alert color="primary">User Updated Successfully!</Alert>}
       </Form>
     </div>

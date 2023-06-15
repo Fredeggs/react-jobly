@@ -1,8 +1,5 @@
 import "./App.css";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-import CompaniesPage from "./CompaniesPage";
-import CompanyPage from "./CompanyPage";
-import JobsPage from "./JobsPage";
 import Home from "./Home";
 import LoginForm from "./LoginForm";
 import SignupForm from "./SignupForm";
@@ -33,6 +30,11 @@ function App() {
     setToken(res.token);
   };
 
+  const updateToken = async (updateData) => {
+    const res = await BKPApi.updateToken(updateData);
+    setToken(res.token);
+  };
+
   const logout = () => {
     setToken("");
   };
@@ -59,6 +61,11 @@ function App() {
 
   const createLibrary = async (data) => {
     const res = await BKPApi.createLibrary(data);
+    return res;
+  };
+
+  const createMOA = async (libraryId, data) => {
+    const res = await BKPApi.createMOA(libraryId, data);
     return res;
   };
 
@@ -98,22 +105,14 @@ function App() {
               <LibraryForm
                 getRegionsAndProvinces={getRegionsAndProvinces}
                 createLibrary={createLibrary}
+                updateToken={updateToken}
               />
             </Route>
             <Route exact path="/moa-form">
-              <MOAForm />
+              <MOAForm createMOA={createMOA} />
             </Route>
             <Route exact path="/libraries">
               <LibrariesPage getLibraries={getLibraries} />
-            </Route>
-            <Route exact path="/companies">
-              <CompaniesPage />
-            </Route>
-            <Route path="/companies/:id">
-              <CompanyPage />
-            </Route>
-            <Route exact path="/jobs">
-              <JobsPage />
             </Route>
             <Route path="/login">
               <LoginForm login={login} />

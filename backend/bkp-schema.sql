@@ -65,7 +65,6 @@ CREATE TABLE contacts (
 
 CREATE TABLE moas (
   id SERIAL PRIMARY KEY,
-  moa_link TEXT NOT NULL,
   moa_status moa_statuses,
   library_id INTEGER REFERENCES libraries ON DELETE CASCADE
 );

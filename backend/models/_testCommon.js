@@ -73,13 +73,11 @@ async function commonBeforeAll() {
           ${testLibraryIds[1]})`);
 
   await db.query(`
-  INSERT INTO moas (id, moa_link, moa_status, library_id)
+  INSERT INTO moas (id, moa_status, library_id)
   VALUES (1,
-          'link number 1',
           'submitted',
           ${testLibraryIds[0]}),
          (2,
-          'link number 2',
           'approved',
           ${testLibraryIds[1]})`);
 

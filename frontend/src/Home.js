@@ -39,8 +39,11 @@ function Home({ getCurrentUser, getLibrary }) {
       // Fetch data
       console.log("fetching");
       const userData = await getCurrentUser();
-      const libraryData = await getLibrary(userData.libraryId);
-      setLibrary(libraryData);
+      console.log(userData);
+      if (userData.libraryId) {
+        const libraryData = await getLibrary(userData.libraryId);
+        setLibrary(libraryData);
+      }
     }
     // Trigger the fetch
     fetchData();

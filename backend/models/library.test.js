@@ -121,39 +121,6 @@ describe("create contact", function () {
   });
 });
 
-/************************************** createMOA */
-
-describe("create moa", function () {
-  test("works", async function () {
-    const newMOA = {
-      link: "link to s3 bucket",
-      libraryId: testLibraryIds[2],
-    };
-    let moa = await Library.createMOA(newMOA);
-
-    expect(moa).toEqual({
-      ...newMOA,
-      moaStatus: "submitted",
-      id: expect.any(Number),
-    });
-  });
-
-  test("bad request with dupe", async function () {
-    const newMOA = {
-      link: "link to s3 bucket",
-      libraryId: testLibraryIds[2],
-    };
-
-    try {
-      await Library.createMOA(newMOA);
-      await Library.createMOA(newMOA);
-      fail();
-    } catch (err) {
-      expect(err instanceof BadRequestError).toBeTruthy();
-    }
-  });
-});
-
 /************************************** findAll */
 
 describe("findAll", function () {
@@ -313,7 +280,6 @@ describe("get", function () {
       },
       moa: {
         id: expect.any(Number),
-        link: "link number 1",
         moaStatus: "submitted",
       },
     });
@@ -430,7 +396,6 @@ describe("update", function () {
       },
       moa: {
         id: expect.any(Number),
-        link: "link number 1",
         moaStatus: "submitted",
       },
     });
@@ -512,7 +477,6 @@ describe("update", function () {
       },
       moa: {
         id: expect.any(Number),
-        link: "link number 1",
         moaStatus: "submitted",
       },
     });

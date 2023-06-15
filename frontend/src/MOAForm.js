@@ -5,21 +5,20 @@ import UserContext from "./userContext";
 import MOA from "./jpgs/test.jpg";
 import { Link } from "react-router-dom/cjs/react-router-dom.min";
 
-function MOAForm() {
+function MOAForm({ createMOA }) {
   const history = useHistory();
-  const [selectedFile, setSelectedFile] = useState();
-  const [isFilePicked, setIsFilePicked] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
   const { currentUser, setCurrentUser } = useContext(UserContext);
-  const handleChange = (e) => {
-    console.log(e.target.files);
-    setSelectedFile(e.target.files[0]);
-    setIsFilePicked(true);
+  const handleChange = async (e) => {
+    const file = e.target.files[0];
+    setSelectedFile(file);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // await signup(formData);
-    console.log(selectedFile);
+    const form = new FormData();
+    form.append("moa", selectedFile);
+    await createMOA(currentUser.libraryId, form);
     history.push("/");
   };
 
@@ -38,25 +37,12 @@ function MOAForm() {
       <Link to={MOA} download="test" target="_blank" rel="noreferrer">
         <button>Download MOA pdf</button>
       </Link>
-      <Form>
+      <Form onSubmit={handleSubmit}>
         <FormGroup>
           <Label for="moa">Upload MOA</Label>
           <Input id="moa" name="moa" type="file" onChange={handleChange} />
-          {isFilePicked ? (
-            <div>
-              <p>Filename: {selectedFile.name}</p>
-              <p>Filetype: {selectedFile.type}</p>
-              <p>Size in bytes: {selectedFile.size}</p>
-              <p>
-                lastModifiedDate:{" "}
-                {selectedFile.lastModifiedDate.toLocaleDateString()}
-              </p>
-            </div>
-          ) : (
-            <p>Select a file to show details</p>
-          )}
         </FormGroup>
-        <Button onClick={handleSubmit}>Submit</Button>
+        <Button>Submit</Button>
       </Form>
     </div>
   );

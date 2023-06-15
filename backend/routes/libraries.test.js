@@ -56,7 +56,7 @@ describe("POST /libraries", function () {
   test("ok for admin", async function () {
     const newTestLibrary = {
       ...newLibrary,
-      adminId: testUserIds[3],
+      adminId: testUserIds[4],
     };
     const resp = await request(app)
       .post("/libraries")
@@ -87,7 +87,7 @@ describe("POST /libraries", function () {
   test("ok for user", async function () {
     const newTestLibrary = {
       ...newLibrary,
-      adminId: testUserIds[3],
+      adminId: testUserIds[4],
     };
     const resp = await request(app)
       .post("/libraries")
@@ -124,7 +124,7 @@ describe("POST /libraries", function () {
         teachers: null,
         studentsPerGrade: null,
       },
-      adminId: testUserIds[3],
+      adminId: testUserIds[4],
     };
     const resp = await request(app)
       .post("/libraries")
@@ -214,6 +214,23 @@ describe("GET /libraries", function () {
         },
         {
           id: expect.any(Number),
+          adminId: testUserIds[3],
+          libraryName: "Community Library 2",
+          libraryType: "community",
+          primaryBarangay: "Primary Barangay",
+          primaryCity: "Primary City",
+          primaryProvince: "Agusan del Sur",
+          primaryRegion: "Mindanao",
+          primaryStreet: "Primary Street",
+          shippingBarangay: "Shipping Barangay",
+          shippingCity: "Shipping City",
+          shippingProvince: "Agusan del Sur",
+          shippingRegion: "Mindanao",
+          shippingStreet: "Shipping Street",
+          moaStatus: null,
+        },
+        {
+          id: expect.any(Number),
           adminId: testUserIds[1],
           libraryName: "Elementary School Library",
           libraryType: "elementary school",
@@ -268,6 +285,23 @@ describe("GET /libraries", function () {
           id: expect.any(Number),
           adminId: testUserIds[2],
           libraryName: "Community Library",
+          libraryType: "community",
+          primaryBarangay: "Primary Barangay",
+          primaryCity: "Primary City",
+          primaryProvince: "Agusan del Sur",
+          primaryRegion: "Mindanao",
+          primaryStreet: "Primary Street",
+          shippingBarangay: "Shipping Barangay",
+          shippingCity: "Shipping City",
+          shippingProvince: "Agusan del Sur",
+          shippingRegion: "Mindanao",
+          shippingStreet: "Shipping Street",
+          moaStatus: null,
+        },
+        {
+          id: expect.any(Number),
+          adminId: testUserIds[3],
+          libraryName: "Community Library 2",
           libraryType: "community",
           primaryBarangay: "Primary Barangay",
           primaryCity: "Primary City",
@@ -389,7 +423,6 @@ describe("GET /libraries/:id", function () {
         },
         moa: {
           id: expect.any(Number),
-          link: "testLink1",
           moaStatus: "submitted",
         },
       },
@@ -443,7 +476,6 @@ describe("GET /libraries/:id", function () {
         },
         moa: {
           id: expect.any(Number),
-          link: "testLink1",
           moaStatus: "submitted",
         },
       },

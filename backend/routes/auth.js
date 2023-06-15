@@ -9,9 +9,14 @@ const express = require("express");
 const router = new express.Router();
 const { createToken } = require("../helpers/tokens");
 const userAuthSchema = require("../schemas/userAuth.json");
+const userAuthPatchSchema = require("../schemas/userAuthPatch.json");
 const userRegisterSchema = require("../schemas/userRegister.json");
 const { BadRequestError } = require("../expressError");
 const db = require("../db");
+const {
+  ensureCorrectUserOrAdmin,
+  ensureLoggedIn,
+} = require("../middleware/auth");
 
 /** POST /auth/token:  { username, password } => { token }
  *
@@ -45,6 +50,29 @@ router.post("/token", async function (req, res, next) {
       ...user,
       libraryId: libraryIdRes.rows.length > 0 ? libraryIdRes.rows[0].id : null,
       shipments: shipmentsRes ? shipmentsRes.rows : [],
+    });
+    return res.json({ token });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+/** PATCH /auth/token:  { updateData } => { token }
+ *
+ * Returns JWT token which can be used to authenticate further requests.
+ *
+ * Authorization required: ensureLoggedIn
+ */
+
+router.patch("/token", ensureLoggedIn, async function (req, res, next) {
+  try {
+    const validator = jsonschema.validate(req.body, userAuthPatchSchema);
+    if (!validator.valid) {
+      const errs = validator.errors.map((e) => e.stack);
+      throw new BadRequestError(errs);
+    }
+    const token = createToken({
+      ...req.body,
     });
     return res.json({ token });
   } catch (err) {

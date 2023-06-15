@@ -13,6 +13,7 @@ const librariesRoutes = require("./routes/libraries");
 const usersRoutes = require("./routes/users");
 const shipmentsRoutes = require("./routes/shipments");
 const databaseRoutes = require("./routes/database");
+const moasRoutes = require("./routes/moas");
 
 const morgan = require("morgan");
 
@@ -27,6 +28,7 @@ app.use("/auth", authRoutes);
 app.use("/libraries", librariesRoutes);
 app.use("/users", usersRoutes);
 app.use("/shipments", shipmentsRoutes);
+app.use("/moas", moasRoutes);
 app.use("/database", databaseRoutes);
 
 /** Handle 404 errors -- this matches everything */

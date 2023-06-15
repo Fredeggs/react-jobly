@@ -22,7 +22,7 @@ function LibraryCard({
           <CardTitle tag="h4">{libraryName}</CardTitle>
           <CardText tag="h5">
             <div>Library Type: {libraryType}</div>
-            <div>MOA Status: {moaStatus}</div>
+            <div>MOA Status: {moaStatus || "not submitted"}</div>
             <div>Primary Address</div>
             <div>Street: {primaryStreet}</div>
             <div>Barangay: {primaryBarangay}</div>

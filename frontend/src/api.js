@@ -40,6 +40,12 @@ class BKPApi {
     return res;
   }
 
+  /** Update a token's payload information  */
+  static async updateToken(updateData) {
+    let res = await this.request(`auth/token`, updateData, "patch");
+    return res;
+  }
+
   /** Get a token when entering correct login credentials  */
   static async register(signupCredentials) {
     let res = await this.request(`auth/register`, signupCredentials, "post");
@@ -49,7 +55,7 @@ class BKPApi {
   /** Create a library for a specific user. */
   static async createLibrary(libraryData) {
     let res = await this.request(`libraries/`, libraryData, "post");
-    return res.user;
+    return res.library;
   }
 
   /** Get details on a library and a list of its shipments by handle. */
@@ -90,6 +96,12 @@ class BKPApi {
   static async updateUser(email, userData) {
     let res = await this.request(`users/${email}`, userData, "patch");
     return res.user;
+  }
+
+  /** Create an MOA for a specific library. */
+  static async createMOA(libraryId, data) {
+    let res = await this.request(`moas/${libraryId}`, data, "post");
+    return res;
   }
 
   // obviously, you'll add a lot here ...

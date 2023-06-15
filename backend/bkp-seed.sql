@@ -130,10 +130,10 @@ VALUES ('Person1', 'Smith', '(344) 882-7360', 'person1@gmail.com', 1),
        ('Person2', 'Johnson', '(546) 705-6760', 'person2@gmail.com', 2),
        ('Person3', 'Brown', '(451) 309-0486', 'person3@gmail.com', 2);
 
-INSERT INTO moas (moa_link, moa_status, library_id)
-VALUES ('link1', 'approved', 1),
-       ('link2', 'rejected', 2),
-       ('link3', 'submitted', 3);
+INSERT INTO moas ( moa_status, library_id)
+VALUES ('approved', 1),
+       ('rejected', 2),
+       ('submitted', 3);
 
 INSERT INTO shipments (id, export_declaration, invoice_num, boxes, date_packed, receipt_url, receipt_date, library_id)
 VALUES (1, 123, 321, 1, '08-Jan-2022', 'link to receipt1', '11-Jan-2022', 1),

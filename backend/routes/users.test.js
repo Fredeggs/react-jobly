@@ -169,6 +169,14 @@ describe("GET /users", function () {
           phone: "4444444444",
           isAdmin: false,
         },
+        {
+          id: expect.any(Number),
+          firstName: "U5F",
+          lastName: "U5L",
+          email: "user5@user.com",
+          phone: "5555555555",
+          isAdmin: false,
+        },
       ],
     });
   });

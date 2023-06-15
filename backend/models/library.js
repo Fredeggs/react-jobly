@@ -152,34 +152,6 @@ class Library {
     return newContact;
   }
 
-  /** Create a Memorandum of Agreement (moa) for a library (from data), update db, return new moa data.
-   *
-   * data should be { link, libraryId  }
-   *
-   * Returns {id, link, moaStatus, libraryId }
-   * */
-  static async createMOA({ link, libraryId }) {
-    const duplicateCheck = await db.query(
-      `SELECT id
-           FROM moas
-           WHERE library_id = $1`,
-      [libraryId]
-    );
-
-    if (duplicateCheck.rows.length >= 1)
-      throw new BadRequestError(`Duplicate moa with libraryId: ${libraryId}`);
-
-    const newMOARes = await db.query(
-      `INSERT INTO moas
-           (moa_link, moa_status, library_id)
-           VALUES ($1, 'submitted', $2)
-           RETURNING id, moa_link AS "link", moa_status AS "moaStatus", library_id AS "libraryId"`,
-      [link, libraryId]
-    );
-    const newMOA = newMOARes.rows[0];
-    return newMOA;
-  }
-
   /** Find all libraries (optional filter on searchFilters).
    *
    * searchFilters (all optional):
@@ -297,7 +269,6 @@ class Library {
 
     const moaRes = await db.query(
       `SELECT id,
-              moa_link AS "link",
               moa_status AS "moaStatus"
            FROM moas
            WHERE library_id = $1`,

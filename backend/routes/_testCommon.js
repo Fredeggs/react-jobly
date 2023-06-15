@@ -3,6 +3,7 @@
 const db = require("../db.js");
 const User = require("../models/user");
 const Library = require("../models/library");
+const MOA = require("../models/moa");
 const Shipment = require("../models/shipment");
 const { createToken } = require("../helpers/tokens");
 const { token } = require("morgan");
@@ -62,6 +63,16 @@ async function commonBeforeAll() {
     isAdmin: false,
   });
   testUserIds.push(u4.id);
+
+  const u5 = await User.register({
+    firstName: "U5F",
+    lastName: "U5L",
+    email: "user5@user.com",
+    phone: "5555555555",
+    password: "password5",
+    isAdmin: false,
+  });
+  testUserIds.push(u5.id);
 
   const l1 = await Library.createLibrary({
     libraryData: {
@@ -162,8 +173,41 @@ async function commonBeforeAll() {
   });
   testLibraryIds.push(l3.id);
 
-  await Library.createMOA({ link: "testLink1", libraryId: testLibraryIds[0] });
-  await Library.createMOA({ link: "testLink2", libraryId: testLibraryIds[1] });
+  const l4 = await Library.createLibrary({
+    libraryData: {
+      libraryName: "Community Library 2",
+      libraryType: "community",
+      classrooms: null,
+      studentsPerGrade: null,
+      teachers: null,
+      program: "FSER",
+    },
+    contactData: {
+      firstName: "First",
+      lastName: "Last",
+      phone: "000-000-0000",
+      email: "contact4@gmail.com",
+    },
+    primaryAddress: {
+      street: "Primary Street",
+      barangay: "Primary Barangay",
+      city: "Primary City",
+      provinceId: 3,
+      regionId: 3,
+    },
+    shippingAddress: {
+      street: "Shipping Street",
+      barangay: "Shipping Barangay",
+      city: "Shipping City",
+      provinceId: 3,
+      regionId: 3,
+    },
+    adminId: testUserIds[3],
+  });
+  testLibraryIds.push(l4.id);
+
+  await MOA.create(testLibraryIds[0]);
+  await MOA.create(testLibraryIds[1]);
 
   await db.query(`
   INSERT INTO shipments (id, export_declaration, invoice_num, boxes, date_packed, receipt_url, receipt_date, library_id)
@@ -212,6 +256,13 @@ async function commonBeforeAll() {
     libraryId: testLibraryIds[2],
     shipments: [],
     isAdmin: true,
+  });
+  tokens.u3Token = createToken({
+    id: testUserIds[3],
+    email: "user4@user.com",
+    libraryId: testLibraryIds[3],
+    shipments: [],
+    isAdmin: false,
   });
 }
 async function commonBeforeEach() {

@@ -3,7 +3,7 @@ import { Form, FormGroup, Input, Label, Button } from "reactstrap";
 import { useHistory } from "react-router-dom";
 import UserContext from "./userContext";
 
-function LibraryForm({ createLibrary, getRegionsAndProvinces }) {
+function LibraryForm({ createLibrary, getRegionsAndProvinces, updateToken }) {
   const history = useHistory();
   const libraryTypeRef = useRef(null);
   const { currentUser, setCurrentUser } = useContext(UserContext);
@@ -121,33 +121,42 @@ function LibraryForm({ createLibrary, getRegionsAndProvinces }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    let formattedFormData;
     if (isChecked) {
-      setFormData((formData) => ({
+      formattedFormData = {
         ...formData,
-        shippingAddress: {
-          street: formData.primaryAddress.street,
-          barangay: formData.primaryAddress.barangay,
-          city: formData.primaryAddress.city,
-          provinceId: formData.primaryAddress.provinceId,
-          regionId: formData.primaryAddress.regionId,
+        primaryAddress: {
+          ...formData.primaryAddress,
+          regionId: parseInt(formData.primaryAddress.regionId),
+          provinceId: parseInt(formData.primaryAddress.provinceId),
         },
-      }));
+        shippingAddress: {
+          ...formData.primaryAddress,
+          regionId: parseInt(formData.primaryAddress.regionId),
+          provinceId: parseInt(formData.primaryAddress.provinceId),
+        },
+      };
+    } else {
+      formattedFormData = {
+        ...formData,
+        primaryAddress: {
+          ...formData.primaryAddress,
+          regionId: parseInt(formData.primaryAddress.regionId),
+          provinceId: parseInt(formData.primaryAddress.provinceId),
+        },
+        shippingAddress: {
+          ...formData.shippingAddress,
+          regionId: parseInt(formData.shippingAddress.regionId),
+          provinceId: parseInt(formData.shippingAddress.provinceId),
+        },
+      };
     }
+    const libraryRes = await createLibrary(formattedFormData);
+    await updateToken({
+      ...currentUser,
+      libraryId: libraryRes.id,
+    });
 
-    const formattedFormData = {
-      ...formData,
-      primaryAddress: {
-        ...formData.primaryAddress,
-        regionId: parseInt(formData.primaryAddress.regionId),
-        provinceId: parseInt(formData.primaryAddress.provinceId),
-      },
-      shippingAddress: {
-        ...formData.shippingAddress,
-        regionId: parseInt(formData.shippingAddress.regionId),
-        provinceId: parseInt(formData.shippingAddress.provinceId),
-      },
-    };
-    await createLibrary(formattedFormData);
     setFormData(INITIAL_FORM_DATA);
     setCurrentUser(currentUser);
     history.push("/");

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Form, FormGroup, Input, Label, Button } from "reactstrap";
-import { useHistory } from "react-router-dom";
+import { useHistory, Link } from "react-router-dom";
 import UserContext from "./userContext";
 import LibraryCard from "./LibraryCard";
 import BKPApi from "./api";
@@ -22,25 +22,18 @@ function NewApplications({ getLibraries }) {
 
   return (
     <div>
-      <p>This is the new applications page!</p>
+      <h1>New Library Applications</h1>
       <div>
         <p>
           {libraries.map((l) => (
-            <LibraryCard
-              libraryName={l.libraryName}
-              moaStatus={l.moaStatus}
-              libraryType={l.libraryType}
-              primaryBarangay={l.primaryBarangay}
-              primaryCity={l.primaryCity}
-              primaryProvince={l.primaryProvince}
-              primaryRegion={l.primaryRegion}
-              primaryStreet={l.primaryStreet}
-              shippingBarangay={l.shippingBarangay}
-              shippingCity={l.shippingCity}
-              shippingProvince={l.shippingProvince}
-              shippingRegion={l.shippingRegion}
-              shippingStreet={l.shippingStreet}
-            />
+            <Link
+              key={l.id}
+              exact={"true"}
+              to={`/libraries/${l.id}`}
+              className="navbar-brand"
+            >
+              <li>{l.libraryName}</li>
+            </Link>
           ))}
         </p>
       </div>

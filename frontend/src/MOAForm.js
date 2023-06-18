@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Form, FormGroup, Input, Label, Button } from "reactstrap";
-import { useHistory } from "react-router-dom";
+import { useHistory, useNavigate } from "react-router-dom";
 import UserContext from "./userContext";
-import MOA from "./jpgs/test.jpg";
+import MOA from "./jpgs/MOA for new libraries rev2023.pdf";
 import { Link } from "react-router-dom/cjs/react-router-dom.min";
 
-function MOAForm({ createMOA }) {
+function MOAForm({ createMOA, updateMOA, updateToken }) {
   const history = useHistory();
   const [selectedFile, setSelectedFile] = useState(null);
   const { currentUser, setCurrentUser } = useContext(UserContext);
+
   const handleChange = async (e) => {
     const file = e.target.files[0];
     setSelectedFile(file);
@@ -18,34 +19,44 @@ function MOAForm({ createMOA }) {
     e.preventDefault();
     const form = new FormData();
     form.append("moa", selectedFile);
-    await createMOA(currentUser.libraryId, form);
+    const moaRes = await createMOA(currentUser.libraryId, form);
+    console.log("moaRes: ", moaRes);
+    await updateToken({
+      ...currentUser,
+      moaStatus: moaRes.moaStatus,
+    });
     history.push("/");
   };
 
-  useEffect(() => {
-    async function fetchData() {
-      // Fetch data
-      console.log("fetching");
-    }
-
-    // Trigger the fetch
-    fetchData();
-  }, []);
-  return (
-    <div>
-      <h1>Memorandum of Agreement Download and Submission</h1>
-      <Link to={MOA} download="test" target="_blank" rel="noreferrer">
-        <button>Download MOA pdf</button>
-      </Link>
-      <Form onSubmit={handleSubmit}>
-        <FormGroup>
-          <Label for="moa">Upload MOA</Label>
-          <Input id="moa" name="moa" type="file" onChange={handleChange} />
-        </FormGroup>
-        <Button>Submit</Button>
-      </Form>
-    </div>
-  );
+  if (
+    currentUser.libraryId &&
+    currentUser.moaStatus != "submitted" &&
+    currentUser.moaStatus != "approved"
+  ) {
+    return (
+      <div>
+        <h1>Memorandum of Agreement Download and Submission</h1>
+        <Link to={MOA} download="BKP_MOA" target="_blank" rel="noreferrer">
+          <button>Download MOA pdf</button>
+        </Link>
+        {
+          <Form onSubmit={handleSubmit}>
+            <FormGroup>
+              <Label for="moa">
+                {" "}
+                {currentUser.moaStatus === "rejected"
+                  ? "Resubmit MOA"
+                  : "Upload MOA"}
+              </Label>
+              <Input id="moa" name="moa" type="file" onChange={handleChange} />
+            </FormGroup>
+            <Button>Submit</Button>
+          </Form>
+        }
+      </div>
+    );
+  }
+  history.push("/");
 }
 
 export default MOAForm;

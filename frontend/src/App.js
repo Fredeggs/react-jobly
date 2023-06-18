@@ -15,6 +15,7 @@ import NewApplications from "./NewApplicationsPage";
 import LibrariesPage from "./LibrariesPage";
 import ShippingEntryForm from "./ShippingEntryForm";
 import LibraryForm from "./LibraryForm";
+import LibraryPage from "./LibraryPage";
 
 function App() {
   const [currentUser, setCurrentUser] = useLocalStorage("user", null);
@@ -69,6 +70,21 @@ function App() {
     return res;
   };
 
+  const updateMOA = async (libraryId, data) => {
+    const res = await BKPApi.updateMOA(libraryId, data);
+    return res;
+  };
+
+  const getMOA = async (libraryId) => {
+    const res = await BKPApi.getMOA(libraryId);
+    return res;
+  };
+
+  const createShipment = async (data) => {
+    const res = await BKPApi.createShipment(data);
+    return res;
+  };
+
   const getCurrentUser = async () => {
     try {
       let { email } = decodeToken(token);
@@ -93,10 +109,17 @@ function App() {
           <NavBar logout={logout} />
           <Switch>
             <Route exact path="/">
-              <Home getCurrentUser={getCurrentUser} getLibrary={getLibrary} />
+              <Home
+                getCurrentUser={getCurrentUser}
+                getLibrary={getLibrary}
+                getMOA={getMOA}
+              />
             </Route>
             <Route exact path="/shipping-entry">
-              <ShippingEntryForm getLibraries={getLibraries} />
+              <ShippingEntryForm
+                getLibraries={getLibraries}
+                createShipment={createShipment}
+              />
             </Route>
             <Route exact path="/new-applications">
               <NewApplications getLibraries={getLibraries} />
@@ -109,7 +132,18 @@ function App() {
               />
             </Route>
             <Route exact path="/moa-form">
-              <MOAForm createMOA={createMOA} />
+              <MOAForm
+                createMOA={createMOA}
+                updateToken={updateToken}
+                updateMOA={updateMOA}
+              />
+            </Route>
+            <Route exact path="/libraries/:id">
+              <LibraryPage
+                getLibrary={getLibrary}
+                getMOA={getMOA}
+                updateMOA={updateMOA}
+              />
             </Route>
             <Route exact path="/libraries">
               <LibrariesPage getLibraries={getLibraries} />

@@ -16,6 +16,7 @@ const Library = require("../models/library");
 const libraryNewSchema = require("../schemas/libraryNew.json");
 const libraryUpdateSchema = require("../schemas/libraryUpdate.json");
 const librarySearchSchema = require("../schemas/librarySearch.json");
+const Shipment = require("../models/shipment");
 
 const router = new express.Router();
 
@@ -91,7 +92,10 @@ router.get(
   async function (req, res, next) {
     try {
       const library = await Library.get(req.params.libraryId);
-      return res.json({ library });
+      const shipments = await Shipment.getLibraryShipments(
+        req.params.libraryId
+      );
+      return res.json({ library, shipments });
     } catch (err) {
       return next(err);
     }

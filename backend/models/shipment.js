@@ -46,14 +46,13 @@ class Shipment {
 
     const shipmentRes = await db.query(
       `INSERT INTO shipments
-           (export_declaration, invoice_num, boxes, date_packed, receipt_url, receipt_date, library_id)
-           VALUES ($1, $2, $3, $4, null, null, $5)
+           (export_declaration, invoice_num, boxes, date_packed, receipt_date, library_id)
+           VALUES ($1, $2, $3, $4, null, $5)
            RETURNING id, 
                     export_declaration AS "exportDeclaration",
                     invoice_num AS "invoiceNum",
                     boxes,
                     date_packed AS "datePacked",
-                    receipt_url AS "receiptURL",
                     receipt_date AS "receiptDate",
                     library_id AS "libraryId"`,
       [exportDeclaration, invoiceNum, boxes, datePacked, libraryId]
@@ -88,7 +87,6 @@ class Shipment {
               s.invoice_num AS "invoiceNum",
               s.boxes,
               s.date_packed AS "datePacked",
-              s.receipt_url AS "receiptURL",
               s.receipt_date AS "receiptDate",
               s.library_id AS "libraryId",
               l.lib_name AS "libraryName"
@@ -130,7 +128,6 @@ class Shipment {
               invoice_num AS "invoiceNum",
               boxes,
               date_packed AS "datePacked",
-              receipt_url AS "receiptURL",
               receipt_date AS "receiptDate"
         FROM shipments
         WHERE library_id = $1
@@ -140,10 +137,10 @@ class Shipment {
 
     const shipments = shipmentsRes.rows;
 
-    if (!shipments.length)
-      throw new NotFoundError(
-        `No records found for library with id: ${libraryId}`
-      );
+    // if (!shipments.length)
+    //   throw new NotFoundError(
+    //     `No records found for library with id: ${libraryId}`
+    //   );
 
     const mappedShipments = shipments.map((s) => {
       const datePacked = new Date(`${s.datePacked}`);
@@ -189,7 +186,6 @@ class Shipment {
       exportDeclaration: "export_declaration",
       invoiceNum: "invoice_num",
       datePacked: "date_packed",
-      receiptURL: "receipt_url",
       receiptDate: "receipt_date",
     });
     const handleVarIdx = "$" + (values.length + 1);
@@ -201,7 +197,6 @@ class Shipment {
                                     invoice_num AS "invoiceNum",
                                     boxes,
                                     date_packed AS "datePacked",
-                                    receipt_url AS "receiptURL",
                                     receipt_date AS "receiptDate"`;
     const result = await db.query(querySql, [...values, id]);
     data = result.rows[0];
@@ -224,20 +219,35 @@ class Shipment {
    * Returns [{ exportDeclaration, invoiceNum, boxes, datePacked, receiptURL, receiptDate }, ...]
    * */
 
-  static async findAll() {
-    let shipmentsRes = await db.query(`
+  static async findAll(searchFilters = {}) {
+    let query = `
     SELECT s.id,
             s.export_declaration AS "exportDeclaration",
             s.invoice_num AS "invoiceNum",
             s.boxes,
             s.date_packed AS "datePacked",
-            s.receipt_url AS "receiptURL",
             s.receipt_date AS "receiptDate",
             s.library_id AS "libraryId",
             l.lib_name AS "libraryName"
     FROM shipments s
-    LEFT JOIN libraries AS l ON l.id = s.library_id
-    ORDER BY date_packed DESC`);
+    LEFT JOIN libraries AS l ON l.id = s.library_id`;
+    let whereExpressions = [];
+    let queryValues = [];
+    const { libraryId } = searchFilters;
+
+    if (libraryId) {
+      queryValues.push(`%${libraryId}%`);
+      whereExpressions.push(`s.lib_name ILIKE $${queryValues.length}`);
+    }
+
+    if (whereExpressions.length > 0) {
+      query += " WHERE " + whereExpressions.join(" AND ");
+    }
+    // Finalize query and return results
+
+    query += " ORDER BY date_packed DESC";
+    const shipmentsRes = await db.query(query, queryValues);
+
     const shipments = shipmentsRes.rows;
     const mappedShipments = shipments.map((s) => {
       const datePacked = new Date(`${s.datePacked}`);

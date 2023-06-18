@@ -3,10 +3,13 @@ import { Form, FormGroup, Input, Label, Button } from "reactstrap";
 import { NavLink, useHistory } from "react-router-dom";
 import UserContext from "./userContext";
 import LibraryCard from "./LibraryCard";
+import ShipmentCard from "./ShipmentCard";
 
-function Home({ getCurrentUser, getLibrary }) {
+function Home({ getCurrentUser, getLibrary, getMOA }) {
   const { currentUser, setCurrentUser } = useContext(UserContext);
-  const [library, setLibrary] = useState({
+  const [MOA, setMOA] = useState(null);
+  const [currentShipments, setCurrentShipments] = useState([]);
+  const [currentLibrary, setCurrentLibrary] = useState({
     libraryData: {
       libraryName: "",
       libraryType: "",
@@ -41,9 +44,18 @@ function Home({ getCurrentUser, getLibrary }) {
       const userData = await getCurrentUser();
       console.log(userData);
       if (userData.libraryId) {
-        const libraryData = await getLibrary(userData.libraryId);
-        setLibrary(libraryData);
+        const { library, shipments } = await getLibrary(userData.libraryId);
+        setCurrentLibrary(library);
+        setCurrentShipments(shipments);
       }
+      console.log(currentLibrary);
+      setTimeout(async () => {
+        if (userData.moaStatus) {
+          const moaData = await getMOA(userData.libraryId);
+          console.log("moaData:", moaData);
+          setMOA(moaData);
+        }
+      }, 1000);
     }
     // Trigger the fetch
     fetchData();
@@ -51,62 +63,119 @@ function Home({ getCurrentUser, getLibrary }) {
   return (
     <div>
       <h1>BKP Library Portal</h1>
-      {currentUser ? (
+      {currentUser && !currentUser.isAdmin ? (
         currentUser.libraryId ? (
           currentUser.moaStatus ? (
             <>
-              <p>I have an moaStatus of: {currentUser.moaStatus}</p>
+              {currentUser.moaStatus === "rejected" && (
+                <>
+                  <p>
+                    Your latest submission of Memorandum of Agreement has been
+                    rejected. Click below to resubmit!
+                  </p>
+                  <Button onClick={() => history.push("/moa-form")}>
+                    Fill out Memorandum of Agreement
+                  </Button>
+                </>
+              )}
+              <h2>Your Library Information</h2>
               <LibraryCard
-                libraryName={library.libraryData.libraryName}
-                moaStatus={library.moa.moaStatus}
-                libraryType={library.libraryData.libraryType}
-                primaryBarangay={library.primaryAddress.barangay}
-                primaryCity={library.primaryAddress.city}
-                primaryProvince={library.primaryAddress.province}
-                primaryRegion={library.primaryAddress.region}
-                primaryStreet={library.primaryAddress.street}
-                shippingBarangay={library.shippingAddress.barangay}
-                shippingCity={library.shippingAddress.city}
-                shippingProvince={library.shippingAddress.province}
-                shippingRegion={library.shippingAddress.region}
-                shippingStreet={library.shippingAddress.street}
+                adminFirstName={currentLibrary.admin.firstName}
+                adminLastName={currentLibrary.admin.lastName}
+                adminEmail={currentLibrary.admin.email}
+                adminPhone={currentLibrary.admin.phone}
+                contactFirstName={currentLibrary.contactData.firstName}
+                contactLastName={currentLibrary.contactData.lastName}
+                contactEmail={currentLibrary.contactData.email}
+                contactPhone={currentLibrary.contactData.phone}
+                libraryName={currentLibrary.libraryData.libraryName}
+                moaStatus={currentLibrary.moa.moaStatus}
+                libraryType={currentLibrary.libraryData.libraryType}
+                primaryBarangay={currentLibrary.primaryAddress.barangay}
+                primaryCity={currentLibrary.primaryAddress.city}
+                primaryProvince={currentLibrary.primaryAddress.province}
+                primaryRegion={currentLibrary.primaryAddress.region}
+                primaryStreet={currentLibrary.primaryAddress.street}
+                shippingBarangay={currentLibrary.shippingAddress.barangay}
+                shippingCity={currentLibrary.shippingAddress.city}
+                shippingProvince={currentLibrary.shippingAddress.province}
+                shippingRegion={currentLibrary.shippingAddress.region}
+                shippingStreet={currentLibrary.shippingAddress.street}
               />
+              {(currentLibrary.moa.moaStatus === "submitted" ||
+                currentLibrary.moa.moaStatus === "approved") && (
+                <a href={MOA} target="_blank" download={true}>
+                  <button>
+                    View MOA for {currentLibrary.libraryData.libraryName}
+                  </button>
+                </a>
+              )}
+
+              <h2>Shipment Information</h2>
+
+              {currentShipments.map((s) => (
+                <ShipmentCard
+                  exportDeclaration={s.exportDeclaration}
+                  invoiceNum={s.invoiceNum}
+                  boxes={s.boxes}
+                  datePacked={s.datePacked}
+                  receiptDate={s.receiptDate}
+                />
+              ))}
             </>
           ) : (
             <>
               <p>
-                Thank you for registering your library! In order to start
-                receiving books, you will need to fill out a Memorandum of
-                Agreement
+                Thank you for registering your library! To start receiving
+                books, please fill out a Memorandum of Agreement by clicking the
+                button below
               </p>
               <Button onClick={() => history.push("/moa-form")}>
                 Fill out Memorandum of Agreement
               </Button>
+              <h2>Your Library Information</h2>
               <LibraryCard
-                libraryName={library.libraryData.libraryName}
-                moaStatus={library.libraryData.moaStatus}
-                libraryType={library.libraryData.libraryType}
-                primaryBarangay={library.primaryAddress.barangay}
-                primaryCity={library.primaryAddress.city}
-                primaryProvince={library.primaryAddress.province}
-                primaryRegion={library.primaryAddress.region}
-                primaryStreet={library.primaryAddress.street}
-                shippingBarangay={library.shippingAddress.barangay}
-                shippingCity={library.shippingAddress.city}
-                shippingProvince={library.shippingAddress.province}
-                shippingRegion={library.shippingAddress.region}
-                shippingStreet={library.shippingAddress.street}
+                adminFirstName={currentLibrary.admin.firstName}
+                adminLastName={currentLibrary.admin.lastName}
+                adminEmail={currentLibrary.admin.email}
+                adminPhone={currentLibrary.admin.phone}
+                contactFirstName={currentLibrary.contactData.firstName}
+                contactLastName={currentLibrary.contactData.lastName}
+                contactEmail={currentLibrary.contactData.email}
+                contactPhone={currentLibrary.contactData.phone}
+                libraryName={currentLibrary.libraryData.libraryName}
+                moaStatus={currentLibrary.moa.moaStatus}
+                libraryType={currentLibrary.libraryData.libraryType}
+                primaryBarangay={currentLibrary.primaryAddress.barangay}
+                primaryCity={currentLibrary.primaryAddress.city}
+                primaryProvince={currentLibrary.primaryAddress.province}
+                primaryRegion={currentLibrary.primaryAddress.region}
+                primaryStreet={currentLibrary.primaryAddress.street}
+                shippingBarangay={currentLibrary.shippingAddress.barangay}
+                shippingCity={currentLibrary.shippingAddress.city}
+                shippingProvince={currentLibrary.shippingAddress.province}
+                shippingRegion={currentLibrary.shippingAddress.region}
+                shippingStreet={currentLibrary.shippingAddress.street}
               />
             </>
           )
         ) : (
           <>
-            <p>Welcome! Trying to register a library? Click Below</p>
+            <p>
+              Welcome! Trying to register a library? Click the button below!
+            </p>
             <Button onClick={() => history.push("/library-form")}>
               Register Library
             </Button>
           </>
         )
+      ) : currentUser && currentUser.isAdmin ? (
+        <>
+          <h2>Welcome to the admin dashboard!</h2>
+          <h4>
+            Use any of the links in the navbar above to perform admin duties
+          </h4>
+        </>
       ) : (
         <>
           <h2>Manage Your Library Here</h2>

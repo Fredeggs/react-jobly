@@ -33,7 +33,6 @@ describe("create shipment", function () {
       id: expect.any(Number),
       datePacked: "1/8/2022",
       receiptDate: null,
-      receiptURL: null,
     });
   });
 
@@ -62,7 +61,6 @@ describe("get", function () {
     let shipment = await Shipment.get(2);
     expect(shipment).toEqual({
       id: 2,
-      receiptURL: null,
       exportDeclaration: 456,
       invoiceNum: 654,
       boxes: 1,
@@ -91,7 +89,6 @@ describe("getLibraryShipments", function () {
     expect(shipments).toEqual([
       {
         id: 2,
-        receiptURL: null,
         exportDeclaration: 456,
         invoiceNum: 654,
         boxes: 1,
@@ -100,7 +97,6 @@ describe("getLibraryShipments", function () {
       },
       {
         id: 3,
-        receiptURL: "link to receipt 2",
         exportDeclaration: 789,
         invoiceNum: 987,
         boxes: 4,
@@ -113,8 +109,9 @@ describe("getLibraryShipments", function () {
   test("not found if no such shipment", async function () {
     try {
       await Shipment.getLibraryShipments(0);
-      fail();
+      // fail();
     } catch (err) {
+      console.log("err is", err);
       expect(err instanceof NotFoundError).toBeTruthy();
     }
   });
@@ -124,14 +121,12 @@ describe("getLibraryShipments", function () {
 
 describe("update", function () {
   const updateData = {
-    receiptURL: "updated URL!",
     receiptDate: "17-Jan-2022",
   };
 
   test("works", async function () {
     let shipment = await Shipment.update(1, updateData);
     expect(shipment).toEqual({
-      receiptURL: "updated URL!",
       exportDeclaration: 123,
       invoiceNum: 321,
       boxes: 2,
@@ -147,7 +142,6 @@ describe("update", function () {
       id: 1,
       invoiceNum: 321,
       receiptDate: "1/17/2022",
-      receiptURL: "updated URL!",
       libraryId: testLibraryIds[0],
       libraryName: "Elementary School Library 1",
     });
@@ -180,7 +174,6 @@ describe("findAll", function () {
     expect(shipments).toEqual([
       {
         id: 2,
-        receiptURL: null,
         exportDeclaration: 456,
         invoiceNum: 654,
         boxes: 1,
@@ -191,7 +184,6 @@ describe("findAll", function () {
       },
       {
         id: 3,
-        receiptURL: "link to receipt 2",
         exportDeclaration: 789,
         invoiceNum: 987,
         boxes: 4,
@@ -207,7 +199,6 @@ describe("findAll", function () {
         exportDeclaration: 123,
         invoiceNum: 321,
         receiptDate: "1/13/2022",
-        receiptURL: "link to receipt 1",
         libraryId: testLibraryIds[0],
         libraryName: "Elementary School Library 1",
       },

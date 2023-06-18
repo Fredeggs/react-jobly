@@ -46,7 +46,6 @@ describe("POST /shipments", function () {
         invoiceNum: 222,
         datePacked: "10/22/2022",
         boxes: 10,
-        receiptURL: null,
         receiptDate: null,
         libraryId: testLibraryIds[0],
       },
@@ -116,7 +115,6 @@ describe("GET /shipments", function () {
           libraryId: testLibraryIds[1],
           libraryName: "Elementary School Library",
           receiptDate: null,
-          receiptURL: null,
         },
         {
           id: expect.any(Number),
@@ -127,7 +125,6 @@ describe("GET /shipments", function () {
           libraryId: testLibraryIds[1],
           libraryName: "Elementary School Library",
           receiptDate: "3/25/2022",
-          receiptURL: "link to receipt 2",
         },
         {
           id: expect.any(Number),
@@ -138,7 +135,6 @@ describe("GET /shipments", function () {
           libraryId: testLibraryIds[0],
           libraryName: "Middle School Library",
           receiptDate: "1/13/2022",
-          receiptURL: "link to receipt 1",
         },
       ],
     });
@@ -169,7 +165,6 @@ describe("GET /shipments/:id", function () {
         libraryId: testLibraryIds[0],
         libraryName: "Middle School Library",
         receiptDate: "1/13/2022",
-        receiptURL: "link to receipt 1",
       },
     });
   });
@@ -188,7 +183,6 @@ describe("GET /shipments/:id", function () {
         libraryId: testLibraryIds[0],
         libraryName: "Middle School Library",
         receiptDate: "1/13/2022",
-        receiptURL: "link to receipt 1",
       },
     });
   });
@@ -218,7 +212,6 @@ describe("PATCH /shipments/:id", function () {
         exportDeclaration: 123,
         invoiceNum: 321,
         receiptDate: "1/13/2022",
-        receiptURL: "link to receipt 1",
       },
     });
   });
@@ -237,7 +230,6 @@ describe("PATCH /shipments/:id", function () {
         exportDeclaration: 123,
         invoiceNum: 321,
         receiptDate: "1/13/2022",
-        receiptURL: "link to receipt 1",
       },
     });
   });

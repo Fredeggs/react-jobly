@@ -75,7 +75,6 @@ CREATE TABLE shipments (
   invoice_num INTEGER CHECK (invoice_num >= 0) NOT NULL,
   boxes INTEGER CHECK (boxes >= 0) NOT NULL,
   date_packed DATE NOT NULL,
-  receipt_url TEXT DEFAULT NULL,
   receipt_date DATE DEFAULT NULL,
   library_id INTEGER REFERENCES libraries ON DELETE CASCADE
 );

@@ -43,6 +43,7 @@ function LibraryForm({ createLibrary, getRegionsAndProvinces, updateToken }) {
   const [regionOptions, setRegionOptions] = useState([]);
   const [provinceOptions, setProvinceOptions] = useState([]);
   const [formData, setFormData] = useState(INITIAL_FORM_DATA);
+  
   const handleChange = (e) => {
     const { name, value, dataset } = e.target;
     setFormData((formData) => ({
@@ -279,7 +280,7 @@ function LibraryForm({ createLibrary, getRegionsAndProvinces, updateToken }) {
 
         <h3>Primary Address</h3>
         <FormGroup>
-          <Label for="p-street">Street</Label>
+          <Label for="p-street">Street Address</Label>
           <Input
             id="p-street"
             name="street"
@@ -365,7 +366,7 @@ function LibraryForm({ createLibrary, getRegionsAndProvinces, updateToken }) {
         ) : (
           <>
             <FormGroup>
-              <Label for="s-street">Street</Label>
+              <Label for="s-street">Street Address</Label>
               <Input
                 id="s-street"
                 name="street"

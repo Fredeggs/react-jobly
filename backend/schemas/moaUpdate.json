@@ -6,13 +6,6 @@
     "title": "Root Schema",
     "required": [],
     "properties": {
-        "link": {
-            "type": "string",
-            "title": "The moaLink Schema",
-            "examples": [
-                "https://developer.mozilla.org/"
-            ]
-        },
         "moaStatus": {
             "type": "string",
             "title": "The moaStatus Schema",
@@ -24,8 +17,7 @@
     "additionalProperties": false,
     "examples": [
         {
-            "link": 111,
-            "moaStatus": 222
+            "moaStatus": "approved"
         }
     ]
 }

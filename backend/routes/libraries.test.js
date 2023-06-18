@@ -426,6 +426,16 @@ describe("GET /libraries/:id", function () {
           moaStatus: "submitted",
         },
       },
+      shipments: [
+        {
+          boxes: 2,
+          datePacked: "1/8/2022",
+          exportDeclaration: 123,
+          id: 1,
+          invoiceNum: 321,
+          receiptDate: "1/13/2022",
+        },
+      ],
     });
   });
 
@@ -479,6 +489,16 @@ describe("GET /libraries/:id", function () {
           moaStatus: "submitted",
         },
       },
+      shipments: [
+        {
+          boxes: 2,
+          datePacked: "1/8/2022",
+          exportDeclaration: 123,
+          id: 1,
+          invoiceNum: 321,
+          receiptDate: "1/13/2022",
+        },
+      ],
     });
   });
 

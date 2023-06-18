@@ -60,8 +60,8 @@ class BKPApi {
 
   /** Get details on a library and a list of its shipments by handle. */
   static async getLibrary(id) {
-    let res = await this.request(`libraries/${id}`);
-    return res.library;
+    let { library, shipments } = await this.request(`libraries/${id}`);
+    return { library, shipments };
   }
 
   /** Get a list of libraries. */
@@ -101,10 +101,26 @@ class BKPApi {
   /** Create an MOA for a specific library. */
   static async createMOA(libraryId, data) {
     let res = await this.request(`moas/${libraryId}`, data, "post");
+    return res.moa;
+  }
+
+  /** Update an MOA for a specific library. */
+  static async updateMOA(libraryId, data) {
+    let res = await this.request(`moas/${libraryId}`, data, "patch");
     return res;
   }
 
-  // obviously, you'll add a lot here ...
+  /** Get an MOA for a specific library. */
+  static async getMOA(libraryId) {
+    let res = await this.request(`moas/${libraryId}`);
+    return res;
+  }
+
+  /** Create a shipment for a specific library. */
+  static async createShipment(data) {
+    let res = await this.request(`shipments`, data, "post");
+    return res.shipment;
+  }
 }
 
 // for now, put token ("testuser" / "password" on class)

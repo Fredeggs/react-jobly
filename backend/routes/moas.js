@@ -13,7 +13,7 @@ const {
 const MOA = require("../models/moa");
 const moaNewSchema = require("../schemas/moaNew.json");
 const moaUpdateSchema = require("../schemas/moaUpdate.json");
-const uploadMOAToS3 = require("../s3");
+const { uploadMOAToS3, getMOAPresignedUrls } = require("../s3");
 const router = new express.Router();
 
 const storage = multer.memoryStorage();
@@ -21,7 +21,7 @@ const upload = multer({ storage });
 
 /** POST / { moa } =>  { moa }
  *
- * moa is { link, moaStatus }
+ * moa is { moaStatus }
  *
  * Returns { id, link, moaStatus, libraryId}
  *
@@ -40,12 +40,45 @@ router.post(
         throw new BadRequestError();
       }
 
+      const moaExists = await MOA.get(libraryId);
+      if (moaExists) {
+        await MOA.remove(libraryId);
+      }
+
       const { error, key } = uploadMOAToS3({ file, libraryId });
       if (error) return res.status(500).json({ message: error.message });
 
       const moa = await MOA.create(libraryId);
 
-      return res.status(201).json({ key });
+      return res.status(201).json({ key, moa });
+    } catch (err) {
+      return next(err);
+    }
+  }
+);
+
+/** GET / {} =>  { moa }
+ *
+ * moa is { link, moaStatus }
+ *
+ * Returns { id, link, moaStatus, libraryId}
+ *
+ * Authorization required: correct user or admin
+ */
+
+router.get(
+  "/:libraryId",
+  ensureCorrectUserOrAdmin,
+  async function (req, res, next) {
+    try {
+      const libraryId = req.params.libraryId;
+      if (!libraryId) {
+        throw new BadRequestError();
+      }
+      const { error, presignedUrl } = await getMOAPresignedUrls(libraryId);
+      if (error) return res.status(400).json({ message: error.message });
+
+      return res.json(presignedUrl);
     } catch (err) {
       return next(err);
     }

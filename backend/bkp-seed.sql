@@ -135,7 +135,7 @@ VALUES ('approved', 1),
        ('rejected', 2),
        ('submitted', 3);
 
-INSERT INTO shipments (id, export_declaration, invoice_num, boxes, date_packed, receipt_url, receipt_date, library_id)
-VALUES (1, 123, 321, 1, '08-Jan-2022', 'link to receipt1', '11-Jan-2022', 1),
-       (2, 456, 654, 1, '09-Jan-2022', 'link to receipt2', '12-Jan-2022', 2),
-       (3, 789, 987, 2, '09-Jan-2022', null, null, 2);
+INSERT INTO shipments (export_declaration, invoice_num, boxes, date_packed, receipt_date, library_id)
+VALUES (123, 321, 1, '08-Jan-2022', '11-Jan-2022', 1),
+       (456, 654, 1, '09-Jan-2022', '12-Jan-2022', 2),
+       (789, 987, 2, '09-Jan-2022', null, 2);

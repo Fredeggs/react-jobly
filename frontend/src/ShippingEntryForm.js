@@ -3,13 +3,14 @@ import { Form, FormGroup, Input, Label, Button } from "reactstrap";
 import { useHistory } from "react-router-dom";
 import UserContext from "./userContext";
 
-function ShippingEntryForm({ getLibraries }) {
+function ShippingEntryForm({ getLibraries, createShipment }) {
   const history = useHistory();
   const INITIAL_FORM_DATA = {
-    libraryId: null,
-    exportDeclaration: null,
-    invoiceNum: null,
-    datePacked: null,
+    libraryId: "",
+    exportDeclaration: "",
+    invoiceNum: "",
+    boxes: "",
+    datePacked: "",
   };
 
   const [options, setOptions] = useState([]);
@@ -36,14 +37,26 @@ function ShippingEntryForm({ getLibraries }) {
       // Update the options state
       setOptions([{ key: "Select a library", value: "" }, ...results]);
     }
-
     // Trigger the fetch
     fetchData();
   }, [currentUser]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // await signup(formData);
+    console.log({
+      exportDeclaration: parseInt(formData.exportDeclaration),
+      invoiceNum: parseInt(formData.invoiceNum),
+      libraryId: parseInt(formData.libraryId),
+      boxes: parseInt(formData.boxes),
+      datePacked: formData.datePacked,
+    });
+    await createShipment({
+      exportDeclaration: parseInt(formData.exportDeclaration),
+      invoiceNum: parseInt(formData.invoiceNum),
+      libraryId: parseInt(formData.libraryId),
+      boxes: parseInt(formData.boxes),
+      datePacked: formData.datePacked,
+    });
     setFormData(INITIAL_FORM_DATA);
     history.push("/");
   };

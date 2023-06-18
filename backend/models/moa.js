@@ -69,6 +69,41 @@ class MOA {
 
     return data;
   }
+
+  /** Get an moa from database based on its libraryId.
+   *
+   * Throws NotFoundError if moa not found.
+   **/
+
+  static async get(libraryId) {
+    const result = await db.query(
+      `SELECT id, moa_status, library_id
+           FROM moas
+           WHERE library_id = $1`,
+      [libraryId]
+    );
+    const moa = result.rows[0];
+
+    return moa;
+  }
+
+  /** Delete given moa from database based on its libraryId; returns undefined.
+   *
+   * Throws NotFoundError if moa not found.
+   **/
+
+  static async remove(libraryId) {
+    const result = await db.query(
+      `DELETE
+           FROM moas
+           WHERE library_id = $1
+           RETURNING id`,
+      [libraryId]
+    );
+    const moa = result.rows[0];
+
+    if (!moa) throw new NotFoundError(`No moa with libraryId: ${libraryId}`);
+  }
 }
 
 module.exports = MOA;

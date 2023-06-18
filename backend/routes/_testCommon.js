@@ -210,13 +210,12 @@ async function commonBeforeAll() {
   await MOA.create(testLibraryIds[1]);
 
   await db.query(`
-  INSERT INTO shipments (id, export_declaration, invoice_num, boxes, date_packed, receipt_url, receipt_date, library_id)
+  INSERT INTO shipments (id, export_declaration, invoice_num, boxes, date_packed, receipt_date, library_id)
   VALUES (1,
           123,
           321,
           2,
           '08-Jan-2022',
-          'link to receipt 1',
           '13-Jan-2022',
           ${testLibraryIds[0]}),
           (2,
@@ -225,14 +224,12 @@ async function commonBeforeAll() {
           1,
           '23-Mar-2022',
           null,
-          null,
           ${testLibraryIds[1]}),
           (3,
           789,
           987,
           4,
           '14-Mar-2022',
-          'link to receipt 2',
           '25-Mar-2022',
           ${testLibraryIds[1]})`);
 

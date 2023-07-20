@@ -24,26 +24,19 @@ function LibraryForm({ createLibrary, getRegionsAndProvinces, updateToken }) {
       provinceId: "",
       regionId: "",
     },
-    shippingAddress: {
-      street: "",
-      barangay: "",
-      city: "",
-      provinceId: "",
-      regionId: "",
-    },
-    contactData: { firstName: "", lastName: "", email: "", phone: "" },
+    USContact: { firstName: "", lastName: "", email: "", phone: "" },
+    PHContact: { firstName: "", lastName: "", email: "", phone: "" },
+    readingSpaces: [],
     adminId: currentUser.id,
   };
   const [libraryType, setLibraryType] = useState("");
   const [readingProgram, setReadingProgram] = useState("");
-  const [teachers, setTeachers] = useState("");
-  const [classrooms, setClassrooms] = useState("");
-  const [studentsPerGrade, setStudentsPerGrade] = useState("");
-  const [isChecked, setIsChecked] = useState(true);
+  const [readingCornerChecked, setReadingCornerChecked] = useState(false);
+  const [readingRoomChecked, setReadingRoomChecked] = useState(false);
   const [regionOptions, setRegionOptions] = useState([]);
   const [provinceOptions, setProvinceOptions] = useState([]);
   const [formData, setFormData] = useState(INITIAL_FORM_DATA);
-  
+
   const handleChange = (e) => {
     const { name, value, dataset } = e.target;
     setFormData((formData) => ({
@@ -82,25 +75,20 @@ function LibraryForm({ createLibrary, getRegionsAndProvinces, updateToken }) {
   };
 
   const handleCheckBoxChange = (e) => {
-    const { checked } = e.target;
+    const { checked, name } = e.target;
+    console.log(e.target);
     if (checked) {
-      setFormData((formData) => ({
-        ...formData,
-        shippingAddress: { ...formData.primaryAddress },
-      }));
+      setFormData((formData) => {
+        formData.readingSpaces.push(name);
+        return formData;
+      });
     } else {
-      setFormData((formData) => ({
-        ...formData,
-        shippingAddress: {
-          street: "",
-          barangay: "",
-          city: "",
-          provinceId: "",
-          regionId: "",
-        },
-      }));
+      setFormData((formData) => {
+        const idx = formData.readingSpaces.indexOf(name);
+        formData.readingSpaces.splice(idx, 1);
+        return formData;
+      });
     }
-    setIsChecked(!isChecked);
   };
 
   useEffect(() => {
@@ -123,35 +111,15 @@ function LibraryForm({ createLibrary, getRegionsAndProvinces, updateToken }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     let formattedFormData;
-    if (isChecked) {
-      formattedFormData = {
-        ...formData,
-        primaryAddress: {
-          ...formData.primaryAddress,
-          regionId: parseInt(formData.primaryAddress.regionId),
-          provinceId: parseInt(formData.primaryAddress.provinceId),
-        },
-        shippingAddress: {
-          ...formData.primaryAddress,
-          regionId: parseInt(formData.primaryAddress.regionId),
-          provinceId: parseInt(formData.primaryAddress.provinceId),
-        },
-      };
-    } else {
-      formattedFormData = {
-        ...formData,
-        primaryAddress: {
-          ...formData.primaryAddress,
-          regionId: parseInt(formData.primaryAddress.regionId),
-          provinceId: parseInt(formData.primaryAddress.provinceId),
-        },
-        shippingAddress: {
-          ...formData.shippingAddress,
-          regionId: parseInt(formData.shippingAddress.regionId),
-          provinceId: parseInt(formData.shippingAddress.provinceId),
-        },
-      };
-    }
+    formattedFormData = {
+      ...formData,
+      primaryAddress: {
+        ...formData.primaryAddress,
+        regionId: parseInt(formData.primaryAddress.regionId),
+        provinceId: parseInt(formData.primaryAddress.provinceId),
+      },
+    };
+    console.log(formattedFormData);
     const libraryRes = await createLibrary(formattedFormData);
     await updateToken({
       ...currentUser,
@@ -162,13 +130,14 @@ function LibraryForm({ createLibrary, getRegionsAndProvinces, updateToken }) {
     setCurrentUser(currentUser);
     history.push("/");
   };
+
   return (
     <div>
       <h1>Register a Library</h1>
       <Form>
         <h3>Library Details</h3>
         <FormGroup>
-          <Label for="library-name">Library Name</Label>
+          <Label for="library-name">Library/School Name</Label>
           <Input
             id="library-name"
             name="libraryName"
@@ -192,8 +161,8 @@ function LibraryForm({ createLibrary, getRegionsAndProvinces, updateToken }) {
             <option value={""} default>
               Select a library type
             </option>
+            <option value={"day care"}>Day Care</option>
             <option value={"elementary school"}>Elementary School</option>
-            <option value={"middle school"}>Middle School</option>
             <option value={"high school"}>High School</option>
             <option value={"community"}>Community</option>
           </Input>
@@ -277,6 +246,28 @@ function LibraryForm({ createLibrary, getRegionsAndProvinces, updateToken }) {
               </>
             )}
         </FormGroup>
+        <FormGroup>
+          <Label for="readingSpaces">
+            Available Reading Spaces (Check all that apply)
+          </Label>
+          <div></div>
+          <Input
+            id="reading-corner"
+            name="reading corner"
+            data-tag="reading-corner"
+            type="checkbox"
+            onChange={handleCheckBoxChange}
+          />
+          <Label for="reading-corner">Reading Corner</Label>
+          <Input
+            id="dedicated-reading-room"
+            name="dedicated reading room"
+            data-tag="dedicated-reading-room"
+            type="checkbox"
+            onChange={handleCheckBoxChange}
+          />
+          <Label for="dedicated-reading-room">Dedicated Reading Room</Label>
+        </FormGroup>
 
         <h3>Primary Address</h3>
         <FormGroup>
@@ -302,7 +293,7 @@ function LibraryForm({ createLibrary, getRegionsAndProvinces, updateToken }) {
           />
         </FormGroup>
         <FormGroup>
-          <Label for="p-city">City</Label>
+          <Label for="p-city">City or Municipality</Label>
           <Input
             id="p-city"
             name="city"
@@ -350,137 +341,95 @@ function LibraryForm({ createLibrary, getRegionsAndProvinces, updateToken }) {
             })}
           </Input>
         </FormGroup>
-        <h3>Shipping Address</h3>
-        <FormGroup>
-          <Label for="same-address">Same as Primary Address? </Label>
-          <Input
-            id="same-address"
-            name="sameAddress"
-            type="checkbox"
-            defaultChecked={isChecked}
-            onChange={handleCheckBoxChange}
-          />
-        </FormGroup>
-        {isChecked ? (
-          <></>
-        ) : (
-          <>
-            <FormGroup>
-              <Label for="s-street">Street Address</Label>
-              <Input
-                id="s-street"
-                name="street"
-                data-tag="shippingAddress"
-                type="text"
-                value={formData.shippingAddress.street}
-                onChange={handleChange}
-              />
-            </FormGroup>
-            <FormGroup>
-              <Label for="s-barangay">Barangay</Label>
-              <Input
-                id="s-barangay"
-                name="barangay"
-                data-tag="shippingAddress"
-                type="text"
-                value={formData.shippingAddress.barangay}
-                onChange={handleChange}
-              />
-            </FormGroup>
-            <FormGroup>
-              <Label for="s-city">City</Label>
-              <Input
-                id="s-city"
-                name="city"
-                data-tag="shippingAddress"
-                type="text"
-                value={formData.shippingAddress.city}
-                onChange={handleChange}
-              />
-            </FormGroup>
-            <FormGroup>
-              <Label for="s-province">Province</Label>
-              <Input
-                id="s-province"
-                name="provinceId"
-                data-tag="shippingAddress"
-                type="select"
-                value={formData.shippingAddress.provinceId}
-                onChange={handleChange}
-              >
-                {provinceOptions.map((option) => {
-                  return (
-                    <option key={"sp-" + option.id} value={option.id}>
-                      {option.name}
-                    </option>
-                  );
-                })}
-              </Input>
-            </FormGroup>
-            <FormGroup>
-              <Label for="s-region">Region</Label>
-              <Input
-                id="s-region"
-                name="regionId"
-                data-tag="shippingAddress"
-                type="select"
-                value={formData.shippingAddress.regionId}
-                onChange={handleChange}
-              >
-                {regionOptions.map((option) => {
-                  return (
-                    <option key={"sr-" + option.id} value={option.id}>
-                      {option.name}
-                    </option>
-                  );
-                })}
-              </Input>
-            </FormGroup>
-          </>
-        )}
 
-        <h3>Library Contact</h3>
+        <h3>US Sponsor Contact Info</h3>
         <FormGroup>
-          <Label for="first-name">First Name</Label>
+          <Label for="us-first-name">First Name</Label>
           <Input
-            id="first-name"
+            id="us-first-name"
             name="firstName"
-            data-tag="contactData"
+            data-tag="USContact"
             type="text"
-            value={formData.firstName}
+            value={formData.USContact.firstName}
             onChange={handleChange}
           />
         </FormGroup>
         <FormGroup>
-          <Label for="last-name">Last Name</Label>
+          <Label for="us-last-name">Last Name</Label>
           <Input
-            id="last-name"
+            id="us-last-name"
             name="lastName"
-            data-tag="contactData"
+            data-tag="USContact"
             type="text"
-            value={formData.lastName}
+            value={formData.USContact.lastName}
             onChange={handleChange}
           />
         </FormGroup>
         <FormGroup>
-          <Label for="email">Email</Label>
+          <Label for="us-email">Email</Label>
           <Input
-            id="email"
+            id="us-email"
             name="email"
-            data-tag="contactData"
+            data-tag="USContact"
             type="email"
-            value={formData.email}
+            value={formData.USContact.email}
             onChange={handleChange}
           />
         </FormGroup>
         <FormGroup>
-          <Label for="phone">Phone</Label>
+          <Label for="us-phone">Phone</Label>
           <Input
-            id="phone"
+            id="us-phone"
             name="phone"
-            data-tag="contactData"
+            data-tag="USContact"
             type="phone"
-            value={formData.phone}
+            value={formData.USContact.phone}
+            onChange={handleChange}
+          />
+        </FormGroup>
+
+        <h3>Filipino Sponsor Contact Info</h3>
+        <FormGroup>
+          <Label for="ph-first-name">First Name</Label>
+          <Input
+            id="ph-first-name"
+            name="firstName"
+            data-tag="PHContact"
+            type="text"
+            value={formData.PHContact.firstName}
+            onChange={handleChange}
+          />
+        </FormGroup>
+        <FormGroup>
+          <Label for="ph-last-name">Last Name</Label>
+          <Input
+            id="ph-last-name"
+            name="lastName"
+            data-tag="PHContact"
+            type="text"
+            value={formData.PHContact.lastName}
+            onChange={handleChange}
+          />
+        </FormGroup>
+        <FormGroup>
+          <Label for="ph-email">Email</Label>
+          <Input
+            id="ph-email"
+            name="email"
+            data-tag="PHContact"
+            type="email"
+            value={formData.PHContact.email}
+            onChange={handleChange}
+          />
+        </FormGroup>
+        <FormGroup>
+          <Label for="ph-phone">Phone</Label>
+          <Input
+            id="ph-phone"
+            name="phone"
+            data-tag="PHContact"
+            type="phone"
+            value={formData.PHContact.phone}
             onChange={handleChange}
           />
         </FormGroup>

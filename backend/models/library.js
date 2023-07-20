@@ -9,9 +9,13 @@ const { sqlForPartialUpdate } = require("../helpers/sql");
 class Library {
   /** Create a library (from data), update db, return new library data.
    *
-   * data should be { admin_id, name, type, primary_address_id, shipping_address_id, classrooms, students, teachers, program }
+   * data should be { libraryData, primaryAddress, USContact, PHContact, adminId }
    *
-   * Returns { id, admin_id, name, type, primary_address_id, shipping_address_id, classrooms, students, teachers, program }
+   * where libraryData is {}
+   * where primaryAddress is {}
+   * where USContact is {}
+   *
+   * Returns { id, admin_id, name, type, primary_address_id, classrooms, students, teachers, program }
    *
    * Throws BadRequestError if library already in database.
    * */
@@ -19,9 +23,10 @@ class Library {
   static async createLibrary({
     libraryData,
     primaryAddress,
-    shippingAddress,
-    contactData,
+    USContact,
+    PHContact,
     adminId,
+    readingSpaces,
   }) {
     const duplicateLibCheck = await db.query(
       `SELECT lib_name
@@ -45,21 +50,6 @@ class Library {
         `User with id: ${adminId} is already associated with a library`
       );
 
-    const shippingAddressRes = await db.query(
-      `INSERT INTO shipping_addresses
-           (street, barangay, city, province_id, region_id)
-           VALUES ($1, $2, $3, $4, $5)
-           RETURNING id, street, barangay, city, province_id AS "provinceId", region_id AS "regionId"`,
-      [
-        shippingAddress.street,
-        shippingAddress.barangay,
-        shippingAddress.city,
-        shippingAddress.provinceId,
-        shippingAddress.regionId,
-      ]
-    );
-    const newShippingAddress = shippingAddressRes.rows[0];
-
     const primaryAddressRes = await db.query(
       `INSERT INTO primary_addresses
            (street, barangay, city, province_id, region_id)
@@ -77,8 +67,8 @@ class Library {
 
     const libraryRes = await db.query(
       `INSERT INTO libraries
-           (admin_id, lib_name, lib_type, program, classrooms, teachers, students_per_grade, primary_address_id, shipping_address_id)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+           (admin_id, lib_name, lib_type, program, classrooms, teachers, students_per_grade, primary_address_id)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
            RETURNING id, admin_id as "adminId", lib_name AS "libraryName", lib_type AS "libraryType", program, classrooms, teachers, students_per_grade AS "studentsPerGrade"`,
       [
         adminId,
@@ -89,13 +79,32 @@ class Library {
         libraryData.teachers,
         libraryData.studentsPerGrade,
         newPrimaryAddress.id,
-        newShippingAddress.id,
       ]
     );
     const newLibrary = libraryRes.rows[0];
 
-    const newContact = await this.createContact({
-      ...contactData,
+    const newReadingSpaces = await Promise.all(
+      readingSpaces.map(async (space) => {
+        const res = await db.query(
+          `INSERT INTO reading_spaces
+             (reading_space, library_id)
+             VALUES ($1, $2)
+             RETURNING reading_space`,
+          [space, newLibrary.id]
+        );
+        return res.rows[0].reading_space;
+      })
+    );
+
+    const newUSContact = await this.createContact({
+      ...USContact,
+      contactType: "us-sponsor",
+      libraryId: newLibrary.id,
+    });
+
+    const newPHContact = await this.createContact({
+      ...PHContact,
+      contactType: "ph-sponsor",
       libraryId: newLibrary.id,
     });
 
@@ -112,25 +121,33 @@ class Library {
       primaryAddress: {
         ...newPrimaryAddress,
       },
-      shippingAddress: {
-        ...newShippingAddress,
+      USContact: {
+        ...newUSContact,
       },
-      contactData: {
-        ...newContact,
+      PHContact: {
+        ...newPHContact,
       },
       adminId: newLibrary.adminId,
+      readingSpaces: newReadingSpaces,
     };
 
     return library;
   }
 
-  /** Create a contact for a library (from data), update db, return new contact data.
+  /** Create a contact for a library (from data), return new contact data.
    *
-   * data should be { firstName, lastName, email, phone, libraryId }
+   * data should be { firstName, lastName, email, phone, libraryId, contactType }
    *
-   * Returns { id, firstName, lastName, email, phone, libraryId }
+   * Returns { id, firstName, lastName, email, phone, libraryId, contactType }
    * */
-  static async createContact({ firstName, lastName, email, phone, libraryId }) {
+  static async createContact({
+    firstName,
+    lastName,
+    email,
+    phone,
+    libraryId,
+    contactType,
+  }) {
     const duplicateCheck = await db.query(
       `SELECT email
            FROM contacts
@@ -143,10 +160,10 @@ class Library {
 
     const newContactRes = await db.query(
       `INSERT INTO contacts
-           (first_name, last_name, phone, email, library_id)
-           VALUES ($1, $2, $3, $4, $5)
-           RETURNING id, first_name AS "firstName", last_name AS "lastName", phone, email, library_id AS "libraryId"`,
-      [firstName, lastName, phone, email, libraryId]
+           (first_name, last_name, phone, email, library_id, contact_type)
+           VALUES ($1, $2, $3, $4, $5, $6)
+           RETURNING id, first_name AS "firstName", last_name AS "lastName", phone, email, library_id AS "libraryId", contact_type AS "contactType"`,
+      [firstName, lastName, phone, email, libraryId, contactType]
     );
     const newContact = newContactRes.rows[0];
     return newContact;
@@ -172,19 +189,11 @@ class Library {
                         prim.city AS "primaryCity",
                         pprov.name AS "primaryProvince",
                         preg.name AS "primaryRegion",
-                        ship.street AS "shippingStreet",
-                        ship.barangay AS "shippingBarangay",
-                        ship.city AS "shippingCity",
-                        sprov.name AS "shippingProvince",
-                        sreg.name AS "shippingRegion",
                         moas.moa_status AS "moaStatus"
                  FROM libraries l
                  LEFT JOIN primary_addresses AS prim ON prim.id = l.primary_address_id
-                 LEFT JOIN shipping_addresses AS ship ON ship.id = l.shipping_address_id
                  LEFT JOIN provinces AS pprov ON pprov.id = prim.province_id
                  LEFT JOIN regions AS preg ON preg.id = prim.region_id
-                 LEFT JOIN provinces AS sprov ON sprov.id = ship.province_id
-                 LEFT JOIN regions AS sreg ON sreg.id = ship.region_id
                  LEFT JOIN moas ON moas.library_id = l.id`;
     let whereExpressions = [];
     let queryValues = [];
@@ -215,7 +224,8 @@ class Library {
    * Returns { id, admin, libraryData, contactData, primaryAddress, shippingAddress }
    *   where libraryData is { libraryName, libraryType, readingProgram, studentsPerGrade, classrooms, teachers }
    *   where admin is { firstName, lastName, email, phone }
-   *   where contactData is { firstName, lastName, email, phone }
+   *   where USContact is { firstName, lastName, email, phone, contactType }
+   *   where PHContact is { firstName, lastName, email, phone, contactType }
    *   where primaryAddress is { street, barangay, city, province, region }
    *   where shippingAddress is { street, barangay, city, province, region }
    *
@@ -227,7 +237,6 @@ class Library {
       `SELECT id,
               admin_id,
               primary_address_id,
-              shipping_address_id,
               lib_name,
               lib_type,
               classrooms,
@@ -243,6 +252,16 @@ class Library {
 
     if (!library) throw new NotFoundError(`No library with id: ${id}`);
 
+    const readingSpacesRes = await db.query(
+      `SELECT reading_space
+        FROM reading_spaces
+        WHERE library_id = $1`,
+      [id]
+    );
+    const readingSpaces = readingSpacesRes.rows.map(
+      (elem) => elem.reading_space
+    );
+
     const adminRes = await db.query(
       `SELECT id,
               first_name AS "firstName",
@@ -255,17 +274,29 @@ class Library {
     );
     const admin = adminRes.rows[0];
 
-    const contactRes = await db.query(
+    const USContactRes = await db.query(
       `SELECT id,
               first_name AS "firstName",
               last_name AS "lastName",
               email,
               phone
            FROM contacts
-           WHERE library_id = $1`,
+           WHERE library_id = $1 AND contact_type = 'us-sponsor'`,
       [library.id]
     );
-    const contact = contactRes.rows[0];
+    const USContact = USContactRes.rows[0];
+
+    const PHContactRes = await db.query(
+      `SELECT id,
+              first_name AS "firstName",
+              last_name AS "lastName",
+              email,
+              phone
+           FROM contacts
+           WHERE library_id = $1 AND contact_type = 'ph-sponsor'`,
+      [library.id]
+    );
+    const PHContact = PHContactRes.rows[0];
 
     const moaRes = await db.query(
       `SELECT id,
@@ -291,21 +322,6 @@ class Library {
     );
     const primaryAddress = primaryAddressRes.rows[0];
 
-    const shippingAddressRes = await db.query(
-      `SELECT a.id,
-              a.street,
-              a.barangay,
-              a.city,
-              p.name AS "province",
-              r.name AS "region"
-           FROM shipping_addresses a
-           LEFT JOIN provinces AS p ON p.id = a.province_id
-           LEFT JOIN regions AS r ON r.id = a.region_id
-           WHERE a.id = $1`,
-      [library.shipping_address_id]
-    );
-    const shippingAddress = shippingAddressRes.rows[0];
-
     return {
       id: library.id,
       libraryData: {
@@ -316,11 +332,12 @@ class Library {
         teachers: library.teachers,
         studentsPerGrade: library.students_per_grade,
       },
+      readingSpaces: readingSpaces,
       admin: { ...admin },
-      contactData: { ...contact },
+      USContact: { ...USContact },
+      PHContact: { ...PHContact },
       moa: { ...moa },
       primaryAddress: { ...primaryAddress },
-      shippingAddress: { ...shippingAddress },
     };
   }
 
@@ -330,10 +347,10 @@ class Library {
    * fields; this only changes provided ones.
    *
    * Data can include: {libraryDetails, primaryAddress, shippingAddress, contact}
-   * where libraryDetails is { libraryName, libraryType, readingProgram, studentsPerGrade, teachers, classrooms }
+   * where libraryDetails is { libraryName, libraryType, readingProgram, studentsPerGrade, teachers, classrooms, readingSpaces }
    * where primaryAddress is { street, barangay, city, regionId, provinceId }
-   * where shippingAddress is { street, barangay, city, regionId, provinceId }
-   * where contact is { firstName, lastName, phone, email }
+   * where USContact is { firstName, lastName, phone, email }
+   * where PHContact is { firstName, lastName, phone, email }
    *
    * Returns {libraryDetails, primaryAddress, shippingAddress, contact}
    *
@@ -343,8 +360,7 @@ class Library {
   static async update(id, data) {
     if (Object.keys(data).length === 0) throw new BadRequestError("No data");
     const addressIdsRes = await db.query(
-      `SELECT primary_address_id AS "primaryAddressId",
-              shipping_address_id AS "shippingAddressId"
+      `SELECT primary_address_id AS "primaryAddressId"
       FROM libraries
       WHERE id = $1`,
       [id]
@@ -387,9 +403,50 @@ class Library {
       data.libraryData = result.rows[0];
     }
 
-    // update contactData if provided, else return existing contactData
-    if (Object.keys(data.contactData).length) {
-      const { setCols, values } = sqlForPartialUpdate(data.contactData, {
+    // update readingSpaces if provided, else return existing readingSpaces
+    if (data.readingSpaces) {
+      await db.query(
+        `DELETE
+             FROM reading_spaces
+             WHERE library_id = $1`,
+        [id]
+      );
+
+      if (data.readingSpaces.length) {
+        const updatedReadingSpaces = await Promise.all(
+          data.readingSpaces.map(async (space) => {
+            const res = await db.query(
+              `INSERT INTO reading_spaces
+                 (reading_space, library_id)
+                 VALUES ($1, $2)
+                 RETURNING reading_space`,
+              [space, id]
+            );
+            return res.rows[0].reading_space;
+          })
+        );
+
+        data.readingSpaces = updatedReadingSpaces;
+      } else {
+        data.readingSpaces = [];
+      }
+    } else {
+      const readingSpacesRes = await db.query(
+        `SELECT reading_space
+          FROM reading_spaces
+          WHERE library_id = $1`,
+        [id]
+      );
+      const readingSpaces = readingSpacesRes.rows.map(
+        (elem) => elem.reading_space
+      );
+
+      data.readingSpaces = readingSpaces;
+    }
+
+    // update USContact if provided, else return existing USContact data
+    if (Object.keys(data.USContact).length) {
+      const { setCols, values } = sqlForPartialUpdate(data.USContact, {
         firstName: "first_name",
         lastName: "last_name",
       });
@@ -397,13 +454,13 @@ class Library {
 
       const querySql = `UPDATE contacts 
                         SET ${setCols} 
-                        WHERE library_id = ${handleVarIdx} 
+                        WHERE library_id = ${handleVarIdx} AND contact_type = 'us-sponsor'
                         RETURNING first_name AS "firstName", 
                                   last_name AS "lastName", 
                                   email,
                                   phone`;
-      const contactRes = await db.query(querySql, [...values, id]);
-      data.contactData = contactRes.rows[0];
+      const USContactRes = await db.query(querySql, [...values, id]);
+      data.USContact = USContactRes.rows[0];
     } else {
       const result = await db.query(
         `SELECT first_name AS "firstName", 
@@ -411,10 +468,40 @@ class Library {
                 email,
                 phone
         FROM contacts 
-        WHERE library_id = $1`,
+        WHERE library_id = $1 AND contact_type = 'us-sponsor'`,
         [id]
       );
-      data.contactData = result.rows[0];
+      data.USContact = result.rows[0];
+    }
+
+    // update PHContact if provided, else return existing PHContact data
+    if (Object.keys(data.PHContact).length) {
+      const { setCols, values } = sqlForPartialUpdate(data.PHContact, {
+        firstName: "first_name",
+        lastName: "last_name",
+      });
+      const handleVarIdx = "$" + (values.length + 1);
+
+      const querySql = `UPDATE contacts 
+                        SET ${setCols} 
+                        WHERE library_id = ${handleVarIdx} AND contact_type = 'ph-sponsor'
+                        RETURNING first_name AS "firstName", 
+                                  last_name AS "lastName", 
+                                  email,
+                                  phone`;
+      const PHContactRes = await db.query(querySql, [...values, id]);
+      data.PHContact = PHContactRes.rows[0];
+    } else {
+      const result = await db.query(
+        `SELECT first_name AS "firstName", 
+                last_name AS "lastName", 
+                email,
+                phone
+        FROM contacts 
+        WHERE library_id = $1 AND contact_type = 'ph-sponsor'`,
+        [id]
+      );
+      data.PHContact = result.rows[0];
     }
 
     // update primaryAddress if provided, else return existing primaryAddress
@@ -477,68 +564,6 @@ class Library {
       };
       delete data.primaryAddress.provinceId;
       delete data.primaryAddress.regionId;
-    }
-
-    // update shippingAddress if provided, else return existing shippingAddress
-    if (Object.keys(data.shippingAddress).length) {
-      const { setCols, values } = sqlForPartialUpdate(data.shippingAddress, {
-        regionId: "region_id",
-        provinceId: "province_id",
-      });
-      const handleVarIdx = "$" + (values.length + 1);
-
-      const querySql = `UPDATE shipping_addresses 
-                        SET ${setCols} 
-                        WHERE id = ${handleVarIdx} 
-                        RETURNING street, 
-                                  barangay, 
-                                  city,
-                                  province_id AS "province",
-                                  region_id AS "region"`;
-      const result = await db.query(querySql, [
-        ...values,
-        addressIds.primaryAddressId,
-      ]);
-      const provinceRes = await db.query(
-        `SELECT name FROM provinces WHERE id = $1`,
-        [result.rows[0].province]
-      );
-      const regionRes = await db.query(
-        `SELECT name FROM regions WHERE id = $1`,
-        [result.rows[0].region]
-      );
-      data.shippingAddress = {
-        ...result.rows[0],
-        province: provinceRes.rows[0].name,
-        region: regionRes.rows[0].name,
-      };
-    } else {
-      const result = await db.query(
-        `SELECT street, 
-                barangay, 
-                city,
-                province_id AS "province",
-                region_id AS "region"
-        FROM shipping_addresses 
-        WHERE id = $1`,
-        [addressIds.shippingAddressId]
-      );
-      const provinceRes = await db.query(
-        `SELECT name FROM provinces WHERE id = $1`,
-        [result.rows[0].province]
-      );
-      const regionRes = await db.query(
-        `SELECT name FROM regions WHERE id = $1`,
-        [result.rows[0].region]
-      );
-
-      data.shippingAddress = {
-        ...result.rows[0],
-        province: provinceRes.rows[0].name,
-        region: regionRes.rows[0].name,
-      };
-      delete data.shippingAddress.provinceId;
-      delete data.shippingAddress.regionId;
     }
 
     return data;

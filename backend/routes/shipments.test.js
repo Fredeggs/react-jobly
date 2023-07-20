@@ -133,7 +133,7 @@ describe("GET /shipments", function () {
           exportDeclaration: 123,
           invoiceNum: 321,
           libraryId: testLibraryIds[0],
-          libraryName: "Middle School Library",
+          libraryName: "Day Care Library",
           receiptDate: "1/13/2022",
         },
       ],
@@ -163,7 +163,7 @@ describe("GET /shipments/:id", function () {
         exportDeclaration: 123,
         invoiceNum: 321,
         libraryId: testLibraryIds[0],
-        libraryName: "Middle School Library",
+        libraryName: "Day Care Library",
         receiptDate: "1/13/2022",
       },
     });
@@ -181,7 +181,7 @@ describe("GET /shipments/:id", function () {
         exportDeclaration: 123,
         invoiceNum: 321,
         libraryId: testLibraryIds[0],
-        libraryName: "Middle School Library",
+        libraryName: "Day Care Library",
         receiptDate: "1/13/2022",
       },
     });

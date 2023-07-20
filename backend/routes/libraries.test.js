@@ -25,17 +25,23 @@ describe("POST /libraries", function () {
   const newLibrary = {
     libraryData: {
       libraryName: "New Library",
-      libraryType: "middle school",
+      libraryType: "elementary school",
       classrooms: 1,
       studentsPerGrade: 2,
       teachers: 3,
       program: "FSER",
     },
-    contactData: {
-      firstName: "First",
-      lastName: "Last",
+    USContact: {
+      firstName: "US-First",
+      lastName: "US-Last",
       phone: "0000000000",
-      email: "contact@gmail.com",
+      email: "uscontact@gmail.com",
+    },
+    PHContact: {
+      firstName: "PH-First",
+      lastName: "PH-Last",
+      phone: "0000000000",
+      email: "phcontact@gmail.com",
     },
     primaryAddress: {
       street: "Primary Street",
@@ -44,13 +50,7 @@ describe("POST /libraries", function () {
       provinceId: 1,
       regionId: 1,
     },
-    shippingAddress: {
-      street: "Primary Street",
-      barangay: "Primary Barangay",
-      city: "Primary City",
-      provinceId: 1,
-      regionId: 1,
-    },
+    readingSpaces: ["dedicated reading room", "reading corner"],
   };
 
   test("ok for admin", async function () {
@@ -67,19 +67,23 @@ describe("POST /libraries", function () {
       library: {
         ...newTestLibrary,
         id: expect.any(Number),
-        contactData: {
-          ...newTestLibrary.contactData,
+        USContact: {
+          ...newTestLibrary.USContact,
           id: expect.any(Number),
           libraryId: expect.any(Number),
+          contactType: "us-sponsor",
+        },
+        PHContact: {
+          ...newTestLibrary.PHContact,
+          id: expect.any(Number),
+          libraryId: expect.any(Number),
+          contactType: "ph-sponsor",
         },
         primaryAddress: {
           ...newTestLibrary.primaryAddress,
           id: expect.any(Number),
         },
-        shippingAddress: {
-          ...newTestLibrary.shippingAddress,
-          id: expect.any(Number),
-        },
+        readingSpaces: ["dedicated reading room", "reading corner"],
       },
     });
   });
@@ -98,19 +102,23 @@ describe("POST /libraries", function () {
       library: {
         ...newTestLibrary,
         id: expect.any(Number),
-        contactData: {
-          ...newTestLibrary.contactData,
+        USContact: {
+          ...newTestLibrary.USContact,
           id: expect.any(Number),
           libraryId: expect.any(Number),
+          contactType: "us-sponsor",
+        },
+        PHContact: {
+          ...newTestLibrary.PHContact,
+          id: expect.any(Number),
+          libraryId: expect.any(Number),
+          contactType: "ph-sponsor",
         },
         primaryAddress: {
           ...newTestLibrary.primaryAddress,
           id: expect.any(Number),
         },
-        shippingAddress: {
-          ...newTestLibrary.shippingAddress,
-          id: expect.any(Number),
-        },
+        readingSpaces: ["dedicated reading room", "reading corner"],
       },
     });
   });
@@ -135,17 +143,20 @@ describe("POST /libraries", function () {
       library: {
         ...newTestLibrary,
         id: expect.any(Number),
-        contactData: {
-          ...newTestLibrary.contactData,
+        USContact: {
+          ...newTestLibrary.USContact,
           id: expect.any(Number),
           libraryId: expect.any(Number),
+          contactType: "us-sponsor",
+        },
+        PHContact: {
+          ...newTestLibrary.PHContact,
+          id: expect.any(Number),
+          libraryId: expect.any(Number),
+          contactType: "ph-sponsor",
         },
         primaryAddress: {
           ...newTestLibrary.primaryAddress,
-          id: expect.any(Number),
-        },
-        shippingAddress: {
-          ...newTestLibrary.shippingAddress,
           id: expect.any(Number),
         },
       },
@@ -205,11 +216,6 @@ describe("GET /libraries", function () {
           primaryProvince: "Agusan del Sur",
           primaryRegion: "Mindanao",
           primaryStreet: "Primary Street",
-          shippingBarangay: "Shipping Barangay",
-          shippingCity: "Shipping City",
-          shippingProvince: "Agusan del Sur",
-          shippingRegion: "Mindanao",
-          shippingStreet: "Shipping Street",
           moaStatus: null,
         },
         {
@@ -222,12 +228,19 @@ describe("GET /libraries", function () {
           primaryProvince: "Agusan del Sur",
           primaryRegion: "Mindanao",
           primaryStreet: "Primary Street",
-          shippingBarangay: "Shipping Barangay",
-          shippingCity: "Shipping City",
-          shippingProvince: "Agusan del Sur",
-          shippingRegion: "Mindanao",
-          shippingStreet: "Shipping Street",
           moaStatus: null,
+        },
+        {
+          id: expect.any(Number),
+          adminId: testUserIds[0],
+          libraryName: "Day Care Library",
+          libraryType: "day care",
+          primaryBarangay: "Primary Barangay",
+          primaryCity: "Primary City",
+          primaryProvince: "Abra",
+          primaryRegion: "Luzon",
+          primaryStreet: "Primary Street",
+          moaStatus: "submitted",
         },
         {
           id: expect.any(Number),
@@ -239,28 +252,6 @@ describe("GET /libraries", function () {
           primaryProvince: "Agusan del Norte",
           primaryRegion: "Visayas",
           primaryStreet: "Primary Street",
-          shippingBarangay: "Shipping Barangay",
-          shippingCity: "Shipping City",
-          shippingProvince: "Agusan del Norte",
-          shippingRegion: "Visayas",
-          shippingStreet: "Shipping Street",
-          moaStatus: "submitted",
-        },
-        {
-          id: expect.any(Number),
-          adminId: testUserIds[0],
-          libraryName: "Middle School Library",
-          libraryType: "middle school",
-          primaryBarangay: "Primary Barangay",
-          primaryCity: "Primary City",
-          primaryProvince: "Abra",
-          primaryRegion: "Luzon",
-          primaryStreet: "Primary Street",
-          shippingBarangay: "Shipping Barangay",
-          shippingCity: "Shipping City",
-          shippingProvince: "Abra",
-          shippingRegion: "Luzon",
-          shippingStreet: "Shipping Street",
           moaStatus: "submitted",
         },
       ],
@@ -291,11 +282,6 @@ describe("GET /libraries", function () {
           primaryProvince: "Agusan del Sur",
           primaryRegion: "Mindanao",
           primaryStreet: "Primary Street",
-          shippingBarangay: "Shipping Barangay",
-          shippingCity: "Shipping City",
-          shippingProvince: "Agusan del Sur",
-          shippingRegion: "Mindanao",
-          shippingStreet: "Shipping Street",
           moaStatus: null,
         },
         {
@@ -308,11 +294,6 @@ describe("GET /libraries", function () {
           primaryProvince: "Agusan del Sur",
           primaryRegion: "Mindanao",
           primaryStreet: "Primary Street",
-          shippingBarangay: "Shipping Barangay",
-          shippingCity: "Shipping City",
-          shippingProvince: "Agusan del Sur",
-          shippingRegion: "Mindanao",
-          shippingStreet: "Shipping Street",
           moaStatus: null,
         },
       ],
@@ -328,6 +309,18 @@ describe("GET /libraries", function () {
       libraries: [
         {
           id: expect.any(Number),
+          adminId: testUserIds[0],
+          libraryName: "Day Care Library",
+          libraryType: "day care",
+          primaryBarangay: "Primary Barangay",
+          primaryCity: "Primary City",
+          primaryProvince: "Abra",
+          primaryRegion: "Luzon",
+          primaryStreet: "Primary Street",
+          moaStatus: "submitted",
+        },
+        {
+          id: expect.any(Number),
           adminId: testUserIds[1],
           libraryName: "Elementary School Library",
           libraryType: "elementary school",
@@ -336,28 +329,6 @@ describe("GET /libraries", function () {
           primaryProvince: "Agusan del Norte",
           primaryRegion: "Visayas",
           primaryStreet: "Primary Street",
-          shippingBarangay: "Shipping Barangay",
-          shippingCity: "Shipping City",
-          shippingProvince: "Agusan del Norte",
-          shippingRegion: "Visayas",
-          shippingStreet: "Shipping Street",
-          moaStatus: "submitted",
-        },
-        {
-          id: expect.any(Number),
-          adminId: testUserIds[0],
-          libraryName: "Middle School Library",
-          libraryType: "middle school",
-          primaryBarangay: "Primary Barangay",
-          primaryCity: "Primary City",
-          primaryProvince: "Abra",
-          primaryRegion: "Luzon",
-          primaryStreet: "Primary Street",
-          shippingBarangay: "Shipping Barangay",
-          shippingCity: "Shipping City",
-          shippingProvince: "Abra",
-          shippingRegion: "Luzon",
-          shippingStreet: "Shipping Street",
           moaStatus: "submitted",
         },
       ],
@@ -391,19 +362,26 @@ describe("GET /libraries/:id", function () {
           phone: "1111111111",
         },
         libraryData: {
-          libraryName: "Middle School Library",
-          libraryType: "middle school",
+          libraryName: "Day Care Library",
+          libraryType: "day care",
           classrooms: 1,
           studentsPerGrade: 10,
           teachers: 3,
           program: "FSER",
         },
-        contactData: {
+        USContact: {
           id: expect.any(Number),
+          email: "uscontact1@gmail.com",
           firstName: "First",
           lastName: "Last",
           phone: "000-000-0000",
-          email: "contact1@gmail.com",
+        },
+        PHContact: {
+          id: expect.any(Number),
+          email: "phcontact1@gmail.com",
+          firstName: "First",
+          lastName: "Last",
+          phone: "000-000-0000",
         },
         primaryAddress: {
           id: expect.any(Number),
@@ -413,14 +391,7 @@ describe("GET /libraries/:id", function () {
           province: "Abra",
           region: "Luzon",
         },
-        shippingAddress: {
-          id: expect.any(Number),
-          street: "Shipping Street",
-          barangay: "Shipping Barangay",
-          city: "Shipping City",
-          province: "Abra",
-          region: "Luzon",
-        },
+        readingSpaces: ["dedicated reading room", "reading corner"],
         moa: {
           id: expect.any(Number),
           moaStatus: "submitted",
@@ -454,19 +425,26 @@ describe("GET /libraries/:id", function () {
           phone: "1111111111",
         },
         libraryData: {
-          libraryName: "Middle School Library",
-          libraryType: "middle school",
+          libraryName: "Day Care Library",
+          libraryType: "day care",
           classrooms: 1,
           studentsPerGrade: 10,
           teachers: 3,
           program: "FSER",
         },
-        contactData: {
+        USContact: {
           id: expect.any(Number),
+          email: "uscontact1@gmail.com",
           firstName: "First",
           lastName: "Last",
           phone: "000-000-0000",
-          email: "contact1@gmail.com",
+        },
+        PHContact: {
+          id: expect.any(Number),
+          email: "phcontact1@gmail.com",
+          firstName: "First",
+          lastName: "Last",
+          phone: "000-000-0000",
         },
         primaryAddress: {
           id: expect.any(Number),
@@ -476,14 +454,7 @@ describe("GET /libraries/:id", function () {
           province: "Abra",
           region: "Luzon",
         },
-        shippingAddress: {
-          id: expect.any(Number),
-          street: "Shipping Street",
-          barangay: "Shipping Barangay",
-          city: "Shipping City",
-          province: "Abra",
-          region: "Luzon",
-        },
+        readingSpaces: ["dedicated reading room", "reading corner"],
         moa: {
           id: expect.any(Number),
           moaStatus: "submitted",
@@ -520,23 +491,29 @@ describe("PATCH /libraries/:id", function () {
         libraryData: {
           libraryName: "Updated Library Name",
         },
-        contactData: {},
+        USContact: {},
+        PHContact: {},
         primaryAddress: {},
-        shippingAddress: {},
       })
       .set("authorization", `Bearer ${tokens.adminToken}`);
     expect(resp.body).toEqual({
       library: {
         libraryData: {
           libraryName: "Updated Library Name",
-          libraryType: "middle school",
+          libraryType: "day care",
           classrooms: 1,
           studentsPerGrade: 10,
           teachers: 3,
           program: "FSER",
         },
-        contactData: {
-          email: "contact1@gmail.com",
+        USContact: {
+          email: "uscontact1@gmail.com",
+          firstName: "First",
+          lastName: "Last",
+          phone: "000-000-0000",
+        },
+        PHContact: {
+          email: "phcontact1@gmail.com",
           firstName: "First",
           lastName: "Last",
           phone: "000-000-0000",
@@ -548,13 +525,7 @@ describe("PATCH /libraries/:id", function () {
           region: "Luzon",
           street: "Primary Street",
         },
-        shippingAddress: {
-          barangay: "Shipping Barangay",
-          city: "Shipping City",
-          province: "Abra",
-          region: "Luzon",
-          street: "Shipping Street",
-        },
+        readingSpaces: ["dedicated reading room", "reading corner"],
       },
     });
   });
@@ -566,23 +537,29 @@ describe("PATCH /libraries/:id", function () {
         libraryData: {
           libraryName: "Updated Library Name",
         },
-        contactData: {},
+        USContact: {},
+        PHContact: {},
         primaryAddress: {},
-        shippingAddress: {},
       })
       .set("authorization", `Bearer ${tokens.u1Token}`);
     expect(resp.body).toEqual({
       library: {
         libraryData: {
           libraryName: "Updated Library Name",
-          libraryType: "middle school",
+          libraryType: "day care",
           classrooms: 1,
           studentsPerGrade: 10,
           teachers: 3,
           program: "FSER",
         },
-        contactData: {
-          email: "contact1@gmail.com",
+        USContact: {
+          email: "uscontact1@gmail.com",
+          firstName: "First",
+          lastName: "Last",
+          phone: "000-000-0000",
+        },
+        PHContact: {
+          email: "phcontact1@gmail.com",
           firstName: "First",
           lastName: "Last",
           phone: "000-000-0000",
@@ -594,13 +571,7 @@ describe("PATCH /libraries/:id", function () {
           region: "Luzon",
           street: "Primary Street",
         },
-        shippingAddress: {
-          barangay: "Shipping Barangay",
-          city: "Shipping City",
-          province: "Abra",
-          region: "Luzon",
-          street: "Shipping Street",
-        },
+        readingSpaces: ["dedicated reading room", "reading corner"],
       },
     });
   });
@@ -614,7 +585,6 @@ describe("PATCH /libraries/:id", function () {
         },
         contactData: {},
         primaryAddress: {},
-        shippingAddress: {},
       })
       .set("authorization", `Bearer ${tokens.u2Token}`);
     expect(resp.statusCode).toEqual(401);
@@ -629,7 +599,6 @@ describe("PATCH /libraries/:id", function () {
         },
         contactData: {},
         primaryAddress: {},
-        shippingAddress: {},
       });
     expect(resp.statusCode).toEqual(401);
   });
@@ -641,9 +610,9 @@ describe("PATCH /libraries/:id", function () {
         libraryData: {
           libraryName: "Updated Library Name",
         },
-        contactData: {},
+        USContact: {},
+        PHContact: {},
         primaryAddress: {},
-        shippingAddress: {},
       })
       .set("authorization", `Bearer ${tokens.adminToken}`);
     expect(resp.statusCode).toEqual(404);
@@ -658,7 +627,6 @@ describe("PATCH /libraries/:id", function () {
         },
         contactData: {},
         primaryAddress: {},
-        shippingAddress: {},
         adminId: 45,
       })
       .set("authorization", `Bearer ${tokens.adminToken}`);

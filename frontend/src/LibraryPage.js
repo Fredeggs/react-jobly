@@ -56,23 +56,24 @@ function LibraryPage({ getLibrary, getMOA, updateMOA }) {
             adminLastName={currentLibrary.admin.lastName}
             adminEmail={currentLibrary.admin.email}
             adminPhone={currentLibrary.admin.phone}
-            contactFirstName={currentLibrary.contactData.firstName}
-            contactLastName={currentLibrary.contactData.lastName}
-            contactEmail={currentLibrary.contactData.email}
-            contactPhone={currentLibrary.contactData.phone}
+            USContactFirstName={currentLibrary.USContact.firstName}
+            USContactLastName={currentLibrary.USContact.lastName}
+            USContactEmail={currentLibrary.USContact.email}
+            USContactPhone={currentLibrary.USContact.phone}
+            PHContactFirstName={currentLibrary.PHContact.firstName}
+            PHContactLastName={currentLibrary.PHContact.lastName}
+            PHContactEmail={currentLibrary.PHContact.email}
+            PHContactPhone={currentLibrary.PHContact.phone}
             libraryName={currentLibrary.libraryData.libraryName}
+            readingProgram={currentLibrary.libraryData.readingProgram}
+            moaStatus={currentLibrary.moa.moaStatus}
             libraryType={currentLibrary.libraryData.libraryType}
             primaryBarangay={currentLibrary.primaryAddress.barangay}
             primaryCity={currentLibrary.primaryAddress.city}
             primaryProvince={currentLibrary.primaryAddress.province}
             primaryRegion={currentLibrary.primaryAddress.region}
             primaryStreet={currentLibrary.primaryAddress.street}
-            shippingBarangay={currentLibrary.shippingAddress.barangay}
-            shippingCity={currentLibrary.shippingAddress.city}
-            shippingProvince={currentLibrary.shippingAddress.province}
-            shippingRegion={currentLibrary.shippingAddress.region}
-            shippingStreet={currentLibrary.shippingAddress.street}
-            moaStatus={currentLibrary.moa.moaStatus}
+            readingSpaces={currentLibrary.readingSpaces}
           />
           {(currentLibrary.moa.moaStatus === "submitted" ||
             currentLibrary.moa.moaStatus === "approved") && (

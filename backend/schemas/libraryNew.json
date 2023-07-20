@@ -6,9 +6,10 @@
   "title": "Root Schema",
   "required": [
     "libraryData",
-    "contactData",
+    "USContact",
+    "PHContact",
     "primaryAddress",
-    "shippingAddress",
+    "readingSpaces",
     "adminId"
   ],
   "properties": {
@@ -97,10 +98,63 @@
         }
       ]
     },
-    "contactData": {
+    "USContact": {
       "type": "object",
       "default": {},
-      "title": "The contactData Schema",
+      "title": "The USContact Schema",
+      "required": [
+        "firstName",
+        "lastName",
+        "email",
+        "phone"
+      ],
+      "properties": {
+        "firstName": {
+          "type": "string",
+          "default": "",
+          "title": "The firstName Schema",
+          "examples": [
+            "FirstName"
+          ]
+        },
+        "lastName": {
+          "type": "string",
+          "default": "",
+          "title": "The lastName Schema",
+          "examples": [
+            "LastName"
+          ]
+        },
+        "email": {
+          "type": "string",
+          "default": "",
+          "title": "The email Schema",
+          "examples": [
+            "name@email.com"
+          ]
+        },
+        "phone": {
+          "type": "string",
+          "default": "",
+          "title": "The phone Schema",
+          "examples": [
+            "1111111111"
+          ]
+        }
+      },
+      "examples": [
+        {
+          "firstName": "FirstName",
+          "lastName": "LastName",
+          "email": "name@email.com",
+          "phone": "1111111111"
+        }
+      ]
+    },
+    "PHContact": {
+      "type": "object",
+      "default": {},
+      "title": "The PHContact Schema",
       "required": [
         "firstName",
         "lastName",
@@ -213,67 +267,23 @@
         }
       ]
     },
-    "shippingAddress": {
-      "type": "object",
-      "default": {},
-      "title": "The shippingAddress Schema",
-      "required": [
-        "street",
-        "barangay",
-        "city",
-        "regionId",
-        "provinceId"
-      ],
-      "properties": {
-        "street": {
-          "type": "string",
-          "default": "",
-          "title": "The street Schema",
-          "examples": [
-            "1 street address "
-          ]
-        },
-        "barangay": {
-          "type": "string",
-          "default": "",
-          "title": "The barangay Schema",
-          "examples": [
-            "barangay"
-          ]
-        },
-        "city": {
-          "type": "string",
-          "default": "",
-          "title": "The city Schema",
-          "examples": [
-            "city"
-          ]
-        },
-        "regionId": {
-          "type": "integer",
-          "default": 0,
-          "title": "The regionId Schema",
-          "examples": [
-            3
-          ]
-        },
-        "provinceId": {
-          "type": "integer",
-          "default": 0,
-          "title": "The provinceId Schema",
-          "examples": [
-            67
-          ]
-        }
+    "readingSpaces": {
+      "type": "array",
+      "default": [],
+      "title": "The readingSpaces Schema",
+      "items": {
+        "type": "string",
+        "title": "A Schema",
+        "examples": [
+          "reading corner",
+          "dedicated reading space"
+        ]
       },
       "examples": [
-        {
-          "street": "1 street address ",
-          "barangay": "barangay",
-          "city": "city",
-          "regionId": 3,
-          "provinceId": 67
-        }
+        [
+          "reading corner",
+          "dedicated reading space"
+        ]
       ]
     },
     "adminId": {
@@ -309,13 +319,10 @@
         "regionId": 3,
         "provinceId": 67
       },
-      "shippingAddress": {
-        "street": "1 street address ",
-        "barangay": "barangay",
-        "city": "city",
-        "regionId": 3,
-        "provinceId": 67
-      },
+      "readingSpaces": [
+        "reading corner",
+        "dedicated reading space"
+      ],
       "adminId": 45
     }
   ]

@@ -53,6 +53,15 @@ function LibrariesPage({ getLibraries }) {
             onChange={handleChange}
           />
         </FormGroup>
+        <FormGroup>
+          <Label for="can-ship">Filter For Shipment Eligibility</Label>
+          <Input
+            id="can-ship"
+            name="canShip"
+            type="checkbox"
+            defaultChecked={false}
+          />
+        </FormGroup>
         <Button>Submit</Button>
       </Form>
       <div>

@@ -22,17 +22,23 @@ describe("create library", function () {
   const newLibrary = {
     libraryData: {
       libraryName: "New Library",
-      libraryType: "middle school",
+      libraryType: "elementary school",
       classrooms: 1,
       studentsPerGrade: 2,
       teachers: 3,
       program: "FSER",
     },
-    contactData: {
+    USContact: {
       firstName: "First",
       lastName: "Last",
       phone: "0000000000",
-      email: "contact@gmail.com",
+      email: "uscontact@gmail.com",
+    },
+    PHContact: {
+      firstName: "First",
+      lastName: "Last",
+      phone: "0000000000",
+      email: "phcontact@gmail.com",
     },
     primaryAddress: {
       street: "Primary Street",
@@ -41,13 +47,7 @@ describe("create library", function () {
       provinceId: 1,
       regionId: 1,
     },
-    shippingAddress: {
-      street: "Primary Street",
-      barangay: "Primary Barangay",
-      city: "Primary City",
-      provinceId: 1,
-      regionId: 1,
-    },
+    readingSpaces: ["reading corner"],
     adminId: 4,
   };
 
@@ -56,19 +56,23 @@ describe("create library", function () {
     expect(library).toEqual({
       ...newLibrary,
       id: expect.any(Number),
-      contactData: {
-        ...newLibrary.contactData,
+      USContact: {
+        ...newLibrary.USContact,
         id: expect.any(Number),
         libraryId: expect.any(Number),
+        contactType: "us-sponsor",
+      },
+      PHContact: {
+        ...newLibrary.PHContact,
+        id: expect.any(Number),
+        libraryId: expect.any(Number),
+        contactType: "ph-sponsor",
       },
       primaryAddress: {
         ...newLibrary.primaryAddress,
         id: expect.any(Number),
       },
-      shippingAddress: {
-        ...newLibrary.shippingAddress,
-        id: expect.any(Number),
-      },
+      readingSpaces: newLibrary.readingSpaces,
     });
   });
 
@@ -93,6 +97,7 @@ describe("create contact", function () {
       email: "testcontact@gmail.com",
       phone: "111-111-1111",
       libraryId: testLibraryIds[0],
+      contactType: "us-sponsor",
     };
     let contact = await Library.createContact(newContact);
 
@@ -109,6 +114,7 @@ describe("create contact", function () {
       email: "testcontact@gmail.com",
       phone: "111-111-1111",
       libraryId: testLibraryIds[0],
+      contactType: "us-sponsor",
     };
 
     try {
@@ -137,12 +143,19 @@ describe("findAll", function () {
         primaryProvince: "Metro Manila",
         primaryRegion: "Luzon",
         primaryStreet: "street2",
-        shippingBarangay: "barangay2",
-        shippingCity: "city2",
-        shippingProvince: "Metro Manila",
-        shippingRegion: "Luzon",
-        shippingStreet: "street2",
         moaStatus: "approved",
+      },
+      {
+        id: expect.any(Number),
+        adminId: expect.any(Number),
+        libraryName: "Day Care Library 1",
+        libraryType: "day care",
+        primaryBarangay: "barangay3",
+        primaryCity: "city3",
+        primaryProvince: "Metro Manila",
+        primaryRegion: "Luzon",
+        primaryStreet: "street3",
+        moaStatus: null,
       },
       {
         id: expect.any(Number),
@@ -154,29 +167,7 @@ describe("findAll", function () {
         primaryProvince: "Metro Manila",
         primaryRegion: "Luzon",
         primaryStreet: "street1",
-        shippingBarangay: "barangay1",
-        shippingCity: "city1",
-        shippingProvince: "Metro Manila",
-        shippingRegion: "Luzon",
-        shippingStreet: "street1",
         moaStatus: "submitted",
-      },
-      {
-        id: expect.any(Number),
-        adminId: expect.any(Number),
-        libraryName: "Middle School Library 1",
-        libraryType: "middle school",
-        primaryBarangay: "barangay3",
-        primaryCity: "city3",
-        primaryProvince: "Metro Manila",
-        primaryRegion: "Luzon",
-        primaryStreet: "street3",
-        shippingBarangay: "barangay3",
-        shippingCity: "city3",
-        shippingProvince: "Metro Manila",
-        shippingRegion: "Luzon",
-        shippingStreet: "street3",
-        moaStatus: null,
       },
     ]);
   });
@@ -194,11 +185,6 @@ describe("findAll", function () {
         primaryProvince: "Metro Manila",
         primaryRegion: "Luzon",
         primaryStreet: "street2",
-        shippingBarangay: "barangay2",
-        shippingCity: "city2",
-        shippingProvince: "Metro Manila",
-        shippingRegion: "Luzon",
-        shippingStreet: "street2",
         moaStatus: "approved",
       },
     ]);
@@ -217,11 +203,6 @@ describe("findAll", function () {
         primaryProvince: "Metro Manila",
         primaryRegion: "Luzon",
         primaryStreet: "street1",
-        shippingBarangay: "barangay1",
-        shippingCity: "city1",
-        shippingProvince: "Metro Manila",
-        shippingRegion: "Luzon",
-        shippingStreet: "street1",
         moaStatus: "submitted",
       },
     ]);
@@ -255,11 +236,18 @@ describe("get", function () {
         lastName: "User1Last",
         phone: "123-456-7890",
       },
-      contactData: {
+      USContact: {
         id: expect.any(Number),
-        email: "testcontact1@test.com",
-        firstName: "Contact1-First",
-        lastName: "Contact1-Last",
+        email: "ustestcontact1@test.com",
+        firstName: "USContact1-First",
+        lastName: "USContact1-Last",
+        phone: "123-456-7890",
+      },
+      PHContact: {
+        id: expect.any(Number),
+        email: "phtestcontact1@test.com",
+        firstName: "PHContact1-First",
+        lastName: "PHContact1-Last",
         phone: "123-456-7890",
       },
       primaryAddress: {
@@ -270,14 +258,7 @@ describe("get", function () {
         region: "Luzon",
         street: "street1",
       },
-      shippingAddress: {
-        id: expect.any(Number),
-        barangay: "barangay1",
-        city: "city1",
-        province: "Metro Manila",
-        region: "Luzon",
-        street: "street1",
-      },
+      readingSpaces: ["reading corner", "dedicated reading room"],
       moa: {
         id: expect.any(Number),
         moaStatus: "submitted",
@@ -303,8 +284,8 @@ describe("update", function () {
       libraryName: "Updated Name",
     },
     primaryAddress: {},
-    shippingAddress: {},
-    contactData: { firstName: "Updated First Name" },
+    USContact: { firstName: "Updated First Name" },
+    PHContact: {},
   };
 
   const updateData2 = {
@@ -313,14 +294,19 @@ describe("update", function () {
       regionId: 3,
       provinceId: 10,
     },
-    shippingAddress: {
-      regionId: 3,
-      provinceId: 10,
-    },
-    contactData: {},
+    USContact: {},
+    PHContact: {},
   };
 
-  test("works: updating libraryData and contactData", async function () {
+  const updateData3 = {
+    libraryData: {},
+    primaryAddress: {},
+    USContact: {},
+    PHContact: {},
+    readingSpaces: ["dedicated reading room"],
+  };
+
+  test("works: updating libraryData and USContact", async function () {
     let library = await Library.update(testLibraryIds[0], updateData1);
     expect(library).toEqual({
       libraryData: {
@@ -338,19 +324,19 @@ describe("update", function () {
         region: "Luzon",
         street: "street1",
       },
-      shippingAddress: {
-        barangay: "barangay1",
-        city: "city1",
-        province: "Metro Manila",
-        region: "Luzon",
-        street: "street1",
-      },
-      contactData: {
-        email: "testcontact1@test.com",
+      USContact: {
+        email: "ustestcontact1@test.com",
         firstName: "Updated First Name",
-        lastName: "Contact1-Last",
+        lastName: "USContact1-Last",
         phone: "123-456-7890",
       },
+      PHContact: {
+        email: "phtestcontact1@test.com",
+        firstName: "PHContact1-First",
+        lastName: "PHContact1-Last",
+        phone: "123-456-7890",
+      },
+      readingSpaces: ["reading corner", "dedicated reading room"],
     });
 
     const getLibrary = await Library.get(testLibraryIds[0]);
@@ -371,11 +357,18 @@ describe("update", function () {
         lastName: "User1Last",
         phone: "123-456-7890",
       },
-      contactData: {
-        email: "testcontact1@test.com",
+      USContact: {
+        email: "ustestcontact1@test.com",
         firstName: "Updated First Name",
         id: expect.any(Number),
-        lastName: "Contact1-Last",
+        lastName: "USContact1-Last",
+        phone: "123-456-7890",
+      },
+      PHContact: {
+        email: "phtestcontact1@test.com",
+        firstName: "PHContact1-First",
+        id: expect.any(Number),
+        lastName: "PHContact1-Last",
         phone: "123-456-7890",
       },
       primaryAddress: {
@@ -386,14 +379,7 @@ describe("update", function () {
         region: "Luzon",
         street: "street1",
       },
-      shippingAddress: {
-        barangay: "barangay1",
-        city: "city1",
-        id: expect.any(Number),
-        province: "Metro Manila",
-        region: "Luzon",
-        street: "street1",
-      },
+      readingSpaces: ["reading corner", "dedicated reading room"],
       moa: {
         id: expect.any(Number),
         moaStatus: "submitted",
@@ -401,7 +387,7 @@ describe("update", function () {
     });
   });
 
-  test("works: updating primaryAddress and shippingAddress", async function () {
+  test("works: updating primaryAddress", async function () {
     let library = await Library.update(testLibraryIds[0], updateData2);
     expect(library).toEqual({
       libraryData: {
@@ -419,19 +405,19 @@ describe("update", function () {
         region: "Mindanao",
         street: "street1",
       },
-      shippingAddress: {
-        barangay: "barangay1",
-        city: "city1",
-        province: "Batanes",
-        region: "Mindanao",
-        street: "street1",
-      },
-      contactData: {
-        email: "testcontact1@test.com",
-        firstName: "Contact1-First",
-        lastName: "Contact1-Last",
+      USContact: {
+        email: "ustestcontact1@test.com",
+        firstName: "USContact1-First",
+        lastName: "USContact1-Last",
         phone: "123-456-7890",
       },
+      PHContact: {
+        email: "phtestcontact1@test.com",
+        firstName: "PHContact1-First",
+        lastName: "PHContact1-Last",
+        phone: "123-456-7890",
+      },
+      readingSpaces: ["reading corner", "dedicated reading room"],
     });
 
     const getLibrary = await Library.get(testLibraryIds[0]);
@@ -452,11 +438,18 @@ describe("update", function () {
         lastName: "User1Last",
         phone: "123-456-7890",
       },
-      contactData: {
-        email: "testcontact1@test.com",
-        firstName: "Contact1-First",
+      USContact: {
+        email: "ustestcontact1@test.com",
+        firstName: "USContact1-First",
         id: expect.any(Number),
-        lastName: "Contact1-Last",
+        lastName: "USContact1-Last",
+        phone: "123-456-7890",
+      },
+      PHContact: {
+        email: "phtestcontact1@test.com",
+        firstName: "PHContact1-First",
+        id: expect.any(Number),
+        lastName: "PHContact1-Last",
         phone: "123-456-7890",
       },
       primaryAddress: {
@@ -467,14 +460,88 @@ describe("update", function () {
         region: "Mindanao",
         street: "street1",
       },
-      shippingAddress: {
+      readingSpaces: ["reading corner", "dedicated reading room"],
+      moa: {
+        id: expect.any(Number),
+        moaStatus: "submitted",
+      },
+    });
+  });
+
+  test("works: updating readingSpaces", async function () {
+    let library = await Library.update(testLibraryIds[0], updateData3);
+    expect(library).toEqual({
+      libraryData: {
+        classrooms: 3,
+        libraryName: "Elementary School Library 1",
+        libraryType: "elementary school",
+        program: "FSER",
+        studentsPerGrade: 20,
+        teachers: 3,
+      },
+      primaryAddress: {
+        barangay: "barangay1",
+        city: "city1",
+        province: "Metro Manila",
+        region: "Luzon",
+        street: "street1",
+      },
+      USContact: {
+        email: "ustestcontact1@test.com",
+        firstName: "USContact1-First",
+        lastName: "USContact1-Last",
+        phone: "123-456-7890",
+      },
+      PHContact: {
+        email: "phtestcontact1@test.com",
+        firstName: "PHContact1-First",
+        lastName: "PHContact1-Last",
+        phone: "123-456-7890",
+      },
+      readingSpaces: ["dedicated reading room"],
+    });
+
+    const getLibrary = await Library.get(testLibraryIds[0]);
+    expect(getLibrary).toEqual({
+      id: expect.any(Number),
+      libraryData: {
+        classrooms: 3,
+        libraryName: "Elementary School Library 1",
+        libraryType: "elementary school",
+        studentsPerGrade: 20,
+        teachers: 3,
+        program: "FSER",
+      },
+      admin: {
+        email: "testuser1@test.com",
+        firstName: "User1First",
+        id: expect.any(Number),
+        lastName: "User1Last",
+        phone: "123-456-7890",
+      },
+      USContact: {
+        email: "ustestcontact1@test.com",
+        firstName: "USContact1-First",
+        id: expect.any(Number),
+        lastName: "USContact1-Last",
+        phone: "123-456-7890",
+      },
+      PHContact: {
+        email: "phtestcontact1@test.com",
+        firstName: "PHContact1-First",
+        id: expect.any(Number),
+        lastName: "PHContact1-Last",
+        phone: "123-456-7890",
+      },
+      primaryAddress: {
         barangay: "barangay1",
         city: "city1",
         id: expect.any(Number),
-        province: "Batanes",
-        region: "Mindanao",
+        province: "Metro Manila",
+        region: "Luzon",
         street: "street1",
       },
+      readingSpaces: ["dedicated reading room"],
       moa: {
         id: expect.any(Number),
         moaStatus: "submitted",

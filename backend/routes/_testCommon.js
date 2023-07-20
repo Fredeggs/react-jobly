@@ -21,8 +21,6 @@ async function commonBeforeAll() {
   await db.query("DELETE FROM users");
   // noinspection SqlWithoutWhere
   await db.query("DELETE FROM primary_addresses");
-  // noinspection SqlWithoutWhere
-  await db.query("DELETE FROM shipping_addresses");
 
   const u1 = await User.register({
     firstName: "U1F",
@@ -76,18 +74,24 @@ async function commonBeforeAll() {
 
   const l1 = await Library.createLibrary({
     libraryData: {
-      libraryName: "Middle School Library",
-      libraryType: "middle school",
+      libraryName: "Day Care Library",
+      libraryType: "day care",
       classrooms: 1,
       studentsPerGrade: 10,
       teachers: 3,
       program: "FSER",
     },
-    contactData: {
+    USContact: {
       firstName: "First",
       lastName: "Last",
       phone: "000-000-0000",
-      email: "contact1@gmail.com",
+      email: "uscontact1@gmail.com",
+    },
+    PHContact: {
+      firstName: "First",
+      lastName: "Last",
+      phone: "000-000-0000",
+      email: "phcontact1@gmail.com",
     },
     primaryAddress: {
       street: "Primary Street",
@@ -96,13 +100,7 @@ async function commonBeforeAll() {
       provinceId: 1,
       regionId: 1,
     },
-    shippingAddress: {
-      street: "Shipping Street",
-      barangay: "Shipping Barangay",
-      city: "Shipping City",
-      provinceId: 1,
-      regionId: 1,
-    },
+    readingSpaces: ["dedicated reading room", "reading corner"],
     adminId: testUserIds[0],
   });
   testLibraryIds.push(l1.id);
@@ -116,11 +114,17 @@ async function commonBeforeAll() {
       teachers: 3,
       program: "FSER",
     },
-    contactData: {
+    USContact: {
       firstName: "First",
       lastName: "Last",
       phone: "000-000-0000",
-      email: "contact2@gmail.com",
+      email: "uscontact2@gmail.com",
+    },
+    PHContact: {
+      firstName: "First",
+      lastName: "Last",
+      phone: "000-000-0000",
+      email: "phcontact2@gmail.com",
     },
     primaryAddress: {
       street: "Primary Street",
@@ -129,13 +133,7 @@ async function commonBeforeAll() {
       provinceId: 2,
       regionId: 2,
     },
-    shippingAddress: {
-      street: "Shipping Street",
-      barangay: "Shipping Barangay",
-      city: "Shipping City",
-      provinceId: 2,
-      regionId: 2,
-    },
+    readingSpaces: ["dedicated reading room"],
     adminId: testUserIds[1],
   });
   testLibraryIds.push(l2.id);
@@ -149,11 +147,17 @@ async function commonBeforeAll() {
       teachers: null,
       program: "FSER",
     },
-    contactData: {
+    USContact: {
       firstName: "First",
       lastName: "Last",
       phone: "000-000-0000",
-      email: "contact3@gmail.com",
+      email: "uscontact3@gmail.com",
+    },
+    PHContact: {
+      firstName: "First",
+      lastName: "Last",
+      phone: "000-000-0000",
+      email: "phcontact3@gmail.com",
     },
     primaryAddress: {
       street: "Primary Street",
@@ -162,13 +166,7 @@ async function commonBeforeAll() {
       provinceId: 3,
       regionId: 3,
     },
-    shippingAddress: {
-      street: "Shipping Street",
-      barangay: "Shipping Barangay",
-      city: "Shipping City",
-      provinceId: 3,
-      regionId: 3,
-    },
+    readingSpaces: ["reading corner"],
     adminId: testUserIds[2],
   });
   testLibraryIds.push(l3.id);
@@ -182,11 +180,17 @@ async function commonBeforeAll() {
       teachers: null,
       program: "FSER",
     },
-    contactData: {
+    USContact: {
       firstName: "First",
       lastName: "Last",
       phone: "000-000-0000",
-      email: "contact4@gmail.com",
+      email: "uscontact4@gmail.com",
+    },
+    PHContact: {
+      firstName: "First",
+      lastName: "Last",
+      phone: "000-000-0000",
+      email: "phcontact4@gmail.com",
     },
     primaryAddress: {
       street: "Primary Street",
@@ -195,13 +199,7 @@ async function commonBeforeAll() {
       provinceId: 3,
       regionId: 3,
     },
-    shippingAddress: {
-      street: "Shipping Street",
-      barangay: "Shipping Barangay",
-      city: "Shipping City",
-      provinceId: 3,
-      regionId: 3,
-    },
+    readingSpaces: [],
     adminId: testUserIds[3],
   });
   testLibraryIds.push(l4.id);

@@ -21,9 +21,23 @@ VALUES ('$2b$12$AZH7virni5jlTTiGgEg4zu3lSvAw68qVEfSIOjJ3RqtbJbdW/Oi5q',
         TRUE);
 
 INSERT INTO regions (name)
-VALUES ('Luzon'),
-       ('Visayas'),
-       ('Mindanao');
+VALUES ('Bangsamoro'),
+       ('Bicol Region'),
+       ('Cagayan Valley'),
+       ('Calabarzon'),
+       ('Caraga'),
+       ('Central Luzon'),
+       ('Central Visayas'),
+       ('Cordillera Administrative Region'),
+       ('Davao Region'),
+       ('Eastern Visayas'),
+       ('Ilocos Region'),
+       ('National Capital Region'),
+       ('Northern Mindanao'),
+       ('Soccsksargen'),
+       ('Southwestern Tagalog Region'),
+       ('Western Visayas'),
+       ('Zamboanga Peninsula');
 
 INSERT INTO provinces (name)
 VALUES ('Abra'),
@@ -114,21 +128,18 @@ VALUES ('999 Southroad St.', 'Jude Luxury Homes', 'Quezon City', 49, 1),
        ('Providence Tower 3000, Unit 2112, Leon Guinto St.', 'Malate', 'Manila', 49, 1),
        ('649 R. Hidalgo Street', 'Barangay 307 Quiapo', 'Manila', 49, 1);
 
-INSERT INTO shipping_addresses (street, barangay, city, province_id, region_id)
-VALUES ('999 Southroad St.', 'Jude Luxury Homes', 'Quezon City', 49, 1),
-       ('8751 Paseo de Roxas St.', 'None', 'Makati City', 49, 1),
-       ('Providence Tower 3000, Unit 2112, Leon Guinto St.', 'Malate', 'Manila', 49, 1),
-       ('649 R. Hidalgo Street', 'Barangay 307 Quiapo', 'Manila', 49, 1);
+INSERT INTO libraries (admin_id, lib_name, lib_type, program, classrooms, teachers, students_per_grade, primary_address_id)
+VALUES (1, 'Elementary School Library 1', 'elementary school', 'FSER', 3, 3, 20, 1),
+       (2, 'Day Care Library 1', 'day care', 'FSER', 3, 3, 20, 3),
+       (3, 'Community Library 1', 'community', 'LC', null, null, null, 2);
 
-INSERT INTO libraries (admin_id, lib_name, lib_type, program, classrooms, teachers, students_per_grade, primary_address_id, shipping_address_id)
-VALUES (1, 'Elementary School Library 1', 'elementary school', 'FSER', 3, 3, 20, 1, 1),
-       (2, 'Middle School Library 1', 'middle school', 'FSER', 3, 3, 20, 3, 3),
-       (3, 'Community Library 1', 'community', 'LC', null, null, null, 2, 2);
-
-INSERT INTO contacts (first_name, last_name, phone, email, library_id)
-VALUES ('Person1', 'Smith', '(344) 882-7360', 'person1@gmail.com', 1),
-       ('Person2', 'Johnson', '(546) 705-6760', 'person2@gmail.com', 2),
-       ('Person3', 'Brown', '(451) 309-0486', 'person3@gmail.com', 2);
+INSERT INTO contacts (first_name, last_name, phone, email, library_id, contact_type)
+VALUES ('Person1', 'Smith', '(344) 882-7360', 'person1@gmail.com', 1, 'us-sponsor'),
+       ('Person2', 'Johnson', '(546) 705-6760', 'person2@gmail.com', 1, 'ph-sponsor'),
+       ('Person3', 'Brown', '(451) 309-0486', 'person3@gmail.com', 2, 'us-sponsor'),
+       ('Person4', 'Jenkins', '(987) 345-1029', 'person4@gmail.com', 2, 'ph-sponsor'),
+       ('Person5', 'Carlisle', '(654) 678-3195', 'person5@gmail.com', 3, 'us-sponsor'),
+       ('Person6', 'Alcarez', '(994) 432-0966', 'person6@gmail.com', 3, 'ph-sponsor');
 
 INSERT INTO moas ( moa_status, library_id)
 VALUES ('approved', 1),
@@ -139,3 +150,8 @@ INSERT INTO shipments (export_declaration, invoice_num, boxes, date_packed, rece
 VALUES (123, 321, 1, '08-Jan-2022', '11-Jan-2022', 1),
        (456, 654, 1, '09-Jan-2022', '12-Jan-2022', 2),
        (789, 987, 2, '09-Jan-2022', null, 2);
+
+INSERT INTO reading_spaces (library_id, reading_space)
+VALUES (1, 'reading corner'),
+       (1, 'dedicated reading room'),
+       (2, 'reading corner');

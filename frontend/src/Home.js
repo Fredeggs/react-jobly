@@ -25,15 +25,10 @@ function Home({ getCurrentUser, getLibrary, getMOA }) {
       provinceId: "",
       regionId: "",
     },
-    shippingAddress: {
-      street: "",
-      barangay: "",
-      city: "",
-      provinceId: "",
-      regionId: "",
-    },
-    contactData: { firstName: "", lastName: "", email: "", phone: "" },
-    adminId: "",
+    USContact: { firstName: "", lastName: "", email: "", phone: "" },
+    PHContact: { firstName: "", lastName: "", email: "", phone: "" },
+    admin: { id: "", firstName: "", lastName: "", email: "", phone: "" },
+    readingSpaces: [],
     moa: { moaStatus: "" },
   });
   const history = useHistory();
@@ -42,17 +37,14 @@ function Home({ getCurrentUser, getLibrary, getMOA }) {
       // Fetch data
       console.log("fetching");
       const userData = await getCurrentUser();
-      console.log(userData);
       if (userData.libraryId) {
         const { library, shipments } = await getLibrary(userData.libraryId);
         setCurrentLibrary(library);
         setCurrentShipments(shipments);
       }
-      console.log(currentLibrary);
       setTimeout(async () => {
         if (userData.moaStatus) {
           const moaData = await getMOA(userData.libraryId);
-          console.log("moaData:", moaData);
           setMOA(moaData);
         }
       }, 1000);
@@ -84,23 +76,24 @@ function Home({ getCurrentUser, getLibrary, getMOA }) {
                 adminLastName={currentLibrary.admin.lastName}
                 adminEmail={currentLibrary.admin.email}
                 adminPhone={currentLibrary.admin.phone}
-                contactFirstName={currentLibrary.contactData.firstName}
-                contactLastName={currentLibrary.contactData.lastName}
-                contactEmail={currentLibrary.contactData.email}
-                contactPhone={currentLibrary.contactData.phone}
+                USContactFirstName={currentLibrary.USContact.firstName}
+                USContactLastName={currentLibrary.USContact.lastName}
+                USContactEmail={currentLibrary.USContact.email}
+                USContactPhone={currentLibrary.USContact.phone}
+                PHContactFirstName={currentLibrary.PHContact.firstName}
+                PHContactLastName={currentLibrary.PHContact.lastName}
+                PHContactEmail={currentLibrary.PHContact.email}
+                PHContactPhone={currentLibrary.PHContact.phone}
                 libraryName={currentLibrary.libraryData.libraryName}
                 moaStatus={currentLibrary.moa.moaStatus}
                 libraryType={currentLibrary.libraryData.libraryType}
+                readingProgram={currentLibrary.libraryData.readingProgram}
                 primaryBarangay={currentLibrary.primaryAddress.barangay}
                 primaryCity={currentLibrary.primaryAddress.city}
                 primaryProvince={currentLibrary.primaryAddress.province}
                 primaryRegion={currentLibrary.primaryAddress.region}
                 primaryStreet={currentLibrary.primaryAddress.street}
-                shippingBarangay={currentLibrary.shippingAddress.barangay}
-                shippingCity={currentLibrary.shippingAddress.city}
-                shippingProvince={currentLibrary.shippingAddress.province}
-                shippingRegion={currentLibrary.shippingAddress.region}
-                shippingStreet={currentLibrary.shippingAddress.street}
+                readingSpaces={currentLibrary.readingSpaces}
               />
               {(currentLibrary.moa.moaStatus === "submitted" ||
                 currentLibrary.moa.moaStatus === "approved") && (
@@ -139,11 +132,16 @@ function Home({ getCurrentUser, getLibrary, getMOA }) {
                 adminLastName={currentLibrary.admin.lastName}
                 adminEmail={currentLibrary.admin.email}
                 adminPhone={currentLibrary.admin.phone}
-                contactFirstName={currentLibrary.contactData.firstName}
-                contactLastName={currentLibrary.contactData.lastName}
-                contactEmail={currentLibrary.contactData.email}
-                contactPhone={currentLibrary.contactData.phone}
+                USContactFirstName={currentLibrary.USContact.firstName}
+                USContactLastName={currentLibrary.USContact.lastName}
+                USContactEmail={currentLibrary.USContact.email}
+                USContactPhone={currentLibrary.USContact.phone}
+                PHContactFirstName={currentLibrary.PHContact.firstName}
+                PHContactLastName={currentLibrary.PHContact.lastName}
+                PHContactEmail={currentLibrary.PHContact.email}
+                PHContactPhone={currentLibrary.PHContact.phone}
                 libraryName={currentLibrary.libraryData.libraryName}
+                readingProgram={currentLibrary.libraryData.readingProgram}
                 moaStatus={currentLibrary.moa.moaStatus}
                 libraryType={currentLibrary.libraryData.libraryType}
                 primaryBarangay={currentLibrary.primaryAddress.barangay}
@@ -151,11 +149,7 @@ function Home({ getCurrentUser, getLibrary, getMOA }) {
                 primaryProvince={currentLibrary.primaryAddress.province}
                 primaryRegion={currentLibrary.primaryAddress.region}
                 primaryStreet={currentLibrary.primaryAddress.street}
-                shippingBarangay={currentLibrary.shippingAddress.barangay}
-                shippingCity={currentLibrary.shippingAddress.city}
-                shippingProvince={currentLibrary.shippingAddress.province}
-                shippingRegion={currentLibrary.shippingAddress.region}
-                shippingStreet={currentLibrary.shippingAddress.street}
+                readingSpaces={currentLibrary.readingSpaces}
               />
             </>
           )

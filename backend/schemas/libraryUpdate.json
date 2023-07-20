@@ -1,281 +1,304 @@
 {
-  "$schema": "https://json-schema.org/draft/2019-09/schema",
-  "$id": "http://example.com/example.json",
-  "type": "object",
-  "default": {},
-  "title": "Root Schema",
-  "required": [
-      "libraryData",
-      "contactData",
-      "primaryAddress",
-      "shippingAddress"
-  ],
-  "properties": {
-      "libraryData": {
-          "type": "object",
-          "default": {},
-          "title": "The libraryData Schema",
-          "required": [],
-          "properties": {
-              "libraryName": {
-                  "type": "string",
-                  "default": "",
-                  "title": "The libraryName Schema",
-                  "examples": [
-                      "Library"
-                  ]
-              },
-              "libraryType": {
-                  "type": "string",
-                  "default": "",
-                  "title": "The libraryType Schema",
-                  "examples": [
-                      "elementary school"
-                  ]
-              },
-              "program": {
-                  "type": "string",
-                  "default": "",
-                  "title": "The program Schema",
-                  "examples": [
-                      "FSER"
-                  ]
-              },
-              "classrooms": {
-                "member_region": {
-                  "type": [
-                    "integer",
-                    "null"
-                  ]
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "default": {},
+    "title": "Root Schema",
+    "required": [
+        "libraryData",
+        "USContact",
+        "PHContact",
+        "primaryAddress"
+    ],
+    "properties": {
+        "libraryData": {
+            "type": "object",
+            "default": {},
+            "title": "The libraryData Schema",
+            "required": [],
+            "properties": {
+                "libraryName": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The libraryName Schema",
+                    "examples": [
+                        "Library"
+                    ]
                 },
-                  "default": 0,
-                  "title": "The classrooms Schema",
-                  "examples": [
-                      3
-                  ]
-              },
-              "teachers": {
-                "member_region": {
-                  "type": [
-                    "integer",
-                    "null"
-                  ]
+                "libraryType": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The libraryType Schema",
+                    "examples": [
+                        "elementary school"
+                    ]
                 },
-                  "default": 0,
-                  "title": "The teachers Schema",
-                  "examples": [
-                      4
-                  ]
-              },
-              "studentsPerGrade": {
-                "member_region": {
-                  "type": [
-                    "integer",
-                    "null"
-                  ]
+                "program": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The program Schema",
+                    "examples": [
+                        "FSER"
+                    ]
                 },
-                  "default": 0,
-                  "title": "The studentsPerGrade Schema",
-                  "examples": [
-                      18
-                  ]
-              }
-          },
-          "examples": [{
-              "libraryName": "Library",
-              "libraryType": "elementary school",
-              "program": "FSER",
-              "classrooms": 3,
-              "teachers": 4,
-              "studentsPerGrade": 18
-          }]
-      },
-      "contactData": {
-          "type": "object",
-          "default": {},
-          "title": "The contactData Schema",
-          "required": [],
-          "properties": {
-              "firstName": {
-                  "type": "string",
-                  "default": "",
-                  "title": "The firstName Schema",
-                  "examples": [
-                      "First"
-                  ]
-              },
-              "lastName": {
-                  "type": "string",
-                  "default": "",
-                  "title": "The lastName Schema",
-                  "examples": [
-                      "Last"
-                  ]
-              },
-              "email": {
-                  "type": "string",
-                  "default": "",
-                  "title": "The email Schema",
-                  "examples": [
-                      "email@email.com"
-                  ]
-              },
-              "phone": {
-                  "type": "string",
-                  "default": "",
-                  "title": "The phone Schema",
-                  "examples": [
-                      "phone"
-                  ]
-              }
-          },
-          "examples": [{
-              "firstName": "First",
-              "lastName": "Last",
-              "email": "email@email.com",
-              "phone": "phone"
-          }]
-      },
-      "primaryAddress": {
-          "type": "object",
-          "default": {},
-          "title": "The primaryAddress Schema",
-          "required": [],
-          "properties": {
-              "street": {
-                  "type": "string",
-                  "default": "",
-                  "title": "The street Schema",
-                  "examples": [
-                      "Street Name"
-                  ]
-              },
-              "barangay": {
-                  "type": "string",
-                  "default": "",
-                  "title": "The barangay Schema",
-                  "examples": [
-                      "Barangay"
-                  ]
-              },
-              "city": {
-                  "type": "string",
-                  "default": "",
-                  "title": "The city Schema",
-                  "examples": [
-                      "City Name"
-                  ]
-              },
-              "province": {
-                  "type": "string",
-                  "default": "",
-                  "title": "The province Schema",
-                  "examples": [
-                      "Province Name"
-                  ]
-              },
-              "region": {
-                  "type": "string",
-                  "default": "",
-                  "title": "The region Schema",
-                  "examples": [
-                      "Region Name"
-                  ]
-              }
-          },
-          "examples": [{
-              "street": "Street Name",
-              "barangay": "Barangay",
-              "city": "City Name",
-              "province": "Province Name",
-              "region": "Region Name"
-          }]
-      },
-      "shippingAddress": {
-          "type": "object",
-          "default": {},
-          "title": "The shippingAddress Schema",
-          "required": [],
-          "properties": {
-              "street": {
-                  "type": "string",
-                  "default": "",
-                  "title": "The street Schema",
-                  "examples": [
-                      "Street Name"
-                  ]
-              },
-              "barangay": {
-                  "type": "string",
-                  "default": "",
-                  "title": "The barangay Schema",
-                  "examples": [
-                      "Barangay"
-                  ]
-              },
-              "city": {
-                  "type": "string",
-                  "default": "",
-                  "title": "The city Schema",
-                  "examples": [
-                      "City Name"
-                  ]
-              },
-              "province": {
-                  "type": "string",
-                  "default": "",
-                  "title": "The province Schema",
-                  "examples": [
-                      "Province Name"
-                  ]
-              },
-              "region": {
-                  "type": "string",
-                  "default": "",
-                  "title": "The region Schema",
-                  "examples": [
-                      "Region Name"
-                  ]
-              }
-          },
-          "examples": [{
-              "street": "Street Name",
-              "barangay": "Barangay",
-              "city": "City Name",
-              "province": "Province Name",
-              "region": "Region Name"
-          }]
-      }
-  },
-  "additionalProperties": false,
-  "examples": [{
-      "libraryData": {
-          "libraryName": "Library",
-          "libraryType": "elementary school",
-          "program": "FSER",
-          "classrooms": 3,
-          "teachers": 4,
-          "studentsPerGrade": 18
-      },
-      "contactData": {
-          "firstName": "First",
-          "lastName": "Last",
-          "email": "email@email.com",
-          "phone": "phone"
-      },
-      "primaryAddress": {
-          "street": "Street Name",
-          "barangay": "Barangay",
-          "city": "City Name",
-          "province": "Province Name",
-          "region": "Region Name"
-      },
-      "shippingAddress": {
-          "street": "Street Name",
-          "barangay": "Barangay",
-          "city": "City Name",
-          "province": "Province Name",
-          "region": "Region Name"
-      }
-  }]
+                "classrooms": {
+                    "member_region": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "default": 0,
+                    "title": "The classrooms Schema",
+                    "examples": [
+                        3
+                    ]
+                },
+                "teachers": {
+                    "member_region": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "default": 0,
+                    "title": "The teachers Schema",
+                    "examples": [
+                        4
+                    ]
+                },
+                "studentsPerGrade": {
+                    "member_region": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "default": 0,
+                    "title": "The studentsPerGrade Schema",
+                    "examples": [
+                        18
+                    ]
+                }
+            },
+            "examples": [
+                {
+                    "libraryName": "Library",
+                    "libraryType": "elementary school",
+                    "program": "FSER",
+                    "classrooms": 3,
+                    "teachers": 4,
+                    "studentsPerGrade": 18
+                }
+            ]
+        },
+        "USContact": {
+            "type": "object",
+            "default": {},
+            "title": "The USContact Schema",
+            "required": [],
+            "properties": {
+                "firstName": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The firstName Schema",
+                    "examples": [
+                        "First"
+                    ]
+                },
+                "lastName": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The lastName Schema",
+                    "examples": [
+                        "Last"
+                    ]
+                },
+                "email": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The email Schema",
+                    "examples": [
+                        "email@email.com"
+                    ]
+                },
+                "phone": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The phone Schema",
+                    "examples": [
+                        "phone"
+                    ]
+                }
+            },
+            "examples": [
+                {
+                    "firstName": "First",
+                    "lastName": "Last",
+                    "email": "email@email.com",
+                    "phone": "phone"
+                }
+            ]
+        },
+        "PHContact": {
+            "type": "object",
+            "default": {},
+            "title": "The PHContact Schema",
+            "required": [],
+            "properties": {
+                "firstName": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The firstName Schema",
+                    "examples": [
+                        "First"
+                    ]
+                },
+                "lastName": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The lastName Schema",
+                    "examples": [
+                        "Last"
+                    ]
+                },
+                "email": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The email Schema",
+                    "examples": [
+                        "email@email.com"
+                    ]
+                },
+                "phone": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The phone Schema",
+                    "examples": [
+                        "phone"
+                    ]
+                }
+            },
+            "examples": [
+                {
+                    "firstName": "First",
+                    "lastName": "Last",
+                    "email": "email@email.com",
+                    "phone": "phone"
+                }
+            ]
+        },
+        "primaryAddress": {
+            "type": "object",
+            "default": {},
+            "title": "The primaryAddress Schema",
+            "required": [],
+            "properties": {
+                "street": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The street Schema",
+                    "examples": [
+                        "Street Name"
+                    ]
+                },
+                "barangay": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The barangay Schema",
+                    "examples": [
+                        "Barangay"
+                    ]
+                },
+                "city": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The city Schema",
+                    "examples": [
+                        "City Name"
+                    ]
+                },
+                "province": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The province Schema",
+                    "examples": [
+                        "Province Name"
+                    ]
+                },
+                "region": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The region Schema",
+                    "examples": [
+                        "Region Name"
+                    ]
+                }
+            },
+            "examples": [
+                {
+                    "street": "Street Name",
+                    "barangay": "Barangay",
+                    "city": "City Name",
+                    "province": "Province Name",
+                    "region": "Region Name"
+                }
+            ]
+        },
+        "readingSpaces": {
+            "type": "array",
+            "default": [],
+            "title": "The readingSpaces Schema",
+            "items": {
+                "type": "string",
+                "title": "A Schema",
+                "examples": [
+                    "reading corner",
+                    "dedicated reading space"
+                ]
+            },
+            "examples": [
+                [
+                    "reading corner",
+                    "dedicated reading space"
+                ]
+            ]
+        }
+    },
+    "additionalProperties": false,
+    "examples": [
+        {
+            "libraryData": {
+                "libraryName": "Library",
+                "libraryType": "elementary school",
+                "program": "FSER",
+                "classrooms": 3,
+                "teachers": 4,
+                "studentsPerGrade": 18
+            },
+            "USContact": {
+                "firstName": "First",
+                "lastName": "Last",
+                "email": "usemail@email.com",
+                "phone": "phone"
+            },
+            "PHContact": {
+                "firstName": "First",
+                "lastName": "Last",
+                "email": "phemail@email.com",
+                "phone": "phone"
+            },
+            "primaryAddress": {
+                "street": "Street Name",
+                "barangay": "Barangay",
+                "city": "City Name",
+                "province": "Province Name",
+                "region": "Region Name"
+            },
+            "readingSpaces": [
+                "reading corner",
+                "dedicated reading space"
+            ]
+        }
+    ]
 }

@@ -5,23 +5,24 @@ function LibraryCard({
   adminLastName,
   adminEmail,
   adminPhone,
-  contactFirstName,
-  contactLastName,
-  contactEmail,
-  contactPhone,
+  USContactFirstName,
+  USContactLastName,
+  USContactEmail,
+  USContactPhone,
+  PHContactFirstName,
+  PHContactLastName,
+  PHContactEmail,
+  PHContactPhone,
   libraryName,
   libraryType,
+  readingProgram,
   primaryBarangay,
   primaryCity,
   primaryProvince,
   primaryRegion,
   primaryStreet,
-  shippingBarangay,
-  shippingCity,
-  shippingProvince,
-  shippingRegion,
-  shippingStreet,
   moaStatus,
+  readingSpaces,
 }) {
   return (
     <Row>
@@ -30,11 +31,18 @@ function LibraryCard({
           <CardTitle tag="h4">{libraryName}</CardTitle>
           <CardText tag="h5">
             <div>Library Type: {libraryType}</div>
+            <div>Reading Program: {readingProgram}</div>
+            <div>
+              Reading Spaces:{" "}
+              {readingSpaces.length
+                ? readingSpaces.map((space) => space + " ")
+                : "none"}
+            </div>
             <div>MOA Status: {moaStatus || "not submitted"}</div>
           </CardText>
           <CardText tag="h5">
             <div>
-              <u>Primary Contact (Library Admin):</u>
+              <u>Library Admin Contact:</u>
             </div>
             <div>Name: {adminFirstName + " " + adminLastName}</div>
             <div>Email: {adminEmail}</div>
@@ -42,11 +50,19 @@ function LibraryCard({
           </CardText>
           <CardText tag="h5">
             <div>
-              <u>Secondary Contact:</u>
+              <u>US Sponsor:</u>
             </div>
-            <div>Name: {contactFirstName + " " + contactLastName}</div>
-            <div>Email: {contactEmail}</div>
-            <div>Phone: {contactPhone}</div>
+            <div>Name: {USContactFirstName + " " + USContactLastName}</div>
+            <div>Email: {USContactEmail}</div>
+            <div>Phone: {USContactPhone}</div>
+          </CardText>
+          <CardText tag="h5">
+            <div>
+              <u>Philippines Sponsor:</u>
+            </div>
+            <div>Name: {PHContactFirstName + " " + PHContactLastName}</div>
+            <div>Email: {PHContactEmail}</div>
+            <div>Phone: {PHContactPhone}</div>
           </CardText>
           <CardText tag="h5">
             <div>
@@ -57,16 +73,6 @@ function LibraryCard({
             <div>City: {primaryCity}</div>
             <div>Province: {primaryProvince}</div>
             <div>Region: {primaryRegion}</div>
-          </CardText>
-          <CardText tag="h5">
-            <div>
-              <u>Shipping Address:</u>
-            </div>
-            <div>Street Address: {shippingStreet}</div>
-            <div>Barangay: {shippingBarangay}</div>
-            <div>City: {shippingCity}</div>
-            <div>Province: {shippingProvince}</div>
-            <div>Region: {shippingRegion}</div>
           </CardText>
         </Card>
       </Col>

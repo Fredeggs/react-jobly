@@ -1,5 +1,7 @@
-CREATE TYPE library_type AS ENUM ('elementary school', 'middle school', 'high school', 'community');
+CREATE TYPE library_type AS ENUM ('elementary school', 'day care', 'high school', 'community');
 CREATE TYPE moa_statuses AS ENUM ('approved', 'rejected', 'submitted');
+CREATE TYPE contact_types AS ENUM ('ph-sponsor', 'us-sponsor');
+CREATE TYPE reading_space_names AS ENUM ('reading corner', 'dedicated reading room');
 
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
@@ -31,15 +33,6 @@ CREATE TABLE primary_addresses (
   region_id INTEGER REFERENCES regions
 );
 
-CREATE TABLE shipping_addresses (
-  id SERIAL PRIMARY KEY,
-  street TEXT NOT NULL,
-  barangay TEXT NOT NULL,
-  city TEXT NOT NULL,
-  province_id INTEGER REFERENCES provinces,
-  region_id INTEGER REFERENCES regions
-);
-
 CREATE TABLE libraries (
   id SERIAL PRIMARY KEY,
   lib_name TEXT UNIQUE NOT NULL,
@@ -49,12 +42,12 @@ CREATE TABLE libraries (
   classrooms INTEGER CHECK (classrooms >= 0),
   teachers INTEGER CHECK (teachers >= 0),
   students_per_grade INTEGER CHECK (students_per_grade >= 0),
-  primary_address_id INTEGER REFERENCES primary_addresses,
-  shipping_address_id INTEGER REFERENCES shipping_addresses
+  primary_address_id INTEGER REFERENCES primary_addresses
 );
 
 CREATE TABLE contacts (
   id SERIAL PRIMARY KEY,
+  contact_type contact_types NOT NULL,
   first_name TEXT NOT NULL,
   last_name TEXT NOT NULL,
   phone TEXT NOT NULL,
@@ -79,3 +72,9 @@ CREATE TABLE shipments (
   library_id INTEGER REFERENCES libraries ON DELETE CASCADE
 );
 
+
+CREATE TABLE reading_spaces (
+  id SERIAL PRIMARY KEY,
+  library_id INTEGER REFERENCES libraries ON DELETE CASCADE,
+  reading_space reading_space_names
+);

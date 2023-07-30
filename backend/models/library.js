@@ -67,9 +67,9 @@ class Library {
 
     const libraryRes = await db.query(
       `INSERT INTO libraries
-           (admin_id, lib_name, lib_type, program, classrooms, teachers, students_per_grade, primary_address_id)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-           RETURNING id, admin_id as "adminId", lib_name AS "libraryName", lib_type AS "libraryType", program, classrooms, teachers, students_per_grade AS "studentsPerGrade"`,
+           (admin_id, lib_name, lib_type, program, classrooms, teachers, students_per_grade, primary_address_id, total_residents, elem_visitors, high_school_visitors, college_visitors, adult_visitors)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+           RETURNING id, admin_id as "adminId", lib_name AS "libraryName", lib_type AS "libraryType", program, classrooms, teachers, students_per_grade AS "studentsPerGrade", total_residents AS "totalResidents", elem_visitors AS "elementaryVisitors", high_school_visitors AS "highSchoolVisitors", college_visitors AS "collegeVisitors", adult_visitors AS "adultVisitors"`,
       [
         adminId,
         libraryData.libraryName,
@@ -79,6 +79,11 @@ class Library {
         libraryData.teachers,
         libraryData.studentsPerGrade,
         newPrimaryAddress.id,
+        libraryData.totalResidents,
+        libraryData.elementaryVisitors,
+        libraryData.highSchoolVisitors,
+        libraryData.collegeVisitors,
+        libraryData.adultVisitors,
       ]
     );
     const newLibrary = libraryRes.rows[0];
@@ -117,6 +122,11 @@ class Library {
         teachers: newLibrary.teachers,
         studentsPerGrade: newLibrary.studentsPerGrade,
         program: newLibrary.program,
+        totalResidents: newLibrary.totalResidents,
+        elementaryVisitors: newLibrary.elementaryVisitors,
+        highSchoolVisitors: newLibrary.highSchoolVisitors,
+        collegeVisitors: newLibrary.collegeVisitors,
+        adultVisitors: newLibrary.adultVisitors,
       },
       primaryAddress: {
         ...newPrimaryAddress,
@@ -242,7 +252,12 @@ class Library {
               classrooms,
               teachers,
               students_per_grade,
-              program
+              program,
+              total_residents,
+              elem_visitors,
+              high_school_visitors,
+              college_visitors,
+              adult_visitors
         FROM libraries
         WHERE id = $1`,
       [id]
@@ -331,6 +346,11 @@ class Library {
         classrooms: library.classrooms,
         teachers: library.teachers,
         studentsPerGrade: library.students_per_grade,
+        totalResidents: library.total_residents,
+        elementaryVisitors: library.elem_visitors,
+        highSchoolVisitors: library.high_school_visitors,
+        collegeVisitors: library.college_visitors,
+        adultVisitors: library.adult_visitors,
       },
       readingSpaces: readingSpaces,
       admin: { ...admin },
@@ -374,6 +394,11 @@ class Library {
         libraryName: "lib_name",
         libraryType: "lib_type",
         studentsPerGrade: "students_per_grade",
+        totalResidents: "total_residents",
+        elementaryVisitors: "elem_visitors",
+        highSchoolVisitors: "high_school_visitors",
+        collegeVisitors: "college_visitors",
+        adultVisitors: "adult_visitors",
       });
       const handleVarIdx = "$" + (values.length + 1);
 
@@ -385,7 +410,12 @@ class Library {
                                   program, 
                                   students_per_grade AS "studentsPerGrade", 
                                   teachers,
-                                  classrooms`;
+                                  classrooms,
+                                  total_residents AS "totalResidents",
+                                  elem_visitors AS "elementaryVisitors",
+                                  high_school_visitors AS "highSchoolVisitors",
+                                  college_visitors AS "collegeVisitors",
+                                  adult_visitors AS "adultVisitors"`;
       const result = await db.query(querySql, [...values, id]);
       data.libraryData = result.rows[0];
     } else {
@@ -395,7 +425,12 @@ class Library {
                 program, 
                 students_per_grade AS "studentsPerGrade", 
                 teachers,
-                classrooms
+                classrooms,
+                total_residents AS "totalResidents",
+                elem_visitors AS "elementaryVisitors",
+                high_school_visitors AS "highSchoolVisitors",
+                college_visitors AS "collegeVisitors",
+                adult_visitors AS "adultVisitors"
         FROM libraries 
         WHERE id = $1`,
         [id]

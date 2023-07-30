@@ -19,8 +19,7 @@
       "title": "The libraryData Schema",
       "required": [
         "libraryName",
-        "libraryType",
-        "program"
+        "libraryType"
       ],
       "properties": {
         "libraryName": {
@@ -85,6 +84,76 @@
           "examples": [
             "FSER"
           ]
+        },
+        "totalResidents": {
+          "member_region": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "default": 0,
+          "title": "The totalResidents Schema",
+          "examples": [
+            18,
+            null
+          ]
+        },
+        "elementaryVisitors": {
+          "member_region": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "default": 0,
+          "title": "The elementaryVisitors Schema",
+          "examples": [
+            18,
+            null
+          ]
+        },
+        "highSchoolVisitors": {
+          "member_region": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "default": 0,
+          "title": "The highSchoolVisitors Schema",
+          "examples": [
+            18,
+            null
+          ]
+        },
+        "collegeVisitors": {
+          "member_region": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "default": 0,
+          "title": "The collegeVisitors Schema",
+          "examples": [
+            18,
+            null
+          ]
+        },
+        "adultVisitors": {
+          "member_region": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "default": 0,
+          "title": "The adultVisitors Schema",
+          "examples": [
+            18,
+            null
+          ]
         }
       },
       "examples": [
@@ -94,7 +163,12 @@
           "classrooms": 3,
           "studentsPerGrade": 18,
           "teachers": 7,
-          "program": "FSER"
+          "program": "FSER",
+          "totalResidents": 0,
+          "elementaryVisitors": 0,
+          "highSchoolVisitors": 0,
+          "collegeVisitors": 0,
+          "adultVisitors": 0
         }
       ]
     },
@@ -304,7 +378,12 @@
         "classrooms": 3,
         "studentsPerGrade": 18,
         "teachers": 7,
-        "program": "FSER"
+        "program": "FSER",
+        "totalResidents": 0,
+        "elementaryVisitors": 0,
+        "highSchoolVisitors": 0,
+        "collegeVisitors": 0,
+        "adultVisitors": 0
       },
       "contactData": {
         "firstName": "FirstName",

@@ -27,6 +27,11 @@ describe("create library", function () {
       studentsPerGrade: 2,
       teachers: 3,
       program: "FSER",
+      totalResidents: 0,
+      elementaryVisitors: 0,
+      highSchoolVisitors: 0,
+      collegeVisitors: 0,
+      adultVisitors: 0,
     },
     USContact: {
       firstName: "First",
@@ -51,7 +56,44 @@ describe("create library", function () {
     adminId: 4,
   };
 
-  test("works", async function () {
+  const newCommunityLibrary = {
+    libraryData: {
+      libraryName: "New Library",
+      libraryType: "community",
+      classrooms: 0,
+      studentsPerGrade: 0,
+      teachers: 0,
+      program: "FSER",
+      totalResidents: 700,
+      elementaryVisitors: 45,
+      highSchoolVisitors: 50,
+      collegeVisitors: 30,
+      adultVisitors: 80,
+    },
+    USContact: {
+      firstName: "First",
+      lastName: "Last",
+      phone: "0000000000",
+      email: "uscontact@gmail.com",
+    },
+    PHContact: {
+      firstName: "First",
+      lastName: "Last",
+      phone: "0000000000",
+      email: "phcontact@gmail.com",
+    },
+    primaryAddress: {
+      street: "Primary Street",
+      barangay: "Primary Barangay",
+      city: "Primary City",
+      provinceId: 1,
+      regionId: 1,
+    },
+    readingSpaces: ["reading corner"],
+    adminId: 4,
+  };
+
+  test("works: school library", async function () {
     let library = await Library.createLibrary(newLibrary);
     expect(library).toEqual({
       ...newLibrary,
@@ -73,6 +115,31 @@ describe("create library", function () {
         id: expect.any(Number),
       },
       readingSpaces: newLibrary.readingSpaces,
+    });
+  });
+
+  test("works: community library", async function () {
+    let library = await Library.createLibrary(newCommunityLibrary);
+    expect(library).toEqual({
+      ...newCommunityLibrary,
+      id: expect.any(Number),
+      USContact: {
+        ...newCommunityLibrary.USContact,
+        id: expect.any(Number),
+        libraryId: expect.any(Number),
+        contactType: "us-sponsor",
+      },
+      PHContact: {
+        ...newCommunityLibrary.PHContact,
+        id: expect.any(Number),
+        libraryId: expect.any(Number),
+        contactType: "ph-sponsor",
+      },
+      primaryAddress: {
+        ...newCommunityLibrary.primaryAddress,
+        id: expect.any(Number),
+      },
+      readingSpaces: newCommunityLibrary.readingSpaces,
     });
   });
 
@@ -228,6 +295,11 @@ describe("get", function () {
         program: "FSER",
         studentsPerGrade: 20,
         teachers: 3,
+        totalResidents: 0,
+        elementaryVisitors: 0,
+        highSchoolVisitors: 0,
+        collegeVisitors: 0,
+        adultVisitors: 0,
       },
       admin: {
         id: expect.any(Number),
@@ -316,6 +388,11 @@ describe("update", function () {
         program: "FSER",
         studentsPerGrade: 20,
         teachers: 3,
+        totalResidents: 0,
+        elementaryVisitors: 0,
+        highSchoolVisitors: 0,
+        collegeVisitors: 0,
+        adultVisitors: 0,
       },
       primaryAddress: {
         barangay: "barangay1",
@@ -349,6 +426,11 @@ describe("update", function () {
         studentsPerGrade: 20,
         teachers: 3,
         program: "FSER",
+        totalResidents: 0,
+        elementaryVisitors: 0,
+        highSchoolVisitors: 0,
+        collegeVisitors: 0,
+        adultVisitors: 0,
       },
       admin: {
         email: "testuser1@test.com",
@@ -397,6 +479,11 @@ describe("update", function () {
         program: "FSER",
         studentsPerGrade: 20,
         teachers: 3,
+        totalResidents: 0,
+        elementaryVisitors: 0,
+        highSchoolVisitors: 0,
+        collegeVisitors: 0,
+        adultVisitors: 0,
       },
       primaryAddress: {
         barangay: "barangay1",
@@ -430,6 +517,11 @@ describe("update", function () {
         studentsPerGrade: 20,
         teachers: 3,
         program: "FSER",
+        totalResidents: 0,
+        elementaryVisitors: 0,
+        highSchoolVisitors: 0,
+        collegeVisitors: 0,
+        adultVisitors: 0,
       },
       admin: {
         email: "testuser1@test.com",
@@ -478,6 +570,11 @@ describe("update", function () {
         program: "FSER",
         studentsPerGrade: 20,
         teachers: 3,
+        totalResidents: 0,
+        elementaryVisitors: 0,
+        highSchoolVisitors: 0,
+        collegeVisitors: 0,
+        adultVisitors: 0,
       },
       primaryAddress: {
         barangay: "barangay1",
@@ -511,6 +608,11 @@ describe("update", function () {
         studentsPerGrade: 20,
         teachers: 3,
         program: "FSER",
+        totalResidents: 0,
+        elementaryVisitors: 0,
+        highSchoolVisitors: 0,
+        collegeVisitors: 0,
+        adultVisitors: 0,
       },
       admin: {
         email: "testuser1@test.com",

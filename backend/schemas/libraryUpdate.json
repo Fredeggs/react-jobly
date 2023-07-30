@@ -79,6 +79,76 @@
                     "examples": [
                         18
                     ]
+                },
+                "totalResidents": {
+                    "member_region": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "default": 0,
+                    "title": "The totalResidents Schema",
+                    "examples": [
+                        18,
+                        null
+                    ]
+                },
+                "elementaryVisitors": {
+                    "member_region": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "default": 0,
+                    "title": "The elementaryVisitors Schema",
+                    "examples": [
+                        18,
+                        null
+                    ]
+                },
+                "highSchoolVisitors": {
+                    "member_region": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "default": 0,
+                    "title": "The highSchoolVisitors Schema",
+                    "examples": [
+                        18,
+                        null
+                    ]
+                },
+                "collegeVisitors": {
+                    "member_region": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "default": 0,
+                    "title": "The collegeVisitors Schema",
+                    "examples": [
+                        18,
+                        null
+                    ]
+                },
+                "adultVisitors": {
+                    "member_region": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "default": 0,
+                    "title": "The adultVisitors Schema",
+                    "examples": [
+                        18,
+                        null
+                    ]
                 }
             },
             "examples": [
@@ -88,7 +158,12 @@
                     "program": "FSER",
                     "classrooms": 3,
                     "teachers": 4,
-                    "studentsPerGrade": 18
+                    "studentsPerGrade": 18,
+                    "totalResidents": 0,
+                    "elementaryVisitors": 0,
+                    "highSchoolVisitors": 0,
+                    "collegeVisitors": 0,
+                    "adultVisitors": 0
                 }
             ]
         },
@@ -274,7 +349,12 @@
                 "program": "FSER",
                 "classrooms": 3,
                 "teachers": 4,
-                "studentsPerGrade": 18
+                "studentsPerGrade": 18,
+                "totalResidents": 0,
+                "elementaryVisitors": 0,
+                "highSchoolVisitors": 0,
+                "collegeVisitors": 0,
+                "adultVisitors": 0
             },
             "USContact": {
                 "firstName": "First",

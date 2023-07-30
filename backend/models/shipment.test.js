@@ -111,7 +111,6 @@ describe("getLibraryShipments", function () {
       await Shipment.getLibraryShipments(0);
       // fail();
     } catch (err) {
-      console.log("err is", err);
       expect(err instanceof NotFoundError).toBeTruthy();
     }
   });

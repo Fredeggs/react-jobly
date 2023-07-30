@@ -128,10 +128,10 @@ VALUES ('999 Southroad St.', 'Jude Luxury Homes', 'Quezon City', 49, 1),
        ('Providence Tower 3000, Unit 2112, Leon Guinto St.', 'Malate', 'Manila', 49, 1),
        ('649 R. Hidalgo Street', 'Barangay 307 Quiapo', 'Manila', 49, 1);
 
-INSERT INTO libraries (admin_id, lib_name, lib_type, program, classrooms, teachers, students_per_grade, primary_address_id)
-VALUES (1, 'Elementary School Library 1', 'elementary school', 'FSER', 3, 3, 20, 1),
-       (2, 'Day Care Library 1', 'day care', 'FSER', 3, 3, 20, 3),
-       (3, 'Community Library 1', 'community', 'LC', null, null, null, 2);
+INSERT INTO libraries (admin_id, lib_name, lib_type, program, classrooms, teachers, students_per_grade, primary_address_id, total_residents, elem_visitors, high_school_visitors, college_visitors, adult_visitors)
+VALUES (1, 'Elementary School Library 1', 'elementary school', 'FSER', 3, 3, 20, 1, null, null, null, null, null),
+       (2, 'Day Care Library 1', 'day care', 'FSER', 3, 3, 20, 3, null, null, null, null, null),
+       (3, 'Community Library 1', 'community', 'LC', null, null, null, 2, 370, 40, 65, 31, 77);
 
 INSERT INTO contacts (first_name, last_name, phone, email, library_id, contact_type)
 VALUES ('Person1', 'Smith', '(344) 882-7360', 'person1@gmail.com', 1, 'us-sponsor'),

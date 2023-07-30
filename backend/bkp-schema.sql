@@ -38,10 +38,15 @@ CREATE TABLE libraries (
   lib_name TEXT UNIQUE NOT NULL,
   admin_id INTEGER REFERENCES users ON DELETE CASCADE,
   lib_type library_type,
-  program TEXT NOT NULL,
+  program TEXT,
   classrooms INTEGER CHECK (classrooms >= 0),
   teachers INTEGER CHECK (teachers >= 0),
   students_per_grade INTEGER CHECK (students_per_grade >= 0),
+  total_residents INTEGER CHECK (total_residents >= 0),
+  elem_visitors INTEGER CHECK (elem_visitors >= 0),
+  high_school_visitors INTEGER CHECK (high_school_visitors >= 0),
+  college_visitors INTEGER CHECK (college_visitors >= 0),
+  adult_visitors INTEGER CHECK (adult_visitors >= 0),
   primary_address_id INTEGER REFERENCES primary_addresses
 );
 

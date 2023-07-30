@@ -40,10 +40,10 @@ async function commonBeforeAll() {
   RETURNING id`);
 
   const resultsLibraries = await db.query(`
-    INSERT INTO libraries(admin_id, lib_name, lib_type, program, classrooms, teachers, students_per_grade, primary_address_id)
-    VALUES (${userIds.rows[0].id}, 'Elementary School Library 1', 'elementary school', 'FSER', 3, 3, 20, ${primaryAddressIds.rows[0].id}),
-           (${userIds.rows[1].id}, 'Community Library 1', 'community', 'LC', null, null, null, ${primaryAddressIds.rows[1].id}),
-           (${userIds.rows[2].id}, 'Day Care Library 1', 'day care', 'FSER', 3, 3, 20, ${primaryAddressIds.rows[2].id})
+    INSERT INTO libraries(admin_id, lib_name, lib_type, program, classrooms, teachers, students_per_grade, primary_address_id, total_residents, elem_visitors, high_school_visitors, college_visitors, adult_visitors)
+    VALUES (${userIds.rows[0].id}, 'Elementary School Library 1', 'elementary school', 'FSER', 3, 3, 20, ${primaryAddressIds.rows[0].id}, 0, 0, 0, 0, 0),
+           (${userIds.rows[1].id}, 'Community Library 1', 'community', 'LC', null, null, null, ${primaryAddressIds.rows[1].id}, 0, 0, 0, 0, 0),
+           (${userIds.rows[2].id}, 'Day Care Library 1', 'day care', 'FSER', 3, 3, 20, ${primaryAddressIds.rows[2].id}, 370, 40, 65, 31, 77)
     RETURNING id`);
   testLibraryIds.splice(0, 0, ...resultsLibraries.rows.map((r) => r.id));
 

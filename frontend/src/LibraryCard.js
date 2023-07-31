@@ -13,9 +13,6 @@ function LibraryCard({
   PHContactLastName,
   PHContactEmail,
   PHContactPhone,
-  libraryName,
-  libraryType,
-  readingProgram,
   primaryBarangay,
   primaryCity,
   primaryProvince,
@@ -23,6 +20,17 @@ function LibraryCard({
   primaryStreet,
   moaStatus,
   readingSpaces,
+  libraryName,
+  libraryType,
+  readingProgram,
+  teachers,
+  classrooms,
+  studentsPerGrade,
+  totalResidents,
+  elementaryVisitors,
+  highSchoolVisitors,
+  collegeVisitors,
+  adultVisitors,
 }) {
   return (
     <Row>
@@ -30,7 +38,36 @@ function LibraryCard({
         <Card body>
           <CardTitle tag="h4">{libraryName}</CardTitle>
           <CardText tag="h5">
+            <div>
+              <u>Library Details:</u>
+            </div>
             <div>Library Type: {libraryType}</div>
+            {libraryType === "community" && (
+              <>
+                <div>Total Residents: {totalResidents}</div>
+                <div>
+                  Elementary Age Visitors in the last 6 Months:{" "}
+                  {elementaryVisitors}
+                </div>
+                <div>
+                  High School Age Visitors in the last 6 Months:{" "}
+                  {highSchoolVisitors}
+                </div>
+                <div>
+                  College Age Visitors in the last 6 Months: {collegeVisitors}
+                </div>
+                <div>
+                  Adult Age Visitors in the last 6 Months: {adultVisitors}
+                </div>
+              </>
+            )}
+            {libraryType != "community" && (
+              <>
+                <div>Teachers: {teachers}</div>
+                <div>Classrooms: {classrooms}</div>
+                <div>Students Per Grade: {studentsPerGrade}</div>
+              </>
+            )}
             <div>Reading Program: {readingProgram}</div>
             <div>
               Reading Spaces:{" "}

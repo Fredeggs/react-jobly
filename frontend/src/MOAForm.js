@@ -20,7 +20,6 @@ function MOAForm({ createMOA, updateMOA, updateToken }) {
     const form = new FormData();
     form.append("moa", selectedFile);
     const moaRes = await createMOA(currentUser.libraryId, form);
-    console.log("moaRes: ", moaRes);
     await updateToken({
       ...currentUser,
       moaStatus: moaRes.moaStatus,

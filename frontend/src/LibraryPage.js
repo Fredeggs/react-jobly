@@ -65,7 +65,7 @@ function LibraryPage({ getLibrary, getMOA, updateMOA }) {
             PHContactEmail={currentLibrary.PHContact.email}
             PHContactPhone={currentLibrary.PHContact.phone}
             libraryName={currentLibrary.libraryData.libraryName}
-            readingProgram={currentLibrary.libraryData.readingProgram}
+            readingProgram={currentLibrary.libraryData.program}
             moaStatus={currentLibrary.moa.moaStatus}
             libraryType={currentLibrary.libraryData.libraryType}
             primaryBarangay={currentLibrary.primaryAddress.barangay}
@@ -74,6 +74,14 @@ function LibraryPage({ getLibrary, getMOA, updateMOA }) {
             primaryRegion={currentLibrary.primaryAddress.region}
             primaryStreet={currentLibrary.primaryAddress.street}
             readingSpaces={currentLibrary.readingSpaces}
+            teachers={currentLibrary.libraryData.teachers}
+            studentsPerGrade={currentLibrary.libraryData.studentsPerGrade}
+            classrooms={currentLibrary.libraryData.classrooms}
+            totalResidents={currentLibrary.libraryData.totalResidents}
+            elementaryVisitors={currentLibrary.libraryData.elementaryVisitors}
+            highSchoolVisitors={currentLibrary.libraryData.highSchoolVisitors}
+            collegeVisitors={currentLibrary.libraryData.collegeVisitors}
+            adultVisitors={currentLibrary.libraryData.adultVisitors}
           />
           {(currentLibrary.moa.moaStatus === "submitted" ||
             currentLibrary.moa.moaStatus === "approved") && (

@@ -84,16 +84,28 @@ function Home({ getCurrentUser, getLibrary, getMOA }) {
                 PHContactLastName={currentLibrary.PHContact.lastName}
                 PHContactEmail={currentLibrary.PHContact.email}
                 PHContactPhone={currentLibrary.PHContact.phone}
-                libraryName={currentLibrary.libraryData.libraryName}
-                moaStatus={currentLibrary.moa.moaStatus}
-                libraryType={currentLibrary.libraryData.libraryType}
-                readingProgram={currentLibrary.libraryData.readingProgram}
                 primaryBarangay={currentLibrary.primaryAddress.barangay}
                 primaryCity={currentLibrary.primaryAddress.city}
                 primaryProvince={currentLibrary.primaryAddress.province}
                 primaryRegion={currentLibrary.primaryAddress.region}
                 primaryStreet={currentLibrary.primaryAddress.street}
                 readingSpaces={currentLibrary.readingSpaces}
+                libraryName={currentLibrary.libraryData.libraryName}
+                moaStatus={currentLibrary.moa.moaStatus}
+                libraryType={currentLibrary.libraryData.libraryType}
+                readingProgram={currentLibrary.libraryData.program}
+                teachers={currentLibrary.libraryData.teachers}
+                studentsPerGrade={currentLibrary.libraryData.studentsPerGrade}
+                classrooms={currentLibrary.libraryData.classrooms}
+                totalResidents={currentLibrary.libraryData.totalResidents}
+                elementaryVisitors={
+                  currentLibrary.libraryData.elementaryVisitors
+                }
+                highSchoolVisitors={
+                  currentLibrary.libraryData.highSchoolVisitors
+                }
+                collegeVisitors={currentLibrary.libraryData.collegeVisitors}
+                adultVisitors={currentLibrary.libraryData.adultVisitors}
               />
               {(currentLibrary.moa.moaStatus === "submitted" ||
                 currentLibrary.moa.moaStatus === "approved") && (
@@ -140,16 +152,28 @@ function Home({ getCurrentUser, getLibrary, getMOA }) {
                 PHContactLastName={currentLibrary.PHContact.lastName}
                 PHContactEmail={currentLibrary.PHContact.email}
                 PHContactPhone={currentLibrary.PHContact.phone}
-                libraryName={currentLibrary.libraryData.libraryName}
-                readingProgram={currentLibrary.libraryData.readingProgram}
-                moaStatus={currentLibrary.moa.moaStatus}
-                libraryType={currentLibrary.libraryData.libraryType}
                 primaryBarangay={currentLibrary.primaryAddress.barangay}
                 primaryCity={currentLibrary.primaryAddress.city}
                 primaryProvince={currentLibrary.primaryAddress.province}
                 primaryRegion={currentLibrary.primaryAddress.region}
                 primaryStreet={currentLibrary.primaryAddress.street}
+                libraryName={currentLibrary.libraryData.libraryName}
+                readingProgram={currentLibrary.libraryData.program}
+                moaStatus={currentLibrary.moa.moaStatus}
+                libraryType={currentLibrary.libraryData.libraryType}
                 readingSpaces={currentLibrary.readingSpaces}
+                teachers={currentLibrary.libraryData.teachers}
+                studentsPerGrade={currentLibrary.libraryData.studentsPerGrade}
+                classrooms={currentLibrary.libraryData.classrooms}
+                totalResidents={currentLibrary.libraryData.totalResidents}
+                elementaryVisitors={
+                  currentLibrary.libraryData.elementaryVisitors
+                }
+                highSchoolVisitors={
+                  currentLibrary.libraryData.highSchoolVisitors
+                }
+                collegeVisitors={currentLibrary.libraryData.collegeVisitors}
+                adultVisitors={currentLibrary.libraryData.adultVisitors}
               />
             </>
           )

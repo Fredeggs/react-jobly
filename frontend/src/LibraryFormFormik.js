@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect, useRef } from "react";
+import { useFormik, Formik } from "formik";
 import "react-phone-number-input/style.css";
 import { useHistory } from "react-router-dom";
 import UserContext from "./userContext";
@@ -7,6 +8,7 @@ import AdvancedLibraryDetails from "./LibraryFormComponents/AdvancedLibraryDetai
 import PrimaryAddressDetails from "./LibraryFormComponents/PrimaryAddressDetails";
 import USSponsorDetails from "./LibraryFormComponents/USSponsorDetails";
 import PHSponsorDetails from "./LibraryFormComponents/PHSponsorDetails";
+import { basicLibraryDetailsSchema } from "./schemas/basicLibraryDetailsSchema";
 
 function LibraryForm({ createLibrary, getRegionsAndProvinces, updateToken }) {
   const history = useHistory();
@@ -15,9 +17,19 @@ function LibraryForm({ createLibrary, getRegionsAndProvinces, updateToken }) {
 
   const INITIAL_FORM_DATA = {
     libraryData: {
+      program: "none",
+    },
+    readingSpaces: [],
+    adminId: currentUser.id,
+  };
+
+  const onNext = () => {
+    console.log("you hit the next button!");
+  };
+  const formikBasicLibraryData = useFormik({
+    initialValues: {
       libraryName: "",
       libraryType: "",
-      program: "none",
       classrooms: 0,
       teachers: 0,
       studentsPerGrade: 0,
@@ -27,20 +39,41 @@ function LibraryForm({ createLibrary, getRegionsAndProvinces, updateToken }) {
       collegeVisitors: 0,
       adultVisitors: 0,
     },
-    primaryAddress: {
+    validationSchema: basicLibraryDetailsSchema,
+    onNext,
+  });
+
+  const formikPrimaryAddressData = useFormik({
+    initialValues: {
       street: "",
       barangay: "",
       city: "",
       provinceId: "",
       regionId: "",
     },
-    USContact: { firstName: "", lastName: "", email: "", phone: "" },
-    PHContact: { firstName: "", lastName: "", email: "", phone: "" },
-    readingSpaces: [],
-    adminId: currentUser.id,
-  };
+  });
+
+  const formikUSContactData = useFormik({
+    initialValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "+1",
+    },
+  });
+
+  const formikPHContactData = useFormik({
+    initialValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "+63",
+    },
+  });
+
+  const advancedLibraryData = {};
+
   const [page, setPage] = useState(0);
-  const [libraryType, setLibraryType] = useState("");
   const [readingProgram, setReadingProgram] = useState("none");
   const [regionOptions, setRegionOptions] = useState([]);
   const [provinceOptions, setProvinceOptions] = useState([]);
@@ -54,26 +87,6 @@ function LibraryForm({ createLibrary, getRegionsAndProvinces, updateToken }) {
       ...formData,
       [dataset.tag]: { ...formData[dataset.tag], [name]: value },
     }));
-  };
-
-  const handleLibraryTypeChange = (e) => {
-    const { name, value, dataset } = e.target;
-    if (value === "community" || value === "") {
-      setFormData((formData) => ({
-        ...formData,
-        libraryData: {
-          ...formData.libraryData,
-          teachers: 0,
-          classrooms: 0,
-          studentsPerGrade: 0,
-        },
-      }));
-    }
-    setFormData((formData) => ({
-      ...formData,
-      [dataset.tag]: { ...formData[dataset.tag], [name]: value },
-    }));
-    setLibraryType(value);
   };
 
   const handleProgramChange = (e) => {
@@ -102,22 +115,22 @@ function LibraryForm({ createLibrary, getRegionsAndProvinces, updateToken }) {
   };
 
   const handleSubmit = async (e) => {
-    // e.preventDefault();
     let formattedFormData;
     formattedFormData = {
-      ...formData,
+      libraryData: {
+        ...formData.libraryData,
+        ...formikBasicLibraryData.values,
+      },
       USContact: {
-        ...formData.USContact,
-        phone: USPhone,
+        ...formikUSContactData.values,
       },
       PHContact: {
-        ...formData.PHContact,
-        phone: PHPhone,
+        ...formikPHContactData.values,
       },
       primaryAddress: {
-        ...formData.primaryAddress,
-        regionId: parseInt(formData.primaryAddress.regionId),
-        provinceId: parseInt(formData.primaryAddress.provinceId),
+        ...formikPrimaryAddressData.values,
+        regionId: parseInt(formikPrimaryAddressData.values.regionId),
+        provinceId: parseInt(formikPrimaryAddressData.values.provinceId),
       },
     };
     console.log(formattedFormData);
@@ -141,19 +154,11 @@ function LibraryForm({ createLibrary, getRegionsAndProvinces, updateToken }) {
   ];
   const PageDisplay = () => {
     if (page === 0) {
-      return (
-        <BasicLibraryDetails
-          formData={formData}
-          handleChange={handleChange}
-          libraryType={libraryType}
-          handleLibraryTypeChange={handleLibraryTypeChange}
-        />
-      );
+      return <BasicLibraryDetails formik={formikBasicLibraryData} />;
     } else if (page === 1) {
       return (
         <PrimaryAddressDetails
-          formData={formData}
-          handleChange={handleChange}
+          formik={formikPrimaryAddressData}
           regionOptions={regionOptions}
           provinceOptions={provinceOptions}
         />
@@ -161,6 +166,7 @@ function LibraryForm({ createLibrary, getRegionsAndProvinces, updateToken }) {
     } else if (page === 2) {
       return (
         <PHSponsorDetails
+          formik={formikPHContactData}
           formData={formData}
           handleChange={handleChange}
           PHPhone={PHPhone}
@@ -170,6 +176,7 @@ function LibraryForm({ createLibrary, getRegionsAndProvinces, updateToken }) {
     } else if (page === 3) {
       return (
         <USSponsorDetails
+          formik={formikUSContactData}
           formData={formData}
           handleChange={handleChange}
           USPhone={USPhone}

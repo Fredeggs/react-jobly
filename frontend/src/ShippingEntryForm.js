@@ -43,13 +43,6 @@ function ShippingEntryForm({ getLibraries, createShipment }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log({
-      exportDeclaration: parseInt(formData.exportDeclaration),
-      invoiceNum: parseInt(formData.invoiceNum),
-      libraryId: parseInt(formData.libraryId),
-      boxes: parseInt(formData.boxes),
-      datePacked: formData.datePacked,
-    });
     await createShipment({
       exportDeclaration: parseInt(formData.exportDeclaration),
       invoiceNum: parseInt(formData.invoiceNum),

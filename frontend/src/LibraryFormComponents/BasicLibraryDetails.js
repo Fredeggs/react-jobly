@@ -1,9 +1,10 @@
 import React, { useState, useContext, useEffect, useRef } from "react";
 import { Form, FormGroup, Input, Label, Button } from "reactstrap";
 
-function BasicLibraryDetails({ formik }) {
+function BasicLibraryDetails({ formik, setDisableNext, setFormTouched }) {
   const { values, handleChange, handleBlur, errors, touched } = formik;
-  console.log(errors);
+  Object.keys(errors).length === 0 ? setDisableNext(false) : setDisableNext(true);
+  Object.keys(touched).length === 0 ? setFormTouched(false) : setFormTouched(true);
   return (
     <form className="basic-library-details-container">
       <label htmlFor="library-name">Library/School Name</label>
@@ -50,7 +51,7 @@ function BasicLibraryDetails({ formik }) {
 
       {values.libraryType != "community" && values.libraryType != "" ? (
         <>
-          <label htmlFor="classrooms">Classrooms</label>
+          <label htmlFor="classrooms">Number of Classrooms</label>
           <input
             id="classrooms"
             name="classrooms"
@@ -67,7 +68,7 @@ function BasicLibraryDetails({ formik }) {
             <p className="error">{errors.classrooms}</p>
           )}
 
-          <label htmlFor="teachers">Teachers</label>
+          <label htmlFor="teachers">Number of Teachers</label>
           <input
             id="teachers"
             name="teachers"

@@ -4,11 +4,11 @@ export const basicLibraryDetailsSchema = yup.object().shape({
   libraryName: yup
     .string()
     .min(2, "Library Name must be at least 2 characters long")
-    .required("Required"),
+    .required("Library name required"),
   libraryType: yup
     .string()
     .oneOf(["day care", "elementary school", "high school", "community"])
-    .required("Required"),
+    .required("Library type selection required"),
   classrooms: yup.number().moreThan(-1, "Please enter a non-negative number"),
   teachers: yup
     .number()

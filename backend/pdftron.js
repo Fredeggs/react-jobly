@@ -1,17 +1,19 @@
-import WebViewer from '@pdftron/webviewer'
+import {Core} from '@pdftron/webviewer'
 
-WebViewer({
-  path: '/public/webviewer',
-  licenseKey: 'YOUR_LICENSE_KEY',
-}, document.getElementById('viewer'))
-  .then(instance => {
-    const { UI, Core } = instance;
-    const { documentViewer, annotationManager, Tools, Annotations } = Core;
-    // call methods from UI, Core, documentViewer and annotationManager as needed
+const documentPath = "../frontend/src/jpgs/"
 
-    documentViewer.addEventListener('documentLoaded', () => {
-      // call methods relating to the loaded document
+export const generatePDF = async function(){
+    const newPDF = Core.office2PDFBuffer(documentPath, {
+        officeOptions: {
+            templateValues: {
+                // keys and values here
+            }
+        }
+    }).then(buffer => {
+        saveByteArray('generated_document.pdf', buffer);
     });
 
-    instance.UI.loadDocument('https://pdftron.s3.amazonaws.com/downloads/pl/demo-annotated.pdf');
-  })
+    console.log(newPDF)
+
+}
+

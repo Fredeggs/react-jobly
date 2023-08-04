@@ -14,7 +14,7 @@ import useLocalStorage from "./hooks/useLocalStorage";
 import NewApplications from "./NewApplicationsPage";
 import LibrariesPage from "./LibrariesPage";
 import ShippingEntryForm from "./ShippingEntryForm";
-import LibraryForm from "./LibraryFormFormik";
+import LibraryForm from "./LibraryForm";
 import LibraryPage from "./LibraryPage";
 
 function App() {

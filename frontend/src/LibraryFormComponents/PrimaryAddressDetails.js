@@ -1,10 +1,31 @@
 import React, { useState, useContext, useEffect, useRef } from "react";
 import { Form, FormGroup, Input, Label, Button } from "reactstrap";
 
-function PrimaryAddressDetails({ formik, setFormTouched, setDisableNext, regionOptions, provinceOptions }) {
+function PrimaryAddressDetails({ formik, setFormTouched, setDisableNext, currentUser, getRegionsAndProvinces }) {
+  const [regionOptions, setRegionOptions] = useState([]);
+  const [provinceOptions, setProvinceOptions] = useState([]);
+
   const { values, handleChange, errors, touched, handleBlur } = formik;
   Object.keys(errors).length === 0 ? setDisableNext(false) : setDisableNext(true);
   Object.keys(touched).length === 0 ? setFormTouched(false) : setFormTouched(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      // Fetch data
+      console.log("fetching");
+      const data = await getRegionsAndProvinces();
+      const { regions, provinces } = data;
+      // Update the options state
+      setRegionOptions([{ name: "Select a region", value: "" }, ...regions]);
+      setProvinceOptions([
+        { name: "Select a province", value: "" },
+        ...provinces,
+      ]);
+    }
+    // Trigger the fetch
+    fetchData();
+  }, [currentUser]);
+
   return (
     <div className="primary-address-container">
       <label htmlFor="p-street">Street Address</label>

@@ -1,4 +1,5 @@
-import React, { useState, useContext, useEffect, useRef } from "react";
+import React, { useState, useContext, useEffect } from "react";
+import { useFormik } from "formik";
 import "react-phone-number-input/style.css";
 import { useHistory } from "react-router-dom";
 import UserContext from "./userContext";
@@ -7,17 +8,30 @@ import AdvancedLibraryDetails from "./LibraryFormComponents/AdvancedLibraryDetai
 import PrimaryAddressDetails from "./LibraryFormComponents/PrimaryAddressDetails";
 import USSponsorDetails from "./LibraryFormComponents/USSponsorDetails";
 import PHSponsorDetails from "./LibraryFormComponents/PHSponsorDetails";
+import { basicLibraryDetailsSchema } from "./schemas/basicLibraryDetailsSchema";
+import {libraryAddressDetailsSchema} from "./schemas/libraryAddressDetailsSchema";
+import { PHContactDetailsSchema } from "./schemas/PHContactDetailsSchema";
+import { USContactDetailsSchema } from "./schemas/USContactDetailsSchema";
+import {Core, saveByteArray} from '@pdftron/webviewer'
+
+const documentPath = "../frontend/src/jpgs/MOA_template.docx"
 
 function LibraryForm({ createLibrary, getRegionsAndProvinces, updateToken }) {
   const history = useHistory();
-  // const libraryTypeRef = useRef(null);
   const { currentUser, setCurrentUser } = useContext(UserContext);
 
   const INITIAL_FORM_DATA = {
     libraryData: {
+      program: "none",
+    },
+    readingSpaces: [],
+    adminId: currentUser.id,
+  };
+
+  const formikBasicLibraryData = useFormik({
+    initialValues: {
       libraryName: "",
       libraryType: "",
-      program: "none",
       classrooms: 0,
       teachers: 0,
       studentsPerGrade: 0,
@@ -27,26 +41,45 @@ function LibraryForm({ createLibrary, getRegionsAndProvinces, updateToken }) {
       collegeVisitors: 0,
       adultVisitors: 0,
     },
-    primaryAddress: {
+    validationSchema: basicLibraryDetailsSchema,
+  });
+
+  const formikPrimaryAddressData = useFormik({
+    initialValues: {
       street: "",
       barangay: "",
       city: "",
       provinceId: "",
       regionId: "",
     },
-    USContact: { firstName: "", lastName: "", email: "", phone: "" },
-    PHContact: { firstName: "", lastName: "", email: "", phone: "" },
-    readingSpaces: [],
-    adminId: currentUser.id,
-  };
+    validationSchema: libraryAddressDetailsSchema,
+  });
+
+  const formikPHContactData = useFormik({
+    initialValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "+63",
+    },
+    validationSchema: PHContactDetailsSchema
+  });
+
+  const formikUSContactData = useFormik({
+    initialValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "+1",
+    },
+    validationSchema: USContactDetailsSchema
+  });
+
   const [page, setPage] = useState(0);
-  const [libraryType, setLibraryType] = useState("");
   const [readingProgram, setReadingProgram] = useState("none");
-  const [regionOptions, setRegionOptions] = useState([]);
-  const [provinceOptions, setProvinceOptions] = useState([]);
-  const [USPhone, setUSPhone] = useState("");
-  const [PHPhone, setPHPhone] = useState("");
   const [formData, setFormData] = useState(INITIAL_FORM_DATA);
+  const [disableNext, setDisableNext] = useState(true);
+  const [formTouched, setFormTouched] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, dataset } = e.target;
@@ -54,26 +87,6 @@ function LibraryForm({ createLibrary, getRegionsAndProvinces, updateToken }) {
       ...formData,
       [dataset.tag]: { ...formData[dataset.tag], [name]: value },
     }));
-  };
-
-  const handleLibraryTypeChange = (e) => {
-    const { name, value, dataset } = e.target;
-    if (value === "community" || value === "") {
-      setFormData((formData) => ({
-        ...formData,
-        libraryData: {
-          ...formData.libraryData,
-          teachers: 0,
-          classrooms: 0,
-          studentsPerGrade: 0,
-        },
-      }));
-    }
-    setFormData((formData) => ({
-      ...formData,
-      [dataset.tag]: { ...formData[dataset.tag], [name]: value },
-    }));
-    setLibraryType(value);
   };
 
   const handleProgramChange = (e) => {
@@ -102,22 +115,23 @@ function LibraryForm({ createLibrary, getRegionsAndProvinces, updateToken }) {
   };
 
   const handleSubmit = async (e) => {
-    // e.preventDefault();
     let formattedFormData;
     formattedFormData = {
       ...formData,
+      libraryData: {
+        ...formData.libraryData,
+        ...formikBasicLibraryData.values,
+      },
       USContact: {
-        ...formData.USContact,
-        phone: USPhone,
+        ...formikUSContactData.values,
       },
       PHContact: {
-        ...formData.PHContact,
-        phone: PHPhone,
+        ...formikPHContactData.values,
       },
       primaryAddress: {
-        ...formData.primaryAddress,
-        regionId: parseInt(formData.primaryAddress.regionId),
-        provinceId: parseInt(formData.primaryAddress.provinceId),
+        ...formikPrimaryAddressData.values,
+        regionId: parseInt(formikPrimaryAddressData.values.regionId),
+        provinceId: parseInt(formikPrimaryAddressData.values.provinceId),
       },
     };
     console.log(formattedFormData);
@@ -141,39 +155,31 @@ function LibraryForm({ createLibrary, getRegionsAndProvinces, updateToken }) {
   ];
   const PageDisplay = () => {
     if (page === 0) {
-      return (
-        <BasicLibraryDetails
-          formData={formData}
-          handleChange={handleChange}
-          libraryType={libraryType}
-          handleLibraryTypeChange={handleLibraryTypeChange}
-        />
-      );
+      return <BasicLibraryDetails formik={formikBasicLibraryData} setDisableNext={setDisableNext} setFormTouched={setFormTouched} />;
     } else if (page === 1) {
       return (
         <PrimaryAddressDetails
-          formData={formData}
-          handleChange={handleChange}
-          regionOptions={regionOptions}
-          provinceOptions={provinceOptions}
+          formik={formikPrimaryAddressData}
+          setDisableNext={setDisableNext}
+          setFormTouched={setFormTouched}
+          currentUser={currentUser}
+          getRegionsAndProvinces={getRegionsAndProvinces}
         />
       );
     } else if (page === 2) {
       return (
         <PHSponsorDetails
-          formData={formData}
-          handleChange={handleChange}
-          PHPhone={PHPhone}
-          setPHPhone={setPHPhone}
+          formik={formikPHContactData}
+          setDisableNext={setDisableNext}
+          setFormTouched={setFormTouched}
         />
       );
     } else if (page === 3) {
       return (
         <USSponsorDetails
-          formData={formData}
-          handleChange={handleChange}
-          USPhone={USPhone}
-          setUSPhone={setUSPhone}
+        formik={formikUSContactData}
+        setDisableNext={setDisableNext}
+        setFormTouched={setFormTouched}
         />
       );
     } else if (page === 4) {
@@ -190,22 +196,54 @@ function LibraryForm({ createLibrary, getRegionsAndProvinces, updateToken }) {
     }
   };
 
+  // if using a class, equivalent of componentDidMount
   useEffect(() => {
-    async function fetchData() {
-      // Fetch data
-      console.log("fetching");
-      const data = await getRegionsAndProvinces();
-      const { regions, provinces } = data;
-      // Update the options state
-      setRegionOptions([{ name: "Select a region", value: "" }, ...regions]);
-      setProvinceOptions([
-        { name: "Select a province", value: "" },
-        ...provinces,
-      ]);
-    }
-    // Trigger the fetch
-    fetchData();
-  }, [currentUser]);
+    const Core = window.Core;
+    Core.setWorkerPath('/public/webviewer/core')
+    console.log(Core)
+
+    const generatePDF = async function(){
+      const newPDF = await Core.officeToPDFBuffer(documentPath, {
+          officeOptions: {
+              templateValues: {
+                  "PHContact": {
+                      "email": "v.dado@gmail.com",
+                      "firstName": "Veronica",
+                      "lastName": "Dado",
+                      "phone": "1234567890"
+                  },
+                  "USContact": {
+                      "email": "a.dauphinais@gmail.com",
+                      "firstName": "Asteria",
+                      "lastName": "Dauphinais",
+                      "phone": "6032646153"
+                  },
+                  "admin": {
+                      "email": "ian.dauphin@gmail.com",
+                      "firstName": "Ian ",
+                      "lastName": "Dauphinais",
+                      "phone": "6032967085"
+                  },
+                  "libraryAddress": {
+                      "barangay": "New Barangay",
+                      "city": "Chester",
+                      "province": "Abra",
+                      "region": "Eastern Visayas",
+                      "street": "67 Meadow Fox Lane"
+                  },
+                  "libraryData": {
+                      "libraryName": "New Library Name"
+                  }
+              }
+          }
+      }).then(buffer => {
+          saveByteArray('generated_document.pdf', buffer);
+      })
+      return newPDF;
+  }
+  const PDF = generatePDF();
+  console.log(PDF)
+})
 
   return (
     <div>
@@ -243,6 +281,8 @@ function LibraryForm({ createLibrary, getRegionsAndProvinces, updateToken }) {
               </button>
             )}
             <button
+            disabled={disableNext || !formTouched}
+            style={disableNext || !formTouched ? {backgroundColor: "grey"} : {}}
               onClick={() => {
                 if (page === FormTitles.length - 1) {
                   handleSubmit();

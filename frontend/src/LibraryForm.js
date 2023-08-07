@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useRef } from "react";
 import { useFormik } from "formik";
 import "react-phone-number-input/style.css";
 import { useHistory } from "react-router-dom";
@@ -9,15 +9,16 @@ import PrimaryAddressDetails from "./LibraryFormComponents/PrimaryAddressDetails
 import USSponsorDetails from "./LibraryFormComponents/USSponsorDetails";
 import PHSponsorDetails from "./LibraryFormComponents/PHSponsorDetails";
 import { basicLibraryDetailsSchema } from "./schemas/basicLibraryDetailsSchema";
-import {libraryAddressDetailsSchema} from "./schemas/libraryAddressDetailsSchema";
+import { libraryAddressDetailsSchema } from "./schemas/libraryAddressDetailsSchema";
 import { PHContactDetailsSchema } from "./schemas/PHContactDetailsSchema";
 import { USContactDetailsSchema } from "./schemas/USContactDetailsSchema";
-import {Core, saveByteArray} from '@pdftron/webviewer'
+import WebViewer, { Core, saveByteArray } from "@pdftron/webviewer";
 
-const documentPath = "../frontend/src/jpgs/MOA_template.docx"
+const documentPath = "./jpgs/MOA_template.docx";
 
 function LibraryForm({ createLibrary, getRegionsAndProvinces, updateToken }) {
   const history = useHistory();
+  const viewer = useRef(null);
   const { currentUser, setCurrentUser } = useContext(UserContext);
 
   const INITIAL_FORM_DATA = {
@@ -62,7 +63,7 @@ function LibraryForm({ createLibrary, getRegionsAndProvinces, updateToken }) {
       email: "",
       phone: "+63",
     },
-    validationSchema: PHContactDetailsSchema
+    validationSchema: PHContactDetailsSchema,
   });
 
   const formikUSContactData = useFormik({
@@ -72,7 +73,7 @@ function LibraryForm({ createLibrary, getRegionsAndProvinces, updateToken }) {
       email: "",
       phone: "+1",
     },
-    validationSchema: USContactDetailsSchema
+    validationSchema: USContactDetailsSchema,
   });
 
   const [page, setPage] = useState(0);
@@ -155,7 +156,13 @@ function LibraryForm({ createLibrary, getRegionsAndProvinces, updateToken }) {
   ];
   const PageDisplay = () => {
     if (page === 0) {
-      return <BasicLibraryDetails formik={formikBasicLibraryData} setDisableNext={setDisableNext} setFormTouched={setFormTouched} />;
+      return (
+        <BasicLibraryDetails
+          formik={formikBasicLibraryData}
+          setDisableNext={setDisableNext}
+          setFormTouched={setFormTouched}
+        />
+      );
     } else if (page === 1) {
       return (
         <PrimaryAddressDetails
@@ -177,9 +184,9 @@ function LibraryForm({ createLibrary, getRegionsAndProvinces, updateToken }) {
     } else if (page === 3) {
       return (
         <USSponsorDetails
-        formik={formikUSContactData}
-        setDisableNext={setDisableNext}
-        setFormTouched={setFormTouched}
+          formik={formikUSContactData}
+          setDisableNext={setDisableNext}
+          setFormTouched={setFormTouched}
         />
       );
     } else if (page === 4) {
@@ -197,56 +204,29 @@ function LibraryForm({ createLibrary, getRegionsAndProvinces, updateToken }) {
   };
 
   // if using a class, equivalent of componentDidMount
-  useEffect(() => {
-    const Core = window.Core;
-    Core.setWorkerPath('/public/webviewer/core')
-    console.log(Core)
+  // useEffect(() => {
+  //   const Core = window.Core;
+  //   Core.setWorkerPath("/webviewer/core");
+  //   Core.enableFullPDF();
+  //   console.log(Core);
 
-    const generatePDF = async function(){
-      const newPDF = await Core.officeToPDFBuffer(documentPath, {
-          officeOptions: {
-              templateValues: {
-                  "PHContact": {
-                      "email": "v.dado@gmail.com",
-                      "firstName": "Veronica",
-                      "lastName": "Dado",
-                      "phone": "1234567890"
-                  },
-                  "USContact": {
-                      "email": "a.dauphinais@gmail.com",
-                      "firstName": "Asteria",
-                      "lastName": "Dauphinais",
-                      "phone": "6032646153"
-                  },
-                  "admin": {
-                      "email": "ian.dauphin@gmail.com",
-                      "firstName": "Ian ",
-                      "lastName": "Dauphinais",
-                      "phone": "6032967085"
-                  },
-                  "libraryAddress": {
-                      "barangay": "New Barangay",
-                      "city": "Chester",
-                      "province": "Abra",
-                      "region": "Eastern Visayas",
-                      "street": "67 Meadow Fox Lane"
-                  },
-                  "libraryData": {
-                      "libraryName": "New Library Name"
-                  }
-              }
-          }
-      }).then(buffer => {
-          saveByteArray('generated_document.pdf', buffer);
-      })
-      return newPDF;
-  }
-  const PDF = generatePDF();
-  console.log(PDF)
-})
+  //   const generatePDF = async function () {
+  //     const newPDF = await Core.officeToPDFBuffer(documentPath, {
+  //       1: "demo:1691023836731:7c41496103000000005573cd05c5287ac1d08cc22d2ecbc44a55c07353",
+  //     });
+  //     // .then(async (buffer) => {
+  //     //   const PDF = await saveByteArray("generated_document.pdf", buffer);
+  //     //   console.log(PDF);
+  //     // });
+  //     return newPDF;
+  //   };
+  //   const PDF = generatePDF();
+  //   console.log(PDF);
+  // });
 
   return (
     <div>
+      <div className="webviewer" ref={viewer} style={{ height: "100vh" }}></div>
       <h1>Register a Library</h1>
       <div className="form">
         <div className="progressbar">
@@ -281,8 +261,10 @@ function LibraryForm({ createLibrary, getRegionsAndProvinces, updateToken }) {
               </button>
             )}
             <button
-            disabled={disableNext || !formTouched}
-            style={disableNext || !formTouched ? {backgroundColor: "grey"} : {}}
+              disabled={disableNext || !formTouched}
+              style={
+                disableNext || !formTouched ? { backgroundColor: "grey" } : {}
+              }
               onClick={() => {
                 if (page === FormTitles.length - 1) {
                   handleSubmit();

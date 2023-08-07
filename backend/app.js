@@ -4,6 +4,9 @@
 
 const express = require("express");
 const cors = require("cors");
+const { PDFNet } = require("@pdftron/pdfnet-node");
+const path = require("path");
+const fs = require("fs");
 
 const { NotFoundError } = require("./expressError");
 
@@ -30,6 +33,12 @@ app.use("/users", usersRoutes);
 app.use("/shipments", shipmentsRoutes);
 app.use("/moas", moasRoutes);
 app.use("/database", databaseRoutes);
+
+// converting office to PDF route
+app.get("/convertFromOffice", (req, res) => {
+  const { filename } = req.query;
+  
+});
 
 /** Handle 404 errors -- this matches everything */
 app.use(function (req, res, next) {

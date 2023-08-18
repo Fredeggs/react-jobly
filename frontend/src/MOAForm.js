@@ -5,9 +5,10 @@ import UserContext from "./userContext";
 import MOA from "./jpgs/MOA for new libraries rev2023.pdf";
 import { Link } from "react-router-dom/cjs/react-router-dom.min";
 
-function MOAForm({ createMOA, updateMOA, updateToken }) {
+function MOAForm({ createMOA, updateMOA, updateToken, getMOA }) {
   const history = useHistory();
   const [selectedFile, setSelectedFile] = useState(null);
+  const [MOAURL, setMOAURL] = useState("");
   const { currentUser, setCurrentUser } = useContext(UserContext);
 
   const handleChange = async (e) => {
@@ -27,6 +28,24 @@ function MOAForm({ createMOA, updateMOA, updateToken }) {
     history.push("/");
   };
 
+  useEffect(() => {
+    async function fetchData() {
+      // Fetch MOA data
+      console.log("fetching");
+      const data = await getMOA(currentUser.libraryId);
+      console.log(data);
+      setMOAURL(data);
+      // Update the options state
+      // setRegionOptions([{ name: "Select a region", value: "" }, ...regions]);
+      // setProvinceOptions([
+      //   { name: "Select a province", value: "" },
+      //   ...provinces,
+      // ]);
+    }
+    // Trigger the fetch
+    fetchData();
+  }, [currentUser]);
+
   if (
     currentUser.libraryId &&
     currentUser.moaStatus != "submitted" &&
@@ -35,10 +54,10 @@ function MOAForm({ createMOA, updateMOA, updateToken }) {
     return (
       <div>
         <h1>Memorandum of Agreement Download and Submission</h1>
-        <Link to={MOA} download="BKP_MOA" target="_blank" rel="noreferrer">
+        <a href={MOAURL} target="_blank" rel="noopener noreferrer">
           <button>Download MOA pdf</button>
-        </Link>
-        {
+        </a>
+        {/* {
           <Form onSubmit={handleSubmit}>
             <FormGroup>
               <Label for="moa">
@@ -51,7 +70,7 @@ function MOAForm({ createMOA, updateMOA, updateToken }) {
             </FormGroup>
             <Button>Submit</Button>
           </Form>
-        }
+        } */}
       </div>
     );
   }

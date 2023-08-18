@@ -7,6 +7,9 @@ require("colors");
 
 const SECRET_KEY = process.env.SECRET_KEY || "secret-dev";
 
+const PDFNET_KEY =
+  "demo:1691424077967:7c5f6ef00300000000836250f8cfc3d7928796ab65c20e1409cbf9259a";
+
 const PORT = +process.env.PORT || 3001;
 
 // Use dev database, testing database, or via env var, production database
@@ -30,6 +33,7 @@ console.log("---");
 
 module.exports = {
   SECRET_KEY,
+  PDFNET_KEY,
   PORT,
   BCRYPT_WORK_FACTOR,
   getDatabaseUri,

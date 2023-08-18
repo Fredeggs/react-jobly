@@ -4,8 +4,7 @@
   "type": "object",
   "properties": {
     "phone": {
-      "type": "string",
-      "pattern": "^[0-9]{10}$"
+      "type": "string"
     },
     "password": {
       "type": "string",

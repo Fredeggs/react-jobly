@@ -1,7 +1,7 @@
 import "./App.css";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import Home from "./Home";
-import LoginForm from "./LoginForm";
+import LoginForm from "./LoginFormFormik";
 import SignupForm from "./SignupForm";
 import ProfileForm from "./ProfileForm";
 import MOAForm from "./MOAForm";
@@ -21,6 +21,7 @@ function App() {
   const [currentUser, setCurrentUser] = useLocalStorage("user", null);
   const [token, setToken] = useLocalStorage("token", null);
 
+  // Auth
   const signup = async (signupCredentials) => {
     const res = await BKPApi.register(signupCredentials);
     setToken(res.token);
@@ -40,16 +41,32 @@ function App() {
     setToken("");
   };
 
+  // Users
   const updateUserDetails = async (updatedDetails) => {
     const res = await BKPApi.updateUser(currentUser.username, updatedDetails);
     return res;
   };
 
+  const getCurrentUser = async () => {
+    try {
+      let { email } = decodeToken(token);
+      // put the token on the Api class so it can use it to call the API.
+      BKPApi.token = token;
+      let user = await BKPApi.getUser(email);
+      setCurrentUser(user);
+      return user;
+    } catch (e) {
+      setCurrentUser(null);
+    }
+  };
+
+  //Database
   const getRegionsAndProvinces = async () => {
     const res = await BKPApi.getRegionsAndProvinces();
     return res;
   };
 
+  // Libraries
   const getLibrary = async (id) => {
     const res = await BKPApi.getLibrary(id);
     return res;
@@ -65,6 +82,7 @@ function App() {
     return res;
   };
 
+  ///MOAs
   const createMOA = async (libraryId, data) => {
     const res = await BKPApi.createMOA(libraryId, data);
     return res;
@@ -80,22 +98,10 @@ function App() {
     return res;
   };
 
+  //Shipments
   const createShipment = async (data) => {
     const res = await BKPApi.createShipment(data);
     return res;
-  };
-
-  const getCurrentUser = async () => {
-    try {
-      let { email } = decodeToken(token);
-      // put the token on the Api class so it can use it to call the API.
-      BKPApi.token = token;
-      let user = await BKPApi.getUser(email);
-      setCurrentUser(user);
-      return user;
-    } catch (e) {
-      setCurrentUser(null);
-    }
   };
 
   useEffect(() => {
@@ -136,6 +142,7 @@ function App() {
                 createMOA={createMOA}
                 updateToken={updateToken}
                 updateMOA={updateMOA}
+                getMOA={getMOA}
               />
             </Route>
             <Route exact path="/libraries/:id">

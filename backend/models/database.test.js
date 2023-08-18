@@ -21,6 +21,6 @@ describe("get regions and provinces", function () {
   test("works", async function () {
     const res = await Database.getRegionsAndProvinces();
     expect(res.provinces.length).toEqual(81);
-    expect(res.regions.length).toEqual(3);
+    expect(res.regions.length).toEqual(17);
   });
 });

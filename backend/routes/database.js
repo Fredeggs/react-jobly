@@ -1,6 +1,7 @@
 "use strict";
 
-/** Routes for libraries. */
+/** Routes for retieving pre-seeded information from the database
+ * such as regions & provinces in the Philippines. */
 
 const express = require("express");
 

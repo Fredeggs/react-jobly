@@ -25,7 +25,7 @@ describe("GET /database/regions-and-provinces", function () {
       .get(`/database/regions-and-provinces`)
       .set("authorization", `Bearer ${tokens.adminToken}`);
     expect(resp.body.provinces.length).toEqual(81);
-    expect(resp.body.regions.length).toEqual(3);
+    expect(resp.body.regions.length).toEqual(17);
   });
 
   test("works for non-admin", async function () {
@@ -33,6 +33,6 @@ describe("GET /database/regions-and-provinces", function () {
       .get(`/database/regions-and-provinces`)
       .set("authorization", `Bearer ${tokens.u1Token}`);
     expect(resp.body.provinces.length).toEqual(81);
-    expect(resp.body.regions.length).toEqual(3);
+    expect(resp.body.regions.length).toEqual(17);
   });
 });

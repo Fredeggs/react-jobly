@@ -104,6 +104,14 @@ class MOA {
 
     if (!moa) throw new NotFoundError(`No moa with libraryId: ${libraryId}`);
   }
+
+  /** Generate an moa based on the createLibrary data; returns undefined.
+   *
+   **/
+
+  static async generateMOA(libraryData) {
+    console.log(libraryData);
+  }
 }
 
 module.exports = MOA;

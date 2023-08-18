@@ -4,6 +4,8 @@
 
 const jsonschema = require("jsonschema");
 const express = require("express");
+const { PDFNet } = require("@pdftron/pdfnet-node");
+const fs = require("fs");
 
 const { BadRequestError } = require("../expressError");
 const {
@@ -17,6 +19,7 @@ const libraryNewSchema = require("../schemas/libraryNew.json");
 const libraryUpdateSchema = require("../schemas/libraryUpdate.json");
 const librarySearchSchema = require("../schemas/librarySearch.json");
 const Shipment = require("../models/shipment");
+const { runContentReplacer } = require("../helpers/PDFNet");
 
 const router = new express.Router();
 
@@ -39,10 +42,35 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
     if (!validator.valid) {
       const errs = validator.errors.map((e) => e.stack);
       throw new BadRequestError(errs);
+    } else {
+      const library = await Library.createLibrary(req.body);
+      const templateData = {
+        id: library.id,
+        libraryName: library.libraryData.libraryName,
+        street: library.primaryAddress.street,
+        barangay: library.primaryAddress.barangay,
+        city: library.primaryAddress.city,
+        province: library.primaryAddress.province,
+        region: library.primaryAddress.region,
+        USContactFirst: library.USContact.firstName,
+        USContactLast: library.USContact.lastName,
+        USContactEmail: library.USContact.email,
+        USContactPhone: library.USContact.phone,
+        adminFirst: library.adminContact.firstName,
+        adminLast: library.adminContact.lastName,
+        adminEmail: library.adminContact.email,
+        adminPhone: library.adminContact.phone,
+        PHContactFirst: library.PHContact.firstName,
+        PHContactLast: library.PHContact.lastName,
+        PHContactEmail: library.PHContact.email,
+        PHContactPhone: library.PHContact.phone,
+      };
+      await runContentReplacer(templateData);
+
+      return res.status(201).json({ library });
     }
-    const library = await Library.createLibrary(req.body);
-    return res.status(201).json({ library });
   } catch (err) {
+    console.log(err);
     return next(err);
   }
 });

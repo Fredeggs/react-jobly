@@ -111,8 +111,18 @@ describe("create library", function () {
         contactType: "ph-sponsor",
       },
       primaryAddress: {
-        ...newLibrary.primaryAddress,
+        street: newLibrary.primaryAddress.street,
+        barangay: newLibrary.primaryAddress.barangay,
+        city: newLibrary.primaryAddress.city,
+        province: "Abra",
+        region: "National Capital Region (NCR)",
         id: expect.any(Number),
+      },
+      adminContact: {
+        email: "testuser3@test.com",
+        firstName: "User3First",
+        lastName: "User3Last",
+        phone: "123-456-7890",
       },
       readingSpaces: newLibrary.readingSpaces,
     });
@@ -136,8 +146,18 @@ describe("create library", function () {
         contactType: "ph-sponsor",
       },
       primaryAddress: {
-        ...newCommunityLibrary.primaryAddress,
+        street: newCommunityLibrary.primaryAddress.street,
+        barangay: newCommunityLibrary.primaryAddress.barangay,
+        city: newCommunityLibrary.primaryAddress.city,
+        province: "Abra",
+        region: "National Capital Region (NCR)",
         id: expect.any(Number),
+      },
+      adminContact: {
+        email: "testuser3@test.com",
+        firstName: "User3First",
+        lastName: "User3Last",
+        phone: "123-456-7890",
       },
       readingSpaces: newCommunityLibrary.readingSpaces,
     });
@@ -208,7 +228,7 @@ describe("findAll", function () {
         primaryBarangay: "barangay2",
         primaryCity: "city2",
         primaryProvince: "Metro Manila",
-        primaryRegion: "Luzon",
+        primaryRegion: "National Capital Region (NCR)",
         primaryStreet: "street2",
         moaStatus: "approved",
       },
@@ -220,7 +240,7 @@ describe("findAll", function () {
         primaryBarangay: "barangay3",
         primaryCity: "city3",
         primaryProvince: "Metro Manila",
-        primaryRegion: "Luzon",
+        primaryRegion: "National Capital Region (NCR)",
         primaryStreet: "street3",
         moaStatus: null,
       },
@@ -232,7 +252,7 @@ describe("findAll", function () {
         primaryBarangay: "barangay1",
         primaryCity: "city1",
         primaryProvince: "Metro Manila",
-        primaryRegion: "Luzon",
+        primaryRegion: "National Capital Region (NCR)",
         primaryStreet: "street1",
         moaStatus: "submitted",
       },
@@ -250,7 +270,7 @@ describe("findAll", function () {
         primaryBarangay: "barangay2",
         primaryCity: "city2",
         primaryProvince: "Metro Manila",
-        primaryRegion: "Luzon",
+        primaryRegion: "National Capital Region (NCR)",
         primaryStreet: "street2",
         moaStatus: "approved",
       },
@@ -268,7 +288,7 @@ describe("findAll", function () {
         primaryBarangay: "barangay1",
         primaryCity: "city1",
         primaryProvince: "Metro Manila",
-        primaryRegion: "Luzon",
+        primaryRegion: "National Capital Region (NCR)",
         primaryStreet: "street1",
         moaStatus: "submitted",
       },
@@ -327,7 +347,7 @@ describe("get", function () {
         barangay: "barangay1",
         city: "city1",
         province: "Metro Manila",
-        region: "Luzon",
+        region: "National Capital Region (NCR)",
         street: "street1",
       },
       readingSpaces: ["reading corner", "dedicated reading room"],
@@ -398,7 +418,7 @@ describe("update", function () {
         barangay: "barangay1",
         city: "city1",
         province: "Metro Manila",
-        region: "Luzon",
+        region: "National Capital Region (NCR)",
         street: "street1",
       },
       USContact: {
@@ -458,7 +478,7 @@ describe("update", function () {
         city: "city1",
         id: expect.any(Number),
         province: "Metro Manila",
-        region: "Luzon",
+        region: "National Capital Region (NCR)",
         street: "street1",
       },
       readingSpaces: ["reading corner", "dedicated reading room"],
@@ -489,7 +509,7 @@ describe("update", function () {
         barangay: "barangay1",
         city: "city1",
         province: "Batanes",
-        region: "Mindanao",
+        region: "Ilocos Region (Region I)",
         street: "street1",
       },
       USContact: {
@@ -549,7 +569,7 @@ describe("update", function () {
         city: "city1",
         id: expect.any(Number),
         province: "Batanes",
-        region: "Mindanao",
+        region: "Ilocos Region (Region I)",
         street: "street1",
       },
       readingSpaces: ["reading corner", "dedicated reading room"],
@@ -580,7 +600,7 @@ describe("update", function () {
         barangay: "barangay1",
         city: "city1",
         province: "Metro Manila",
-        region: "Luzon",
+        region: "National Capital Region (NCR)",
         street: "street1",
       },
       USContact: {
@@ -640,7 +660,7 @@ describe("update", function () {
         city: "city1",
         id: expect.any(Number),
         province: "Metro Manila",
-        region: "Luzon",
+        region: "National Capital Region (NCR)",
         street: "street1",
       },
       readingSpaces: ["dedicated reading room"],
@@ -697,6 +717,6 @@ describe("get regions and provinces", function () {
   test("works", async function () {
     const res = await Library.getRegionsAndProvinces();
     expect(res.provinces.length).toEqual(81);
-    expect(res.regions.length).toEqual(3);
+    expect(res.regions.length).toEqual(17);
   });
 });

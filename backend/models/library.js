@@ -3,6 +3,7 @@
 const db = require("../db");
 const { BadRequestError, NotFoundError } = require("../expressError");
 const { sqlForPartialUpdate } = require("../helpers/sql");
+const User = require("./user");
 
 /** Related functions for companies. */
 
@@ -51,10 +52,14 @@ class Library {
       );
 
     const primaryAddressRes = await db.query(
-      `INSERT INTO primary_addresses
+      `WITH new_address AS (INSERT INTO primary_addresses
            (street, barangay, city, province_id, region_id)
            VALUES ($1, $2, $3, $4, $5)
-           RETURNING id, street, barangay, city, province_id AS "provinceId", region_id AS "regionId"`,
+           RETURNING * )
+      SELECT new_address.id, new_address.street, new_address.barangay, new_address.city, provinces.name AS "province", regions.name AS "region" 
+      FROM new_address
+      LEFT JOIN provinces ON provinces.id = new_address.province_id
+      LEFT JOIN regions ON regions.id = new_address.region_id `,
       [
         primaryAddress.street,
         primaryAddress.barangay,
@@ -113,6 +118,13 @@ class Library {
       libraryId: newLibrary.id,
     });
 
+    const adminContactRes = await db.query(
+      `SELECT first_name AS "firstName", last_name AS "lastName", email, phone
+      FROM users
+      WHERE id = $1`,
+      [adminId]
+    );
+
     const library = {
       id: newLibrary.id,
       libraryData: {
@@ -136,6 +148,9 @@ class Library {
       },
       PHContact: {
         ...newPHContact,
+      },
+      adminContact: {
+        ...adminContactRes.rows[0],
       },
       adminId: newLibrary.adminId,
       readingSpaces: newReadingSpaces,

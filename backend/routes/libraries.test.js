@@ -67,8 +67,8 @@ describe("POST /libraries", function () {
       .post("/libraries")
       .send(newTestLibrary)
       .set("authorization", `Bearer ${tokens.adminToken}`);
-    expect(resp.statusCode).toEqual(201);
-    expect(resp.body).toEqual({
+    await expect(resp.statusCode).toEqual(201);
+    await expect(resp.body).toEqual({
       library: {
         ...newTestLibrary,
         id: expect.any(Number),
@@ -85,8 +85,18 @@ describe("POST /libraries", function () {
           contactType: "ph-sponsor",
         },
         primaryAddress: {
-          ...newTestLibrary.primaryAddress,
+          street: "Primary Street",
+          barangay: "Primary Barangay",
+          city: "Primary City",
           id: expect.any(Number),
+          province: "Abra",
+          region: "National Capital Region (NCR)",
+        },
+        adminContact: {
+          email: "user5@user.com",
+          firstName: "U5F",
+          lastName: "U5L",
+          phone: "5555555555",
         },
         readingSpaces: ["dedicated reading room", "reading corner"],
       },
@@ -102,8 +112,8 @@ describe("POST /libraries", function () {
       .post("/libraries")
       .send(newTestLibrary)
       .set("authorization", `Bearer ${tokens.u1Token}`);
-    expect(resp.statusCode).toEqual(201);
-    expect(resp.body).toEqual({
+    await expect(resp.statusCode).toEqual(201);
+    await expect(resp.body).toEqual({
       library: {
         ...newTestLibrary,
         id: expect.any(Number),
@@ -120,8 +130,18 @@ describe("POST /libraries", function () {
           contactType: "ph-sponsor",
         },
         primaryAddress: {
-          ...newTestLibrary.primaryAddress,
+          street: "Primary Street",
+          barangay: "Primary Barangay",
+          city: "Primary City",
           id: expect.any(Number),
+          province: "Abra",
+          region: "National Capital Region (NCR)",
+        },
+        adminContact: {
+          email: "user5@user.com",
+          firstName: "U5F",
+          lastName: "U5L",
+          phone: "5555555555",
         },
         readingSpaces: ["dedicated reading room", "reading corner"],
       },
@@ -143,8 +163,8 @@ describe("POST /libraries", function () {
       .post("/libraries")
       .send(newTestLibrary)
       .set("authorization", `Bearer ${tokens.adminToken}`);
-    expect(resp.statusCode).toEqual(201);
-    expect(resp.body).toEqual({
+    await expect(resp.statusCode).toEqual(201);
+    await expect(resp.body).toEqual({
       library: {
         ...newTestLibrary,
         id: expect.any(Number),
@@ -161,8 +181,18 @@ describe("POST /libraries", function () {
           contactType: "ph-sponsor",
         },
         primaryAddress: {
-          ...newTestLibrary.primaryAddress,
+          street: "Primary Street",
+          barangay: "Primary Barangay",
+          city: "Primary City",
           id: expect.any(Number),
+          province: "Abra",
+          region: "National Capital Region (NCR)",
+        },
+        adminContact: {
+          email: "user5@user.com",
+          firstName: "U5F",
+          lastName: "U5L",
+          phone: "5555555555",
         },
       },
     });
@@ -219,7 +249,7 @@ describe("GET /libraries", function () {
           primaryBarangay: "Primary Barangay",
           primaryCity: "Primary City",
           primaryProvince: "Agusan del Sur",
-          primaryRegion: "Mindanao",
+          primaryRegion: "Ilocos Region (Region I)",
           primaryStreet: "Primary Street",
           moaStatus: null,
         },
@@ -231,7 +261,7 @@ describe("GET /libraries", function () {
           primaryBarangay: "Primary Barangay",
           primaryCity: "Primary City",
           primaryProvince: "Agusan del Sur",
-          primaryRegion: "Mindanao",
+          primaryRegion: "Ilocos Region (Region I)",
           primaryStreet: "Primary Street",
           moaStatus: null,
         },
@@ -243,7 +273,7 @@ describe("GET /libraries", function () {
           primaryBarangay: "Primary Barangay",
           primaryCity: "Primary City",
           primaryProvince: "Abra",
-          primaryRegion: "Luzon",
+          primaryRegion: "National Capital Region (NCR)",
           primaryStreet: "Primary Street",
           moaStatus: "submitted",
         },
@@ -255,7 +285,7 @@ describe("GET /libraries", function () {
           primaryBarangay: "Primary Barangay",
           primaryCity: "Primary City",
           primaryProvince: "Agusan del Norte",
-          primaryRegion: "Visayas",
+          primaryRegion: "Cordillera Administrative Region (CAR)",
           primaryStreet: "Primary Street",
           moaStatus: "submitted",
         },
@@ -285,7 +315,7 @@ describe("GET /libraries", function () {
           primaryBarangay: "Primary Barangay",
           primaryCity: "Primary City",
           primaryProvince: "Agusan del Sur",
-          primaryRegion: "Mindanao",
+          primaryRegion: "Ilocos Region (Region I)",
           primaryStreet: "Primary Street",
           moaStatus: null,
         },
@@ -297,7 +327,7 @@ describe("GET /libraries", function () {
           primaryBarangay: "Primary Barangay",
           primaryCity: "Primary City",
           primaryProvince: "Agusan del Sur",
-          primaryRegion: "Mindanao",
+          primaryRegion: "Ilocos Region (Region I)",
           primaryStreet: "Primary Street",
           moaStatus: null,
         },
@@ -320,7 +350,7 @@ describe("GET /libraries", function () {
           primaryBarangay: "Primary Barangay",
           primaryCity: "Primary City",
           primaryProvince: "Abra",
-          primaryRegion: "Luzon",
+          primaryRegion: "National Capital Region (NCR)",
           primaryStreet: "Primary Street",
           moaStatus: "submitted",
         },
@@ -332,7 +362,7 @@ describe("GET /libraries", function () {
           primaryBarangay: "Primary Barangay",
           primaryCity: "Primary City",
           primaryProvince: "Agusan del Norte",
-          primaryRegion: "Visayas",
+          primaryRegion: "Cordillera Administrative Region (CAR)",
           primaryStreet: "Primary Street",
           moaStatus: "submitted",
         },
@@ -399,7 +429,7 @@ describe("GET /libraries/:id", function () {
           barangay: "Primary Barangay",
           city: "Primary City",
           province: "Abra",
-          region: "Luzon",
+          region: "National Capital Region (NCR)",
         },
         readingSpaces: ["dedicated reading room", "reading corner"],
         moa: {
@@ -467,7 +497,7 @@ describe("GET /libraries/:id", function () {
           barangay: "Primary Barangay",
           city: "Primary City",
           province: "Abra",
-          region: "Luzon",
+          region: "National Capital Region (NCR)",
         },
         readingSpaces: ["dedicated reading room", "reading corner"],
         moa: {
@@ -542,7 +572,7 @@ describe("PATCH /libraries/:id", function () {
           barangay: "Primary Barangay",
           city: "Primary City",
           province: "Abra",
-          region: "Luzon",
+          region: "National Capital Region (NCR)",
           street: "Primary Street",
         },
         readingSpaces: ["dedicated reading room", "reading corner"],
@@ -593,7 +623,7 @@ describe("PATCH /libraries/:id", function () {
           barangay: "Primary Barangay",
           city: "Primary City",
           province: "Abra",
-          region: "Luzon",
+          region: "National Capital Region (NCR)",
           street: "Primary Street",
         },
         readingSpaces: ["dedicated reading room", "reading corner"],

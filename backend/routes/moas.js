@@ -13,7 +13,7 @@ const {
 const MOA = require("../models/moa");
 const moaNewSchema = require("../schemas/moaNew.json");
 const moaUpdateSchema = require("../schemas/moaUpdate.json");
-const { uploadMOAToS3, getMOAPresignedUrls } = require("../s3");
+const { uploadMOAToS3, getMOAPresignedUrls } = require("../helpers/s3");
 const router = new express.Router();
 
 const storage = multer.memoryStorage();

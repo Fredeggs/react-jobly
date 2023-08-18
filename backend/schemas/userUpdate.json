@@ -19,8 +19,7 @@
       "maxLength": 30
     },
     "phone": {
-      "type": "string",
-      "pattern": "^[0-9]{10}$"
+      "type": "string"
     }
   },
   "additionalProperties": false,

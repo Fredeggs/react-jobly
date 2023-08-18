@@ -14,8 +14,7 @@
       "type": "string"
     },
     "phone": {
-      "type": "string",
-      "pattern": "^[0-9]{10}$"
+      "type": "string"
     },
     "isAdmin": {
       "type": "boolean"

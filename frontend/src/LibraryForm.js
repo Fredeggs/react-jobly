@@ -18,7 +18,6 @@ const documentPath = "./jpgs/MOA_template.docx";
 
 function LibraryForm({ createLibrary, getRegionsAndProvinces, updateToken }) {
   const history = useHistory();
-  const viewer = useRef(null);
   const { currentUser, setCurrentUser } = useContext(UserContext);
 
   const INITIAL_FORM_DATA = {
@@ -28,6 +27,11 @@ function LibraryForm({ createLibrary, getRegionsAndProvinces, updateToken }) {
     readingSpaces: [],
     adminId: currentUser.id,
   };
+  const [page, setPage] = useState(0);
+  const [readingProgram, setReadingProgram] = useState("none");
+  const [formData, setFormData] = useState(INITIAL_FORM_DATA);
+  const [disableNext, setDisableNext] = useState(true);
+  const [formTouched, setFormTouched] = useState(false);
 
   const formikBasicLibraryData = useFormik({
     initialValues: {
@@ -75,12 +79,6 @@ function LibraryForm({ createLibrary, getRegionsAndProvinces, updateToken }) {
     },
     validationSchema: USContactDetailsSchema,
   });
-
-  const [page, setPage] = useState(0);
-  const [readingProgram, setReadingProgram] = useState("none");
-  const [formData, setFormData] = useState(INITIAL_FORM_DATA);
-  const [disableNext, setDisableNext] = useState(true);
-  const [formTouched, setFormTouched] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, dataset } = e.target;
@@ -136,15 +134,15 @@ function LibraryForm({ createLibrary, getRegionsAndProvinces, updateToken }) {
       },
     };
     console.log(formattedFormData);
-    // const libraryRes = await createLibrary(formattedFormData);
-    // await updateToken({
-    //   ...currentUser,
-    //   libraryId: libraryRes.id,
-    // });
+    const libraryRes = await createLibrary(formattedFormData);
+    await updateToken({
+      ...currentUser,
+      libraryId: libraryRes.id,
+    });
 
-    // setFormData(INITIAL_FORM_DATA);
-    // setCurrentUser(currentUser);
-    // history.push("/");
+    setFormData(INITIAL_FORM_DATA);
+    setCurrentUser(currentUser);
+    history.push("/");
   };
 
   const FormTitles = [
@@ -203,30 +201,8 @@ function LibraryForm({ createLibrary, getRegionsAndProvinces, updateToken }) {
     }
   };
 
-  // if using a class, equivalent of componentDidMount
-  // useEffect(() => {
-  //   const Core = window.Core;
-  //   Core.setWorkerPath("/webviewer/core");
-  //   Core.enableFullPDF();
-  //   console.log(Core);
-
-  //   const generatePDF = async function () {
-  //     const newPDF = await Core.officeToPDFBuffer(documentPath, {
-  //       1: "demo:1691023836731:7c41496103000000005573cd05c5287ac1d08cc22d2ecbc44a55c07353",
-  //     });
-  //     // .then(async (buffer) => {
-  //     //   const PDF = await saveByteArray("generated_document.pdf", buffer);
-  //     //   console.log(PDF);
-  //     // });
-  //     return newPDF;
-  //   };
-  //   const PDF = generatePDF();
-  //   console.log(PDF);
-  // });
-
   return (
     <div>
-      <div className="webviewer" ref={viewer} style={{ height: "100vh" }}></div>
       <h1>Register a Library</h1>
       <div className="form">
         <div className="progressbar">
